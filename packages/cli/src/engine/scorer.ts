@@ -34,10 +34,12 @@ export interface ScoreResult {
  * normalized by how many rules in that category actually applied to this
  * repo — ARCHITECTURE.md names this normalization but doesn't pin an exact
  * denominator. Here, "applicable" means the check was meaningful for this
- * repo: an `exists` rule always applies (that's the point of it — absence
- * IS the finding), while regex/astgrep/tokens rules apply only if their
- * `files` glob matched at least one scanned file. A category with zero
- * applicable rules scores 100 — nothing was checked, so nothing is docked.
+ * repo: an unconditional `exists` rule always applies (that's the point of
+ * it — absence IS the finding), a *conditional* `exists` rule (pattern.when
+ * set, see DECISIONS/0005) applies only if its precondition matched, and
+ * regex/astgrep/tokens rules apply only if their `files` glob matched at
+ * least one scanned file. A category with zero applicable rules scores 100
+ * — nothing was checked, so nothing is docked.
  * Composite = weighted mean of category scores via CATEGORY_WEIGHTS.
  */
 export function scoreFindings(
@@ -89,10 +91,19 @@ function scoreCategory(
 }
 
 function isApplicable(rule: Rule, scannedFiles: string[]): boolean {
+  // dot: true — scannedFiles includes dotfiles (see scan.ts); without it
+  // micromatch's `**` won't match a dotfile segment, either as a positive
+  // match or under a `!` exclusion pattern.
   if (rule.tier === "exists") {
-    return true;
+    // A conditional exists rule (rule.pattern.when set — see DECISIONS/0005)
+    // is only applicable if its precondition matched, same as regex/astgrep
+    // below. An unconditional one keeps ADR 0004's "always applicable".
+    const when = rule.pattern.when;
+    return (
+      when === undefined || micromatch.some(scannedFiles, when.files, { dot: true })
+    );
   }
-  return micromatch.some(scannedFiles, rule.files);
+  return micromatch.some(scannedFiles, rule.files, { dot: true });
 }
 
 function clamp(value: number, min: number, max: number): number {

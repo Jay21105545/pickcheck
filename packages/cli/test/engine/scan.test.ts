@@ -60,4 +60,34 @@ describe("scanRepo", () => {
       await dir.cleanup();
     }
   });
+
+  it("includes dotfiles like .env, but never .gitignore itself", async () => {
+    const dir = await createTempDir("scan-dotfiles");
+    try {
+      await dir.write(".gitignore", "dist/\n");
+      await dir.write(".env", "SECRET=1\n");
+      await dir.write("src/index.ts", "");
+
+      const files = await scanRepo({ cwd: dir.path });
+
+      expect(files).toEqual([".env", "src/index.ts"]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("still honors .gitignore rules that target a dotfile", async () => {
+    const dir = await createTempDir("scan-gitignore-dotfile");
+    try {
+      await dir.write(".gitignore", ".env\n");
+      await dir.write(".env", "SECRET=1\n");
+      await dir.write("src/index.ts", "");
+
+      const files = await scanRepo({ cwd: dir.path });
+
+      expect(files).toEqual(["src/index.ts"]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
 });

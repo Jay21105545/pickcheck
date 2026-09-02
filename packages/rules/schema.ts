@@ -31,6 +31,16 @@ const existsRuleSchema = baseRuleSchema.extend({
   tier: z.literal("exists"),
   pattern: z.object({
     mode: z.enum(["present", "absent"]),
+    // Optional precondition: the rule only runs if `when.files` matches at
+    // least one scanned file. Lets an exists-tier rule be conditional (e.g.
+    // "only require API.md if an API surface exists") without engine code
+    // special-cased to a rule id — see DECISIONS/0005. Unset means
+    // unconditional, matching every exists rule before this field existed.
+    when: z
+      .object({
+        files: z.array(z.string().min(1)).min(1),
+      })
+      .optional(),
   }),
 });
 

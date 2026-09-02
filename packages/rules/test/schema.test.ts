@@ -96,6 +96,24 @@ describe("ruleSchema", () => {
     expect(result.success).toBe(false);
   });
 
+  it("accepts an exists rule with a conditional `when` precondition", () => {
+    const result = ruleSchema.safeParse({
+      ...base,
+      tier: "exists",
+      pattern: { mode: "present", when: { files: ["app/api/**"] } },
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects an exists rule whose `when.files` is empty", () => {
+    const result = ruleSchema.safeParse({
+      ...base,
+      tier: "exists",
+      pattern: { mode: "present", when: { files: [] } },
+    });
+    expect(result.success).toBe(false);
+  });
+
   it("rejects a negative weight", () => {
     const result = ruleSchema.safeParse({
       ...base,

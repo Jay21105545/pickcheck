@@ -70,4 +70,57 @@ describe("runExistsTier", () => {
 
     expect(result).toEqual({ findings: [], warnings: [] });
   });
+
+  it("when: precondition met — checks for the target as usual", async () => {
+    const result = await runExistsTier(
+      rule({
+        files: ["API.md"],
+        pattern: { mode: "present", when: { files: ["app/api/**"] } },
+      }),
+      { cwd: "/repo", scannedFiles: ["app/api/users/route.ts"] },
+    );
+
+    expect(result.findings).toEqual([expect.objectContaining({ file: "API.md" })]);
+  });
+
+  it("when: precondition unmet — skips the check entirely, even if the target is absent", async () => {
+    const result = await runExistsTier(
+      rule({
+        files: ["API.md"],
+        pattern: { mode: "present", when: { files: ["app/api/**"] } },
+      }),
+      { cwd: "/repo", scannedFiles: ["src/index.ts"] },
+    );
+
+    expect(result).toEqual({ findings: [], warnings: [] });
+  });
+
+  it("a `!` exclusion glob excludes a dotfile nested under the excluded dir", async () => {
+    // Regression: micromatch defaults to dot:false, so "!**/fixtures/**"
+    // silently failed to exclude a nested ".env" before dot:true was added.
+    const result = await runExistsTier(
+      rule({
+        files: ["**/.env", "!**/fixtures/**"],
+        pattern: { mode: "absent" },
+      }),
+      {
+        cwd: "/repo",
+        scannedFiles: ["packages/rules/foo/fixtures/bad/.env", "real-app/.env"],
+      },
+    );
+
+    expect(result.findings.map((f) => f.file)).toEqual(["real-app/.env"]);
+  });
+
+  it("when: precondition met and target present — no finding", async () => {
+    const result = await runExistsTier(
+      rule({
+        files: ["API.md"],
+        pattern: { mode: "present", when: { files: ["app/api/**"] } },
+      }),
+      { cwd: "/repo", scannedFiles: ["app/api/users/route.ts", "API.md"] },
+    );
+
+    expect(result).toEqual({ findings: [], warnings: [] });
+  });
 });

@@ -3,7 +3,10 @@ import { join } from "node:path";
 import fg from "fast-glob";
 import ignore from "ignore";
 
-const ALWAYS_IGNORED = ["**/.git/**", "**/node_modules/**"];
+// .gitignore itself is repo plumbing, like .git/ and node_modules/ — never
+// audit-relevant content, so it's force-ignored the same way. Every other
+// dotfile is scanned: rules like sec/no-env-in-git need to see `.env`.
+const ALWAYS_IGNORED = ["**/.git/**", "**/node_modules/**", "**/.gitignore"];
 
 export interface ScanOptions {
   /** Repo root to scan. */
@@ -12,9 +15,9 @@ export interface ScanOptions {
 
 /**
  * Lists every file in the repo, respecting .gitignore (if present) on top
- * of the always-ignored .git and node_modules directories. Returned paths
- * are relative to `cwd`, POSIX-separated, and sorted for deterministic
- * output.
+ * of the always-ignored .git, node_modules, and .gitignore itself. Returned
+ * paths are relative to `cwd`, POSIX-separated, and sorted for deterministic
+ * output. Dotfiles (e.g. `.env`) are included — see ALWAYS_IGNORED above.
  */
 export async function scanRepo({ cwd }: ScanOptions): Promise<string[]> {
   const gitignore = await readGitignore(cwd);
@@ -22,7 +25,7 @@ export async function scanRepo({ cwd }: ScanOptions): Promise<string[]> {
 
   const files = await fg("**/*", {
     cwd,
-    dot: false,
+    dot: true,
     onlyFiles: true,
     ignore: ALWAYS_IGNORED,
   });

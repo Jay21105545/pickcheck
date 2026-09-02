@@ -99,6 +99,49 @@ describe("scoreFindings", () => {
     expect(security?.score).toBe(90); // NOT 100 — proves applicableCount stayed 1, not 0
   });
 
+  it("excludes a conditional exists rule from the applicable count when its `when` precondition is unmet", () => {
+    const rule = existsRule({
+      id: "docs/api-doc-exists",
+      category: "docs",
+      files: ["API.md"],
+      pattern: { mode: "present", when: { files: ["app/api/**"] } },
+      weight: 2,
+      severity: "warn",
+    });
+
+    // No app/api/** anywhere in the repo -> precondition unmet -> not
+    // applicable -> zero applicable rules in "docs" -> scores 100, not
+    // docked, even though the finding array below is non-empty.
+    const result = scoreFindings(
+      [finding(rule, { file: "API.md" })],
+      [rule],
+      ["src/index.ts"],
+    );
+
+    const docs = result.categories.find((c) => c.category === "docs");
+    expect(docs?.score).toBe(100);
+  });
+
+  it("keeps a conditional exists rule applicable once its `when` precondition matches", () => {
+    const rule = existsRule({
+      id: "docs/api-doc-exists",
+      category: "docs",
+      files: ["API.md"],
+      pattern: { mode: "present", when: { files: ["app/api/**"] } },
+      weight: 2, // warn -> multiplier 1 -> penalty 2 / 1 applicable = 2
+      severity: "warn",
+    });
+
+    const result = scoreFindings(
+      [finding(rule, { file: "API.md" })],
+      [rule],
+      ["app/api/users/route.ts"],
+    );
+
+    const docs = result.categories.find((c) => c.category === "docs");
+    expect(docs?.score).toBe(98);
+  });
+
   it("excludes a regex-tier rule from the applicable count when its files glob matches nothing", () => {
     const applicable = regexRule({ id: "qual/rule-a", files: ["**/*.ts"], weight: 2 });
     const notApplicable = regexRule({

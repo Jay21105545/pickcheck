@@ -11,7 +11,10 @@ export async function runRegexTier(
   rule: RegexRule,
   ctx: TierContext,
 ): Promise<TierResult> {
-  const matches = micromatch(ctx.scannedFiles, rule.files);
+  // dot: true — scannedFiles includes dotfiles (see scan.ts), and without
+  // it micromatch's `**` won't match a dotfile segment even under a `!`
+  // exclusion pattern like "!**/fixtures/**".
+  const matches = micromatch(ctx.scannedFiles, rule.files, { dot: true });
   const regex = new RegExp(rule.pattern.regex, rule.pattern.flags);
   const findings: Finding[] = [];
   const warnings: string[] = [];
