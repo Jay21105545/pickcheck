@@ -1,0 +1,28 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`renderTerminal > matches the snapshot for a clean result (no color) 1`] = `
+"┌─ pickcheck audit
+│ Score  [####################] 100/100
+│ 0 rules · 10 files · 0 findings
+└─
+
+No findings.
+"
+`;
+
+exports[`renderTerminal > matches the snapshot for a result with findings and warnings (no color) 1`] = `
+"┌─ pickcheck audit
+│ Score  [###################-] 97.45/100
+│ 2 rules · 42 files · 2 findings
+└─
+
+security (92)
+  ERROR src/config.ts — A secret looks hardcoded.
+
+discipline (99)
+  WARN  src/index.ts:12 — console.log left in source.
+
+Warnings:
+  - qual/no-empty-catch: astgrep tier not implemented yet (TODO phase-1.1) — skipped
+"
+`;

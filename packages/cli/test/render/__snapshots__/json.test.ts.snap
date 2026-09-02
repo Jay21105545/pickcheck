@@ -1,0 +1,91 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`renderJson > matches the snapshot for a clean result 1`] = `
+"{
+  "composite": 100,
+  "categories": [
+    {
+      "category": "security",
+      "score": 100
+    },
+    {
+      "category": "quality",
+      "score": 100
+    },
+    {
+      "category": "docs",
+      "score": 100
+    },
+    {
+      "category": "discipline",
+      "score": 100
+    },
+    {
+      "category": "ui-ux",
+      "score": 100
+    },
+    {
+      "category": "tokens",
+      "score": 100
+    }
+  ],
+  "findings": [],
+  "warnings": [],
+  "fileCount": 10,
+  "ruleCount": 0
+}"
+`;
+
+exports[`renderJson > matches the snapshot for a result with findings and warnings 1`] = `
+"{
+  "composite": 97.45,
+  "categories": [
+    {
+      "category": "security",
+      "score": 92
+    },
+    {
+      "category": "quality",
+      "score": 100
+    },
+    {
+      "category": "docs",
+      "score": 100
+    },
+    {
+      "category": "discipline",
+      "score": 99
+    },
+    {
+      "category": "ui-ux",
+      "score": 100
+    },
+    {
+      "category": "tokens",
+      "score": 100
+    }
+  ],
+  "findings": [
+    {
+      "ruleId": "sec/no-secrets-in-code",
+      "file": "src/config.ts",
+      "severity": "error",
+      "message": "A secret looks hardcoded.",
+      "fixPrompt": "Fix \\"Hardcoded secret\\" (sec/no-secrets-in-code) at src/config.ts: A secret looks hardcoded."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "src/index.ts",
+      "line": 12,
+      "severity": "warn",
+      "message": "console.log left in source.",
+      "fixPrompt": "Fix \\"console.log left in\\" (disc/no-console-log) at src/index.ts:12: console.log left in source."
+    }
+  ],
+  "warnings": [
+    "qual/no-empty-catch: astgrep tier not implemented yet (TODO phase-1.1) — skipped"
+  ],
+  "fileCount": 42,
+  "ruleCount": 2
+}"
+`;
