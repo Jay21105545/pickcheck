@@ -64,9 +64,16 @@ weight: 3                  # relative weight inside its category
 
 ## Scoring
 
-- Category score = 100 − Σ(finding weight × severity multiplier), floor 0.
-  Multipliers: info 0.5, warn 1, error 2. Normalized by rules-applicable
-  count so small repos aren't over-punished.
+- A rule is **applicable** to a category if it was actually checked
+  against this repo: an `exists`-tier rule is always applicable (a
+  missing file IS the finding, so applicability can't be gated on a match
+  existing); a `regex`/`astgrep`/`tokens`-tier rule is applicable only if
+  its `files` glob matched at least one scanned file.
+- Category score = 100 − ( Σ(finding weight × severity multiplier) /
+  applicable-rule-count ), floor 0. Multipliers: info 0.5, warn 1,
+  error 2. A category with zero applicable rules scores 100 (nothing was
+  checked, so nothing is docked) rather than 0. See
+  [ADR 0004](../DECISIONS/0004-scoring-normalization.md).
 - Composite = weighted mean (weights in one config object, changed only via
   decision record): security .30, quality .20, docs .15, discipline .15,
   ui-ux .10, tokens .10.
