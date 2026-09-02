@@ -1,0 +1,19 @@
+id: disc/no-console-log
+category: discipline
+severity: warn
+tier: regex
+title: console.log left in source
+files:
+  - "**/*.{ts,tsx,js,jsx}"
+  - "!**/*.test.*"
+  - "!**/*.spec.*"
+  - "!**/__tests__/**"
+  - "!**/test/**"
+  - "!**/tests/**"
+  - "!**/scripts/**"
+  - "!**/*.config.*"
+  - "!**/fixtures/**"
+message: "console.log left in source — remove it or replace it with a real logger."
+weight: 1
+pattern:
+  regex: 'console\.log\('

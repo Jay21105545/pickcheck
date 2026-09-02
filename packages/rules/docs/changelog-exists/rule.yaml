@@ -1,0 +1,11 @@
+id: docs/changelog-exists
+category: docs
+severity: warn
+tier: exists
+title: CHANGELOG.md missing
+files:
+  - "CHANGELOG.md"
+message: "No CHANGELOG.md found — users and future-you can't see what changed between versions."
+weight: 2
+pattern:
+  mode: present

@@ -1,0 +1,17 @@
+id: docs/env-example-exists
+category: docs
+severity: warn
+tier: exists
+title: .env present with no .env.example
+files:
+  - ".env.example"
+message: "A .env file exists but there's no .env.example — nobody can tell what environment variables this app needs without reading source."
+weight: 2
+pattern:
+  mode: present
+  when:
+    files:
+      - "**/.env"
+      - "**/.env.local"
+      - "**/.env.production"
+      - "!**/fixtures/**"

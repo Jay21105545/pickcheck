@@ -1,0 +1,14 @@
+id: sec/no-env-in-git
+category: security
+severity: error
+tier: exists
+title: .env file tracked in the repo
+files:
+  - "**/.env"
+  - "**/.env.local"
+  - "**/.env.production"
+  - "!**/fixtures/**"
+message: "A .env file is present and not git-ignored — it will be committed with real secrets in it."
+weight: 5
+pattern:
+  mode: absent

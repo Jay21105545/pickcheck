@@ -1,0 +1,22 @@
+id: docs/api-doc-exists
+category: docs
+severity: warn
+tier: exists
+title: API surface detected with no API.md or openapi spec
+files:
+  - "API.md"
+  - "openapi.json"
+  - "openapi.yaml"
+  - "openapi.yml"
+message: "An API surface was detected but no API.md or openapi.* spec documents it."
+weight: 2
+pattern:
+  mode: present
+  when:
+    files:
+      - "app/api/**"
+      - "pages/api/**"
+      - "routes/**"
+      - "src/routes/**"
+      - "api/**"
+      - "!**/fixtures/**"
