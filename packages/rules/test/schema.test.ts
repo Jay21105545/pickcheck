@@ -86,6 +86,16 @@ describe("ruleSchema", () => {
     expect(result.success).toBe(false);
   });
 
+  it("rejects a regex rule carrying an astgrep-shaped pattern (tier/pattern mismatch)", () => {
+    const result = ruleSchema.safeParse({
+      ...base,
+      tier: "regex",
+      // An astgrep pattern has no `regex` field, which regexRuleSchema requires.
+      pattern: { rule: { kind: "catch_clause" } },
+    });
+    expect(result.success).toBe(false);
+  });
+
   it("rejects a negative weight", () => {
     const result = ruleSchema.safeParse({
       ...base,
