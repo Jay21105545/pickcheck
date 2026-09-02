@@ -5,7 +5,8 @@
   "type": "module",
   "description": "Rule content (rule.yaml per category) and the zod schema that validates it. No engine code. Populated starting Phase 1.",
   "exports": {
-    "./schema": "./schema.ts"
+    "./schema": "./schema.ts",
+    "./package.json": "./package.json"
   },
   "dependencies": {
     "zod": "^4.5.4"

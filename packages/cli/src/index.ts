@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { Command } from "commander";
+import { registerAuditCommand } from "./commands/audit.js";
 import { getVersion } from "./version.js";
 
 const program = new Command();
@@ -9,4 +10,6 @@ program
   .description("Zero-config audit CLI for AI-built apps")
   .version(getVersion());
 
-program.parse(process.argv);
+registerAuditCommand(program);
+
+await program.parseAsync(process.argv);
