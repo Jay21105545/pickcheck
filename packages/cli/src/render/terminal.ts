@@ -2,10 +2,13 @@ import { createColors } from "picocolors";
 import type { AuditResult } from "../engine/audit.js";
 import { CATEGORY_WEIGHTS } from "../engine/scorer.js";
 import type { Category, Severity } from "../engine/types.js";
+import { resolveTerminalMode } from "./terminal-mode.js";
 
 export interface TerminalRenderOptions {
-  /** Disable ANSI styling — off by default in tests for stable snapshots. */
+  /** Explicit override. Defaults to auto-detecting NO_COLOR from the environment. */
   color?: boolean;
+  /** Explicit override. Defaults to auto-detecting TERM=dumb from the environment. */
+  ascii?: boolean;
 }
 
 type Styler = (input: string) => string;
@@ -25,10 +28,11 @@ const IDENTITY_STYLES: Styles = {
   red: (s) => s,
 };
 
-// picocolors' default export auto-detects TTY/CI/NO_COLOR and no-ops
-// itself when the environment looks non-interactive. `options.color` is
-// already an explicit, caller-controlled toggle, so use createColors(true)
-// to bypass that auto-detection rather than let it silently override us.
+// picocolors' default export auto-detects TTY/CI/NO_COLOR/TERM and no-ops
+// itself when the environment looks non-interactive. That detection is
+// redundant with (and can disagree with) resolveTerminalMode() below,
+// which is what actually decides on/off here — so bypass picocolors' own
+// detection with createColors(true) and always defer to ours.
 const forcedColors = createColors(true);
 const COLOR_STYLES: Styles = {
   bold: forcedColors.bold,
@@ -36,6 +40,30 @@ const COLOR_STYLES: Styles = {
   green: forcedColors.green,
   yellow: forcedColors.yellow,
   red: forcedColors.red,
+};
+
+interface Glyphs {
+  topLeft: string;
+  bottomLeft: string;
+  side: string;
+  separator: string;
+  dash: string;
+}
+
+const UNICODE_GLYPHS: Glyphs = {
+  topLeft: "┌─ ",
+  bottomLeft: "└─",
+  side: "│ ",
+  separator: " · ",
+  dash: " — ",
+};
+
+const ASCII_GLYPHS: Glyphs = {
+  topLeft: "+- ",
+  bottomLeft: "+-",
+  side: "| ",
+  separator: " * ",
+  dash: " - ",
 };
 
 const CATEGORY_ORDER = Object.keys(CATEGORY_WEIGHTS) as Category[];
@@ -55,10 +83,12 @@ export function renderTerminal(
   result: AuditResult,
   options: TerminalRenderOptions = {},
 ): string {
-  const styles = (options.color ?? true) ? COLOR_STYLES : IDENTITY_STYLES;
+  const detected = resolveTerminalMode(process.env);
+  const styles = (options.color ?? detected.color) ? COLOR_STYLES : IDENTITY_STYLES;
+  const glyphs = (options.ascii ?? detected.ascii) ? ASCII_GLYPHS : UNICODE_GLYPHS;
   const ruleById = new Map(result.rules.map((rule) => [rule.id, rule]));
 
-  const lines: string[] = [...renderSummaryCard(result, styles), ""];
+  const lines: string[] = [...renderSummaryCard(result, styles, glyphs), ""];
 
   if (result.findings.length === 0) {
     lines.push(styles.dim("No findings."));
@@ -87,7 +117,7 @@ export function renderTerminal(
               ? finding.file
               : `${finding.file}:${finding.line}`;
           lines.push(
-            `  ${severityBadge(severity, styles)} ${location} — ${finding.message}`,
+            `  ${severityBadge(severity, styles)} ${location}${glyphs.dash}${finding.message}`,
           );
         }
       }
@@ -106,14 +136,18 @@ export function renderTerminal(
   return `${lines.join("\n").trimEnd()}\n`;
 }
 
-function renderSummaryCard(result: AuditResult, styles: Styles): string[] {
+function renderSummaryCard(
+  result: AuditResult,
+  styles: Styles,
+  glyphs: Glyphs,
+): string[] {
   const composite = result.score.composite;
   const scoreText = scoreStyle(composite, styles)(`${composite}/100`);
   return [
-    `┌─ ${styles.bold("pickcheck audit")}`,
-    `│ Score  ${scoreBar(composite)} ${scoreText}`,
-    `│ ${result.rules.length} rules · ${result.fileCount} files · ${result.findings.length} findings`,
-    "└─",
+    `${glyphs.topLeft}${styles.bold("pickcheck audit")}`,
+    `${glyphs.side}Score  ${scoreBar(composite)} ${scoreText}`,
+    `${glyphs.side}${result.rules.length} rules${glyphs.separator}${result.fileCount} files${glyphs.separator}${result.findings.length} findings`,
+    glyphs.bottomLeft,
   ];
 }
 
