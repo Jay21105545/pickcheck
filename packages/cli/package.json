@@ -15,9 +15,16 @@
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "commander": "^15.0.0"
+    "@pickcheck/rules": "workspace:^",
+    "commander": "^15.0.0",
+    "fast-glob": "^3.3.3",
+    "ignore": "^7.0.8",
+    "micromatch": "^4.0.8",
+    "picocolors": "^1.1.1",
+    "yaml": "^2.9.0"
   },
   "devDependencies": {
+    "@types/micromatch": "^4.0.10",
     "@types/node": "^26.4.1"
   }
 }
