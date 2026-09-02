@@ -1,0 +1,7 @@
+{
+  "name": "@pickcheck/report",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Self-contained HTML report template (vanilla JS, no CDN/network). Populated starting Phase 4."
+}

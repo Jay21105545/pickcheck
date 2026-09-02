@@ -1,0 +1,7 @@
+{
+  "name": "@pickcheck/rules",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Rule content (rule.yaml per category) and the zod schema that validates it. No engine code. Populated starting Phase 1."
+}
