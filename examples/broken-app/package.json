@@ -1,0 +1,14 @@
+{
+  "name": "broken-app",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Deliberately bad Next.js-shaped demo repo — used by pickcheck's own tests and README to show what an audit finds. Every finding here is intentional.",
+  "scripts": {
+    "dev": "next dev"
+  },
+  "dependencies": {
+    "next": "^15.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}
