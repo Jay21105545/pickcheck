@@ -1,0 +1,6 @@
+# Excluded from pickcheck's own self-audit — not from git. Same syntax as
+# .gitignore. See DECISIONS/0006.
+
+# examples/broken-app is deliberately, permanently bad: it exists to prove
+# the rules and scorer work, not as real repo content to be judged by.
+examples/

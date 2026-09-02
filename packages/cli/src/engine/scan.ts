@@ -3,10 +3,16 @@ import { join } from "node:path";
 import fg from "fast-glob";
 import ignore from "ignore";
 
-// .gitignore itself is repo plumbing, like .git/ and node_modules/ — never
-// audit-relevant content, so it's force-ignored the same way. Every other
-// dotfile is scanned: rules like sec/no-env-in-git need to see `.env`.
-const ALWAYS_IGNORED = ["**/.git/**", "**/node_modules/**", "**/.gitignore"];
+// .gitignore and .pickcheckignore are repo plumbing, like .git/ and
+// node_modules/ — never audit-relevant content, so they're force-ignored
+// the same way. Every other dotfile is scanned: rules like
+// sec/no-env-in-git need to see `.env`.
+const ALWAYS_IGNORED = [
+  "**/.git/**",
+  "**/node_modules/**",
+  "**/.gitignore",
+  "**/.pickcheckignore",
+];
 
 export interface ScanOptions {
   /** Repo root to scan. */
@@ -14,14 +20,22 @@ export interface ScanOptions {
 }
 
 /**
- * Lists every file in the repo, respecting .gitignore (if present) on top
- * of the always-ignored .git, node_modules, and .gitignore itself. Returned
- * paths are relative to `cwd`, POSIX-separated, and sorted for deterministic
- * output. Dotfiles (e.g. `.env`) are included — see ALWAYS_IGNORED above.
+ * Lists every file in the repo, respecting .gitignore and .pickcheckignore
+ * (both optional, same gitignore pattern syntax) on top of the
+ * always-ignored .git, node_modules, and the ignore files themselves.
+ * .pickcheckignore exists for content that's legitimately git-tracked but
+ * shouldn't be audited — e.g. this repo's own .pickcheckignore excludes
+ * examples/, whose whole purpose is to contain deliberately bad code (see
+ * DECISIONS/0006). Returned paths are relative to `cwd`, POSIX-separated,
+ * and sorted for deterministic output. Dotfiles (e.g. `.env`) are
+ * included — see ALWAYS_IGNORED above.
  */
 export async function scanRepo({ cwd }: ScanOptions): Promise<string[]> {
-  const gitignore = await readGitignore(cwd);
-  const filter = ignore().add(gitignore);
+  const [gitignore, pickcheckignore] = await Promise.all([
+    readIgnoreFile(cwd, ".gitignore"),
+    readIgnoreFile(cwd, ".pickcheckignore"),
+  ]);
+  const filter = ignore().add(gitignore).add(pickcheckignore);
 
   const files = await fg("**/*", {
     cwd,
@@ -33,9 +47,9 @@ export async function scanRepo({ cwd }: ScanOptions): Promise<string[]> {
   return files.filter((file) => !filter.ignores(file)).sort();
 }
 
-async function readGitignore(cwd: string): Promise<string> {
+async function readIgnoreFile(cwd: string, name: string): Promise<string> {
   try {
-    return await readFile(join(cwd, ".gitignore"), "utf-8");
+    return await readFile(join(cwd, name), "utf-8");
   } catch (error) {
     if (isErrnoException(error) && error.code === "ENOENT") {
       return "";
