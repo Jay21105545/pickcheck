@@ -27,7 +27,7 @@ pickcheck/
 ## Engine Pipeline
 
 ```
-scan (fast-glob, .gitignore-aware)
+scan (fast-glob, .gitignore- and .pickcheckignore-aware)
   → load rules (zod-validate every rule.yaml; invalid → warn + skip)
   → dispatch by tier:
       exists   — file presence/absence checks
@@ -64,19 +64,56 @@ weight: 3                  # relative weight inside its category
 
 ## Scoring
 
+See [ADR 0006](../DECISIONS/0006-scoring-recalibration.md) (supersedes
+[ADR 0004](../DECISIONS/0004-scoring-normalization.md)'s formula; category
+weights are unchanged).
+
 - A rule is **applicable** to a category if it was actually checked
-  against this repo: an `exists`-tier rule is always applicable (a
-  missing file IS the finding, so applicability can't be gated on a match
-  existing); a `regex`/`astgrep`/`tokens`-tier rule is applicable only if
-  its `files` glob matched at least one scanned file.
-- Category score = 100 − ( Σ(finding weight × severity multiplier) /
-  applicable-rule-count ), floor 0. Multipliers: info 0.5, warn 1,
-  error 2. A category with zero applicable rules scores 100 (nothing was
-  checked, so nothing is docked) rather than 0. See
-  [ADR 0004](../DECISIONS/0004-scoring-normalization.md).
-- Composite = weighted mean (weights in one config object, changed only via
-  decision record): security .30, quality .20, docs .15, discipline .15,
-  ui-ux .10, tokens .10.
+  against this repo: an unconditional `exists`-tier rule is always
+  applicable (a missing file IS the finding, so applicability can't be
+  gated on a match existing); a *conditional* `exists`-tier rule
+  (`pattern.when` set — [ADR 0005](../DECISIONS/0005-conditional-exists-precondition.md))
+  is applicable only if `when.files` matched at least one scanned file; a
+  `regex`/`astgrep`/`tokens`-tier rule is applicable only if its `files`
+  glob matched at least one scanned file.
+- Category penalty is **additive, not normalized** — no division by
+  applicable-rule count:
+  ```
+  SEVERITY_POINTS = { info: 4, warn: 10, error: 25 }
+  PER_RULE_PENALTY_CAP = 50
+
+  categoryPenalty(category) = Σ over rules r with ≥1 finding in category of
+    min(PER_RULE_PENALTY_CAP, Σ over r's findings f of
+        SEVERITY_POINTS[f.severity] × r.weight)
+
+  categoryScore(category) = clamp(100 − categoryPenalty(category), 0, 100)
+  ```
+  `PER_RULE_PENALTY_CAP` bounds any single rule's contribution regardless
+  of how many times it fires (one rule can't zero a category alone; two
+  different rules still can). A category with zero findings — whether it
+  has zero applicable rules or applicable rules that just didn't fire —
+  still *reports* 100.
+- Composite is a weighted mean, but **renormalized over only the
+  categories with ≥1 applicable rule** for this scan (weights unchanged
+  from ADR 0004: security .30, quality .20, docs .15, discipline .15,
+  ui-ux .10, tokens .10):
+  ```
+  composite = Σ(categoryScore × weight) / Σ(weight)   over applicable categories
+  composite = 100                                     if no category is applicable
+  ```
+  A category with no rules loaded (e.g. `ui-ux`/`tokens` pre-Phase-3)
+  contributes nothing to the composite rather than a free 100 at full
+  nominal weight — see ADR 0006 for why that matters as the ruleset
+  grows.
+- **Gating severity**: after the weighted composite, each entry in
+  `SCORING_GATES` (`packages/cli/src/engine/scorer.ts`) can force the
+  composite down further — `{ category, minSeverity, compositeCap }` —
+  if any finding in `category` is at `minSeverity` or worse, `composite =
+  min(composite, compositeCap)`. General config-driven mechanism, not
+  category-specific engine code; the shipped default is
+  `{ category: "security", minSeverity: "error", compositeCap: 59 }`, one
+  point under the CLI's default `--min 60` so an error-severity security
+  finding always fails the default gate.
 
 ## Renderer Principles
 
