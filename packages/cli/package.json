@@ -15,6 +15,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
+    "@ast-grep/napi": "^0.45.3",
     "@pickcheck/rules": "workspace:^",
     "commander": "^15.0.0",
     "fast-glob": "^3.3.3",
