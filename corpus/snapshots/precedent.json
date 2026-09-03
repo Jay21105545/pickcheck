@@ -1,5 +1,5 @@
 {
-  "composite": 84.64,
+  "composite": 86.11,
   "categories": [
     {
       "category": "security",
@@ -23,7 +23,7 @@
     },
     {
       "category": "tokens",
-      "score": 71.43
+      "score": 100
     }
   ],
   "findings": [
@@ -49,16 +49,23 @@
       "severity": "warn",
       "message": "This fetch() call isn't wrapped in try/catch, doesn't check response.ok, and has no .catch — a failed or non-2xx request will fail silently.",
       "fixPrompt": "Fix \"fetch() call with no error handling\" (qual/fetch-has-error-handling) at app/opengraph-image.tsx:9: This fetch() call isn't wrapped in try/catch, doesn't check response.ok, and has no .catch — a failed or non-2xx request will fail silently."
-    },
-    {
-      "ruleId": "tok/ai-ignore-coverage",
-      "file": "pnpm-lock.yaml",
-      "severity": "warn",
-      "message": "This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore.",
-      "fixPrompt": "Fix \"Heavy/generated artifact not excluded from AI context\" (tok/ai-ignore-coverage) at pnpm-lock.yaml: This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore. (no AI-ignore file found (looked for .cursorignore, .claudeignore, .aiderignore, .codeiumignore, .windsurfignore, .rooignore))"
     }
   ],
   "warnings": [],
   "fileCount": 55,
-  "ruleCount": 20
+  "ruleCount": 19,
+  "tokenSurface": {
+    "files": [],
+    "totalTokens": 0,
+    "estimatedWastePercent": 0,
+    "ignoreCoverage": {
+      "ignoreFilesFound": [],
+      "artifacts": [
+        {
+          "target": "pnpm-lock.yaml",
+          "covered": false
+        }
+      ]
+    }
+  }
 }

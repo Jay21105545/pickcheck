@@ -1,5 +1,5 @@
 {
-  "composite": 77.94,
+  "composite": 80.42,
   "categories": [
     {
       "category": "security",
@@ -23,7 +23,7 @@
     },
     {
       "category": "tokens",
-      "score": 55.56
+      "score": 100
     }
   ],
   "findings": [
@@ -107,20 +107,6 @@
       "fixPrompt": "Fix \"CHANGELOG.md missing\" (docs/changelog-exists) at CHANGELOG.md: No CHANGELOG.md found — users and future-you can't see what changed between versions."
     },
     {
-      "ruleId": "tok/ai-ignore-coverage",
-      "file": "package-lock.json",
-      "severity": "warn",
-      "message": "This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore.",
-      "fixPrompt": "Fix \"Heavy/generated artifact not excluded from AI context\" (tok/ai-ignore-coverage) at package-lock.json: This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore. (no AI-ignore file found (looked for .cursorignore, .claudeignore, .aiderignore, .codeiumignore, .windsurfignore, .rooignore))"
-    },
-    {
-      "ruleId": "tok/ai-ignore-coverage",
-      "file": "bun.lockb",
-      "severity": "warn",
-      "message": "This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore.",
-      "fixPrompt": "Fix \"Heavy/generated artifact not excluded from AI context\" (tok/ai-ignore-coverage) at bun.lockb: This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore. (no AI-ignore file found (looked for .cursorignore, .claudeignore, .aiderignore, .codeiumignore, .windsurfignore, .rooignore))"
-    },
-    {
       "ruleId": "ux/inline-hex-threshold",
       "file": "src/components/ui/chart.tsx",
       "line": 53,
@@ -171,5 +157,23 @@
   ],
   "warnings": [],
   "fileCount": 110,
-  "ruleCount": 20
+  "ruleCount": 19,
+  "tokenSurface": {
+    "files": [],
+    "totalTokens": 0,
+    "estimatedWastePercent": 0,
+    "ignoreCoverage": {
+      "ignoreFilesFound": [],
+      "artifacts": [
+        {
+          "target": "package-lock.json",
+          "covered": false
+        },
+        {
+          "target": "bun.lockb",
+          "covered": false
+        }
+      ]
+    }
+  }
 }

@@ -1,9 +1,9 @@
 {
-  "composite": 59,
+  "composite": 79.54,
   "categories": [
     {
       "category": "security",
-      "score": 50
+      "score": 100
     },
     {
       "category": "quality",
@@ -23,7 +23,7 @@
     },
     {
       "category": "tokens",
-      "score": 71.43
+      "score": 100
     }
   ],
   "findings": [
@@ -58,101 +58,6 @@
       "fixPrompt": "Fix \"fetch() call with no error handling\" (qual/fetch-has-error-handling) at app/api/og/route.tsx:11: This fetch() call isn't wrapped in try/catch, doesn't check response.ok, and has no .catch — a failed or non-2xx request will fail silently."
     },
     {
-      "ruleId": "sec/no-hallucinated-imports",
-      "file": "components/billing-form.tsx",
-      "line": 5,
-      "severity": "error",
-      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
-      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/billing-form.tsx:5: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
-    },
-    {
-      "ruleId": "sec/no-hallucinated-imports",
-      "file": "components/main-nav.tsx",
-      "line": 7,
-      "severity": "error",
-      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
-      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/main-nav.tsx:7: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
-    },
-    {
-      "ruleId": "sec/no-hallucinated-imports",
-      "file": "components/mobile-nav.tsx",
-      "line": 4,
-      "severity": "error",
-      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
-      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/mobile-nav.tsx:4: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
-    },
-    {
-      "ruleId": "sec/no-hallucinated-imports",
-      "file": "components/nav.tsx",
-      "line": 6,
-      "severity": "error",
-      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
-      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/nav.tsx:6: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
-    },
-    {
-      "ruleId": "sec/no-hallucinated-imports",
-      "file": "components/sidebar-nav.tsx",
-      "line": 6,
-      "severity": "error",
-      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
-      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/sidebar-nav.tsx:6: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
-    },
-    {
-      "ruleId": "sec/no-hallucinated-imports",
-      "file": "config/dashboard.ts",
-      "line": 1,
-      "severity": "error",
-      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
-      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at config/dashboard.ts:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
-    },
-    {
-      "ruleId": "sec/no-hallucinated-imports",
-      "file": "config/docs.ts",
-      "line": 1,
-      "severity": "error",
-      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
-      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at config/docs.ts:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
-    },
-    {
-      "ruleId": "sec/no-hallucinated-imports",
-      "file": "config/marketing.ts",
-      "line": 1,
-      "severity": "error",
-      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
-      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at config/marketing.ts:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
-    },
-    {
-      "ruleId": "sec/no-hallucinated-imports",
-      "file": "config/site.ts",
-      "line": 1,
-      "severity": "error",
-      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
-      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at config/site.ts:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
-    },
-    {
-      "ruleId": "sec/no-hallucinated-imports",
-      "file": "config/subscriptions.ts",
-      "line": 1,
-      "severity": "error",
-      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
-      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at config/subscriptions.ts:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
-    },
-    {
-      "ruleId": "sec/no-hallucinated-imports",
-      "file": "lib/subscription.ts",
-      "line": 3,
-      "severity": "error",
-      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
-      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at lib/subscription.ts:3: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
-    },
-    {
-      "ruleId": "tok/ai-ignore-coverage",
-      "file": "pnpm-lock.yaml",
-      "severity": "warn",
-      "message": "This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore.",
-      "fixPrompt": "Fix \"Heavy/generated artifact not excluded from AI context\" (tok/ai-ignore-coverage) at pnpm-lock.yaml: This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore. (no AI-ignore file found (looked for .cursorignore, .claudeignore, .aiderignore, .codeiumignore, .windsurfignore, .rooignore))"
-    },
-    {
       "ruleId": "ux/form-submit-no-pending",
       "file": "components/editor.tsx",
       "line": 141,
@@ -163,5 +68,19 @@
   ],
   "warnings": [],
   "fileCount": 187,
-  "ruleCount": 20
+  "ruleCount": 19,
+  "tokenSurface": {
+    "files": [],
+    "totalTokens": 0,
+    "estimatedWastePercent": 0,
+    "ignoreCoverage": {
+      "ignoreFilesFound": [],
+      "artifacts": [
+        {
+          "target": "pnpm-lock.yaml",
+          "covered": false
+        }
+      ]
+    }
+  }
 }

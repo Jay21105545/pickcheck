@@ -1,9 +1,9 @@
 {
-  "composite": 57.94,
+  "composite": 59,
   "categories": [
     {
       "category": "security",
-      "score": 33.33
+      "score": 50
     },
     {
       "category": "quality",
@@ -23,7 +23,7 @@
     },
     {
       "category": "tokens",
-      "score": 55.56
+      "score": 100
     }
   ],
   "findings": [
@@ -714,68 +714,6 @@
       "fixPrompt": "Fix \".env file tracked in the repo\" (sec/no-env-in-git) at .env: A .env file is present and not git-ignored — it will be committed with real secrets in it."
     },
     {
-      "ruleId": "sec/no-hallucinated-imports",
-      "file": "src/pages/HostGame.tsx",
-      "line": 256,
-      "severity": "error",
-      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
-      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at src/pages/HostGame.tsx:256: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
-    },
-    {
-      "ruleId": "sec/no-hallucinated-imports",
-      "file": "supabase/functions/archive-expired-communities/index.ts",
-      "line": 1,
-      "severity": "error",
-      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
-      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at supabase/functions/archive-expired-communities/index.ts:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
-    },
-    {
-      "ruleId": "sec/no-hallucinated-imports",
-      "file": "supabase/functions/chat-sporty/index.ts",
-      "line": 1,
-      "severity": "error",
-      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
-      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at supabase/functions/chat-sporty/index.ts:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
-    },
-    {
-      "ruleId": "sec/no-hallucinated-imports",
-      "file": "supabase/functions/delete-user-account/index.ts",
-      "line": 1,
-      "severity": "error",
-      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
-      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at supabase/functions/delete-user-account/index.ts:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
-    },
-    {
-      "ruleId": "sec/no-hallucinated-imports",
-      "file": "supabase/functions/geocode/index.ts",
-      "line": 1,
-      "severity": "error",
-      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
-      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at supabase/functions/geocode/index.ts:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
-    },
-    {
-      "ruleId": "sec/no-hallucinated-imports",
-      "file": "supabase/functions/moderate-content/index.ts",
-      "line": 1,
-      "severity": "error",
-      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
-      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at supabase/functions/moderate-content/index.ts:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
-    },
-    {
-      "ruleId": "tok/ai-ignore-coverage",
-      "file": "package-lock.json",
-      "severity": "warn",
-      "message": "This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore.",
-      "fixPrompt": "Fix \"Heavy/generated artifact not excluded from AI context\" (tok/ai-ignore-coverage) at package-lock.json: This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore. (no AI-ignore file found (looked for .cursorignore, .claudeignore, .aiderignore, .codeiumignore, .windsurfignore, .rooignore))"
-    },
-    {
-      "ruleId": "tok/ai-ignore-coverage",
-      "file": "bun.lockb",
-      "severity": "warn",
-      "message": "This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore.",
-      "fixPrompt": "Fix \"Heavy/generated artifact not excluded from AI context\" (tok/ai-ignore-coverage) at bun.lockb: This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore. (no AI-ignore file found (looked for .cursorignore, .claudeignore, .aiderignore, .codeiumignore, .windsurfignore, .rooignore))"
-    },
-    {
       "ruleId": "ux/inline-hex-threshold",
       "file": "src/components/ui/chart.tsx",
       "line": 48,
@@ -810,5 +748,23 @@
   ],
   "warnings": [],
   "fileCount": 186,
-  "ruleCount": 20
+  "ruleCount": 19,
+  "tokenSurface": {
+    "files": [],
+    "totalTokens": 0,
+    "estimatedWastePercent": 0,
+    "ignoreCoverage": {
+      "ignoreFilesFound": [],
+      "artifacts": [
+        {
+          "target": "package-lock.json",
+          "covered": false
+        },
+        {
+          "target": "bun.lockb",
+          "covered": false
+        }
+      ]
+    }
+  }
 }

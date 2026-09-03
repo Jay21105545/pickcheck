@@ -23,7 +23,7 @@
     },
     {
       "category": "tokens",
-      "score": 55.56
+      "score": 100
     }
   ],
   "findings": [
@@ -73,20 +73,6 @@
       "severity": "error",
       "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
       "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at playwright.config.ts:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
-    },
-    {
-      "ruleId": "tok/ai-ignore-coverage",
-      "file": "package-lock.json",
-      "severity": "warn",
-      "message": "This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore.",
-      "fixPrompt": "Fix \"Heavy/generated artifact not excluded from AI context\" (tok/ai-ignore-coverage) at package-lock.json: This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore. (no AI-ignore file found (looked for .cursorignore, .claudeignore, .aiderignore, .codeiumignore, .windsurfignore, .rooignore))"
-    },
-    {
-      "ruleId": "tok/ai-ignore-coverage",
-      "file": "bun.lockb",
-      "severity": "warn",
-      "message": "This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore.",
-      "fixPrompt": "Fix \"Heavy/generated artifact not excluded from AI context\" (tok/ai-ignore-coverage) at bun.lockb: This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore. (no AI-ignore file found (looked for .cursorignore, .claudeignore, .aiderignore, .codeiumignore, .windsurfignore, .rooignore))"
     },
     {
       "ruleId": "ux/fetch-missing-states",
@@ -203,5 +189,23 @@
   ],
   "warnings": [],
   "fileCount": 117,
-  "ruleCount": 20
+  "ruleCount": 19,
+  "tokenSurface": {
+    "files": [],
+    "totalTokens": 0,
+    "estimatedWastePercent": 0,
+    "ignoreCoverage": {
+      "ignoreFilesFound": [],
+      "artifacts": [
+        {
+          "target": "package-lock.json",
+          "covered": false
+        },
+        {
+          "target": "bun.lockb",
+          "covered": false
+        }
+      ]
+    }
+  }
 }
