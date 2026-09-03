@@ -1,0 +1,11 @@
+{
+  "name": "good-hallucinated-imports",
+  "private": true,
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "@pickcheck/rules": "workspace:^"
+  },
+  "devDependencies": {
+    "commander": "^15.0.0"
+  }
+}

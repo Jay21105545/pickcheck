@@ -16,6 +16,9 @@ export async function runRegexTier(
   // exclusion pattern like "!**/fixtures/**".
   const matches = micromatch(ctx.scannedFiles, rule.files, { dot: true });
   const regex = new RegExp(rule.pattern.regex, rule.pattern.flags);
+  const unless = rule.pattern.unless;
+  const unlessRegex =
+    unless === undefined ? undefined : new RegExp(unless.regex, unless.flags);
   const findings: Finding[] = [];
   const warnings: string[] = [];
 
@@ -28,6 +31,13 @@ export async function runRegexTier(
         `${rule.id}: could not read ${file} (${error instanceof Error ? error.message : String(error)})`,
       );
       continue;
+    }
+
+    if (unlessRegex !== undefined) {
+      unlessRegex.lastIndex = 0; // reset in case of a stateful global/sticky flag
+      if (unlessRegex.test(content)) {
+        continue;
+      }
     }
 
     const lines = content.split("\n");

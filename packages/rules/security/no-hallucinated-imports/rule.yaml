@@ -1,0 +1,23 @@
+id: sec/no-hallucinated-imports
+category: security
+severity: error
+tier: manifest
+title: Import of a package absent from package.json
+files:
+  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
+  - "!**/*.test.*"
+  - "!**/*.spec.*"
+  - "!**/__tests__/**"
+  - "!**/test/**"
+  - "!**/tests/**"
+  - "!**/fixtures/**"
+message: "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+weight: 4
+pattern:
+  regex: "(?:\\bfrom\\s+|\\brequire\\(\\s*|\\bimport\\(\\s*|\\bimport\\s+)['\"]([^'\"]+)['\"]"
+  manifestFile: package.json
+  dependencyFields:
+    - dependencies
+    - devDependencies
+    - peerDependencies
+    - optionalDependencies

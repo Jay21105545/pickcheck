@@ -78,6 +78,55 @@ describe("runRegexTier", () => {
     }
   });
 
+  it("suppresses all findings in a file when pattern.unless matches anywhere in it", async () => {
+    const dir = await createTempDir("regex-unless-suppressed");
+    try {
+      await dir.write(
+        "src/users.ts",
+        "import { z } from 'zod';\nconst body = req.body;\n",
+      );
+      await dir.write("src/other.ts", "const body = req.body;\n");
+
+      const result = await runRegexTier(
+        rule({
+          pattern: { regex: "req\\.body", unless: { regex: "\\bzod\\b" } },
+        }),
+        { cwd: dir.path, scannedFiles: ["src/users.ts", "src/other.ts"] },
+      );
+
+      expect(result.findings).toEqual([
+        expect.objectContaining({ file: "src/other.ts" }),
+      ]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("does not carry unless-regex state across files when it uses a global flag", async () => {
+    const dir = await createTempDir("regex-unless-global-flag");
+    try {
+      await dir.write("src/a.ts", "import { z } from 'zod';\nconst body = req.body;\n");
+      await dir.write("src/b.ts", "import { z } from 'zod';\nconst body = req.body;\n");
+
+      const result = await runRegexTier(
+        rule({
+          pattern: {
+            regex: "req\\.body",
+            unless: { regex: "\\bzod\\b", flags: "g" },
+          },
+        }),
+        { cwd: dir.path, scannedFiles: ["src/a.ts", "src/b.ts"] },
+      );
+
+      // A stateful global `unless` regex whose lastIndex isn't reset
+      // between files would suppress src/a.ts (lastIndex 0) but miss the
+      // match on src/b.ts (lastIndex left mid-string), wrongly flagging it.
+      expect(result.findings).toEqual([]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
   it("does not carry regex state across lines when the rule uses a global flag", async () => {
     const dir = await createTempDir("regex-global-flag");
     try {

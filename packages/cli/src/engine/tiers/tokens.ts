@@ -4,8 +4,8 @@ import type { TierContext, TierResult } from "./types.js";
 /**
  * TODO(phase-3, per EXECUTION.md): implement token-budget checks via
  * gpt-tokenizer (WASM). CLAUDE.md's cold-start constraint requires
- * lazy-loading it — only `import("gpt-tokenizer")` here, inside this
- * function, once a tokens-tier rule actually needs to run.
+ * lazy-loading it — only a dynamic `import` of gpt-tokenizer here, inside
+ * this function, once a tokens-tier rule actually needs to run.
  *
  * Until then this tier is a no-op: it never crashes the audit (per
  * CLAUDE.md's "engine failures on a single rule log a warning and

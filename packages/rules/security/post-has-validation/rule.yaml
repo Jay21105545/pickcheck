@@ -1,0 +1,20 @@
+id: sec/post-has-validation
+category: security
+severity: warn
+tier: regex
+title: Request body read with no apparent validation
+files:
+  - "app/api/**/*.{ts,tsx,js,jsx}"
+  - "pages/api/**/*.{ts,tsx,js,jsx}"
+  - "routes/**/*.{ts,tsx,js,jsx}"
+  - "src/routes/**/*.{ts,tsx,js,jsx}"
+  - "api/**/*.{ts,tsx,js,jsx}"
+  - "!**/*.test.*"
+  - "!**/*.spec.*"
+  - "!**/fixtures/**"
+message: "No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference."
+weight: 2
+pattern:
+  regex: 'req\.body|await\s+request\.json\(\)'
+  unless:
+    regex: '\b(zod|yup|joi|valibot|class-validator)\b'

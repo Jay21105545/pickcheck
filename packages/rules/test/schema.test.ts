@@ -48,6 +48,30 @@ describe("ruleSchema", () => {
     expect(result.success).toBe(true);
   });
 
+  it("accepts a valid manifest rule and defaults manifestFile to package.json", () => {
+    const result = ruleSchema.safeParse({
+      ...base,
+      tier: "manifest",
+      pattern: {
+        regex: "from\\s+['\"]([^'\"]+)['\"]",
+        dependencyFields: ["dependencies", "devDependencies"],
+      },
+    });
+    expect(result.success).toBe(true);
+    if (result.success && result.data.tier === "manifest") {
+      expect(result.data.pattern.manifestFile).toBe("package.json");
+    }
+  });
+
+  it("rejects a manifest rule missing dependencyFields", () => {
+    const result = ruleSchema.safeParse({
+      ...base,
+      tier: "manifest",
+      pattern: { regex: "from\\s+['\"]([^'\"]+)['\"]" },
+    });
+    expect(result.success).toBe(false);
+  });
+
   it("rejects an id that isn't category/rule-id shaped", () => {
     const result = ruleSchema.safeParse({
       ...base,
@@ -66,6 +90,15 @@ describe("ruleSchema", () => {
       pattern: { mode: "absent" },
     });
     expect(result.success).toBe(false);
+  });
+
+  it("accepts a regex rule with a pattern.unless suppression", () => {
+    const result = ruleSchema.safeParse({
+      ...base,
+      tier: "regex",
+      pattern: { regex: "req\\.body", unless: { regex: "\\bzod\\b" } },
+    });
+    expect(result.success).toBe(true);
   });
 
   it("rejects a regex rule missing its pattern.regex field", () => {
