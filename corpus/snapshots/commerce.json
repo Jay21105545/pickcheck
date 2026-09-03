@@ -1,0 +1,807 @@
+{
+  "composite": 59,
+  "categories": [
+    {
+      "category": "security",
+      "score": 50
+    },
+    {
+      "category": "quality",
+      "score": 100
+    },
+    {
+      "category": "docs",
+      "score": 55.56
+    },
+    {
+      "category": "discipline",
+      "score": 50
+    },
+    {
+      "category": "ui-ux",
+      "score": 29.41
+    },
+    {
+      "category": "tokens",
+      "score": 71.43
+    }
+  ],
+  "findings": [
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/shopify/index.ts",
+      "line": 325,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/shopify/index.ts:325: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/shopify/index.ts",
+      "line": 341,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/shopify/index.ts:341: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/shopify/index.ts",
+      "line": 356,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/shopify/index.ts:356: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/shopify/index.ts",
+      "line": 404,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/shopify/index.ts:404: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/shopify/index.ts",
+      "line": 449,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/shopify/index.ts:449: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "docs/api-doc-exists",
+      "file": "API.md",
+      "severity": "warn",
+      "message": "An API surface was detected but no API.md or openapi.* spec documents it.",
+      "fixPrompt": "Fix \"API surface detected with no API.md or openapi spec\" (docs/api-doc-exists) at API.md: An API surface was detected but no API.md or openapi.* spec documents it."
+    },
+    {
+      "ruleId": "docs/changelog-exists",
+      "file": "CHANGELOG.md",
+      "severity": "warn",
+      "message": "No CHANGELOG.md found — users and future-you can't see what changed between versions.",
+      "fixPrompt": "Fix \"CHANGELOG.md missing\" (docs/changelog-exists) at CHANGELOG.md: No CHANGELOG.md found — users and future-you can't see what changed between versions."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/[page]/layout.tsx",
+      "line": 1,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/[page]/layout.tsx:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/[page]/opengraph-image.tsx",
+      "line": 1,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/[page]/opengraph-image.tsx:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/[page]/opengraph-image.tsx",
+      "line": 2,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/[page]/opengraph-image.tsx:2: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/[page]/page.tsx",
+      "line": 3,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/[page]/page.tsx:3: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/[page]/page.tsx",
+      "line": 4,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/[page]/page.tsx:4: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/api/revalidate/route.ts",
+      "line": 1,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/api/revalidate/route.ts:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/layout.tsx",
+      "line": 1,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/layout.tsx:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/layout.tsx",
+      "line": 2,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/layout.tsx:2: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/layout.tsx",
+      "line": 3,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/layout.tsx:3: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/layout.tsx",
+      "line": 5,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/layout.tsx:5: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/layout.tsx",
+      "line": 9,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/layout.tsx:9: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/opengraph-image.tsx",
+      "line": 1,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/opengraph-image.tsx:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/page.tsx",
+      "line": 1,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/page.tsx:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/page.tsx",
+      "line": 2,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/page.tsx:2: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/page.tsx",
+      "line": 3,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/page.tsx:3: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/product/[handle]/page.tsx",
+      "line": 1,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/product/[handle]/page.tsx:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/product/[handle]/page.tsx",
+      "line": 2,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/product/[handle]/page.tsx:2: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/product/[handle]/page.tsx",
+      "line": 3,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/product/[handle]/page.tsx:3: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/product/[handle]/page.tsx",
+      "line": 4,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/product/[handle]/page.tsx:4: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/product/[handle]/page.tsx",
+      "line": 5,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/product/[handle]/page.tsx:5: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/product/[handle]/page.tsx",
+      "line": 6,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/product/[handle]/page.tsx:6: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/product/[handle]/page.tsx",
+      "line": 7,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/product/[handle]/page.tsx:7: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/robots.ts",
+      "line": 1,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/robots.ts:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/search/[collection]/opengraph-image.tsx",
+      "line": 1,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/search/[collection]/opengraph-image.tsx:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/search/[collection]/opengraph-image.tsx",
+      "line": 2,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/search/[collection]/opengraph-image.tsx:2: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/search/[collection]/page.tsx",
+      "line": 1,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/search/[collection]/page.tsx:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/search/[collection]/page.tsx",
+      "line": 5,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/search/[collection]/page.tsx:5: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/search/[collection]/page.tsx",
+      "line": 6,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/search/[collection]/page.tsx:6: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/search/[collection]/page.tsx",
+      "line": 7,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/search/[collection]/page.tsx:7: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/search/layout.tsx",
+      "line": 1,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/search/layout.tsx:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/search/layout.tsx",
+      "line": 2,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/search/layout.tsx:2: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/search/layout.tsx",
+      "line": 3,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/search/layout.tsx:3: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/search/layout.tsx",
+      "line": 4,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/search/layout.tsx:4: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/search/loading.tsx",
+      "line": 1,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/search/loading.tsx:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/search/page.tsx",
+      "line": 1,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/search/page.tsx:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/search/page.tsx",
+      "line": 2,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/search/page.tsx:2: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/search/page.tsx",
+      "line": 3,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/search/page.tsx:3: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/search/page.tsx",
+      "line": 4,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/search/page.tsx:4: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/sitemap.ts",
+      "line": 1,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/sitemap.ts:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "app/sitemap.ts",
+      "line": 2,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at app/sitemap.ts:2: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/carousel.tsx",
+      "line": 1,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/carousel.tsx:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/cart/actions.ts",
+      "line": 3,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/cart/actions.ts:3: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/cart/actions.ts",
+      "line": 10,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/cart/actions.ts:10: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/cart/add-to-cart.tsx",
+      "line": 5,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/cart/add-to-cart.tsx:5: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/cart/add-to-cart.tsx",
+      "line": 6,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/cart/add-to-cart.tsx:6: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/cart/cart-context.tsx",
+      "line": 8,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/cart/cart-context.tsx:8: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/cart/delete-item-button.tsx",
+      "line": 4,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/cart/delete-item-button.tsx:4: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/cart/delete-item-button.tsx",
+      "line": 5,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/cart/delete-item-button.tsx:5: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/cart/edit-item-quantity-button.tsx",
+      "line": 5,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/cart/edit-item-quantity-button.tsx:5: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/cart/edit-item-quantity-button.tsx",
+      "line": 6,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/cart/edit-item-quantity-button.tsx:6: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/cart/modal.tsx",
+      "line": 6,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/cart/modal.tsx:6: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/cart/modal.tsx",
+      "line": 7,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/cart/modal.tsx:7: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/cart/modal.tsx",
+      "line": 8,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/cart/modal.tsx:8: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/cart/modal.tsx",
+      "line": 9,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/cart/modal.tsx:9: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/grid/three-items.tsx",
+      "line": 1,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/grid/three-items.tsx:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/grid/three-items.tsx",
+      "line": 2,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/grid/three-items.tsx:2: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/grid/three-items.tsx",
+      "line": 3,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/grid/three-items.tsx:3: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/layout/footer-menu.tsx",
+      "line": 4,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/layout/footer-menu.tsx:4: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/layout/footer.tsx",
+      "line": 3,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/layout/footer.tsx:3: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/layout/footer.tsx",
+      "line": 4,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/layout/footer.tsx:4: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/layout/footer.tsx",
+      "line": 5,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/layout/footer.tsx:5: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/layout/navbar/index.tsx",
+      "line": 1,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/layout/navbar/index.tsx:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/layout/navbar/index.tsx",
+      "line": 2,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/layout/navbar/index.tsx:2: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/layout/navbar/index.tsx",
+      "line": 3,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/layout/navbar/index.tsx:3: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/layout/navbar/index.tsx",
+      "line": 4,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/layout/navbar/index.tsx:4: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/layout/navbar/mobile-menu.tsx",
+      "line": 9,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/layout/navbar/mobile-menu.tsx:9: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/layout/product-grid-items.tsx",
+      "line": 1,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/layout/product-grid-items.tsx:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/layout/product-grid-items.tsx",
+      "line": 2,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/layout/product-grid-items.tsx:2: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/layout/product-grid-items.tsx",
+      "line": 3,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/layout/product-grid-items.tsx:3: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/layout/search/collections.tsx",
+      "line": 4,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/layout/search/collections.tsx:4: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/layout/search/filter/index.tsx",
+      "line": 1,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/layout/search/filter/index.tsx:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/layout/search/filter/item.tsx",
+      "line": 4,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/layout/search/filter/item.tsx:4: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/layout/search/filter/item.tsx",
+      "line": 5,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/layout/search/filter/item.tsx:5: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/product/gallery.tsx",
+      "line": 4,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/product/gallery.tsx:4: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/product/product-description.tsx",
+      "line": 1,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/product/product-description.tsx:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/product/product-description.tsx",
+      "line": 2,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/product/product-description.tsx:2: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/product/product-description.tsx",
+      "line": 3,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/product/product-description.tsx:3: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/product/product-description.tsx",
+      "line": 4,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/product/product-description.tsx:4: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "components/product/variant-selector.tsx",
+      "line": 4,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at components/product/variant-selector.tsx:4: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "lib/shopify/index.ts",
+      "line": 5,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at lib/shopify/index.ts:5: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "lib/shopify/index.ts",
+      "line": 6,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at lib/shopify/index.ts:6: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "lib/shopify/index.ts",
+      "line": 7,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at lib/shopify/index.ts:7: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "postcss.config.mjs",
+      "line": 1,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at postcss.config.mjs:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "tok/ai-ignore-coverage",
+      "file": "pnpm-lock.yaml",
+      "severity": "warn",
+      "message": "This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore.",
+      "fixPrompt": "Fix \"Heavy/generated artifact not excluded from AI context\" (tok/ai-ignore-coverage) at pnpm-lock.yaml: This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore. (no AI-ignore file found (looked for .cursorignore, .claudeignore, .aiderignore, .codeiumignore, .windsurfignore, .rooignore))"
+    },
+    {
+      "ruleId": "ux/form-submit-no-pending",
+      "file": "components/cart/delete-item-button.tsx",
+      "line": 26,
+      "severity": "warn",
+      "message": "This submit button has no disabled attribute — a user can click it repeatedly (double-submitting the form) with no visual sign the request is in flight.",
+      "fixPrompt": "Fix \"Submit button with no pending/disabled state\" (ux/form-submit-no-pending) at components/cart/delete-item-button.tsx:26: This submit button has no disabled attribute — a user can click it repeatedly (double-submitting the form) with no visual sign the request is in flight."
+    },
+    {
+      "ruleId": "ux/form-submit-no-pending",
+      "file": "components/cart/edit-item-quantity-button.tsx",
+      "line": 11,
+      "severity": "warn",
+      "message": "This submit button has no disabled attribute — a user can click it repeatedly (double-submitting the form) with no visual sign the request is in flight.",
+      "fixPrompt": "Fix \"Submit button with no pending/disabled state\" (ux/form-submit-no-pending) at components/cart/edit-item-quantity-button.tsx:11: This submit button has no disabled attribute — a user can click it repeatedly (double-submitting the form) with no visual sign the request is in flight."
+    },
+    {
+      "ruleId": "ux/input-missing-label",
+      "file": "components/layout/navbar/search.tsx",
+      "line": 15,
+      "severity": "warn",
+      "message": "This <input> has no aria-label, aria-labelledby, id, or wrapping <label> — assistive technology has no accessible name to announce for it.",
+      "fixPrompt": "Fix \"input element with no associated label\" (ux/input-missing-label) at components/layout/navbar/search.tsx:15: This <input> has no aria-label, aria-labelledby, id, or wrapping <label> — assistive technology has no accessible name to announce for it."
+    },
+    {
+      "ruleId": "ux/input-missing-label",
+      "file": "components/layout/navbar/search.tsx",
+      "line": 34,
+      "severity": "warn",
+      "message": "This <input> has no aria-label, aria-labelledby, id, or wrapping <label> — assistive technology has no accessible name to announce for it.",
+      "fixPrompt": "Fix \"input element with no associated label\" (ux/input-missing-label) at components/layout/navbar/search.tsx:34: This <input> has no aria-label, aria-labelledby, id, or wrapping <label> — assistive technology has no accessible name to announce for it."
+    },
+    {
+      "ruleId": "ux/onclick-non-interactive",
+      "file": "components/layout/search/filter/dropdown.tsx",
+      "line": 41,
+      "severity": "warn",
+      "message": "This <div>/<span> has an onClick handler but no role and tabIndex — it isn't keyboard-focusable or announced as interactive to assistive technology.",
+      "fixPrompt": "Fix \"onClick on a non-interactive element with no role and tabIndex\" (ux/onclick-non-interactive) at components/layout/search/filter/dropdown.tsx:41: This <div>/<span> has an onClick handler but no role and tabIndex — it isn't keyboard-focusable or announced as interactive to assistive technology."
+    },
+    {
+      "ruleId": "ux/onclick-non-interactive",
+      "file": "components/layout/search/filter/dropdown.tsx",
+      "line": 51,
+      "severity": "warn",
+      "message": "This <div>/<span> has an onClick handler but no role and tabIndex — it isn't keyboard-focusable or announced as interactive to assistive technology.",
+      "fixPrompt": "Fix \"onClick on a non-interactive element with no role and tabIndex\" (ux/onclick-non-interactive) at components/layout/search/filter/dropdown.tsx:51: This <div>/<span> has an onClick handler but no role and tabIndex — it isn't keyboard-focusable or announced as interactive to assistive technology."
+    }
+  ],
+  "warnings": [],
+  "fileCount": 77,
+  "ruleCount": 20
+}

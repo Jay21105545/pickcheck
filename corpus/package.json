@@ -1,0 +1,13 @@
+{
+  "name": "@pickcheck/corpus",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Backtest corpus runner (EXECUTION.md's Stress-Test & Backtest Protocol). No published artifact — a dev-only tool, run via the root `pnpm corpus` script.",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.1"
+  }
+}

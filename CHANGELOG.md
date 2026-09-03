@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`pnpm corpus`**: promotes EXECUTION.md's Stress-Test & Backtest
+  Protocol from a one-off manual run (DECISIONS/0014) into permanent
+  infrastructure. Clones/updates a pinned-by-commit-SHA set of real repos
+  (`corpus/repos.json`) into a gitignored cache, runs the built CLI
+  against each, and diffs the result against committed snapshots
+  (`corpus/snapshots/`) — reporting exactly which findings were
+  added/removed, per repo and per rule, and exiting non-zero on any diff.
+  `pnpm corpus -- --update` accepts the current run as the new baseline.
+  Seeded with the 4 repos from DECISIONS/0014 plus 4 confirmed
+  Lovable-generated apps (real `lovable-dev`-topic-tagged repos, not
+  merely AI-tool-friendly boilerplate) — the corpus was missing the exact
+  population pickcheck targets, which is why `ux/fetch-missing-states`
+  had never fired on real code before this. It now does: 5 genuine
+  findings on one of the four AI-generated apps' real external-API news
+  feed, none on the other three (two of which fetch exclusively via a
+  Supabase client the rule's `fetch`/`axios`/`useQuery`/`useSWR` pattern
+  list doesn't recognize — a real recall gap, noted for future work, not
+  a precision problem).
+- `CONTRIBUTING.md` (new, repo root — distinct from `docs-kit/
+  CONTRIBUTING.md`, which is the template `init` copies into *other*
+  repos): documents the corpus-diff requirement for any rule or engine
+  change, and how to add a repo to the corpus.
+- `disc/no-console-log` now also excludes `corpus/**` (alongside its
+  existing `**/scripts/**` exclusion) — `corpus/run.ts`'s console output
+  is its intended reporting mechanism, not a stray debug statement.
+
 ### Changed
 
 - **First real-world ruleset calibration** (DECISIONS/0014): ran the

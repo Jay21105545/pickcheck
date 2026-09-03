@@ -1,0 +1,141 @@
+{
+  "composite": 59,
+  "categories": [
+    {
+      "category": "security",
+      "score": 33.33
+    },
+    {
+      "category": "quality",
+      "score": 100
+    },
+    {
+      "category": "docs",
+      "score": 55.56
+    },
+    {
+      "category": "discipline",
+      "score": 62.5
+    },
+    {
+      "category": "ui-ux",
+      "score": 62.5
+    },
+    {
+      "category": "tokens",
+      "score": 55.56
+    }
+  ],
+  "findings": [
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "supabase/functions/chat/index.ts",
+      "line": 62,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/chat/index.ts:62: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "supabase/functions/chat/index.ts",
+      "line": 89,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/chat/index.ts:89: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "supabase/functions/chat/index.ts",
+      "line": 98,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/chat/index.ts:98: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "docs/changelog-exists",
+      "file": "CHANGELOG.md",
+      "severity": "warn",
+      "message": "No CHANGELOG.md found — users and future-you can't see what changed between versions.",
+      "fixPrompt": "Fix \"CHANGELOG.md missing\" (docs/changelog-exists) at CHANGELOG.md: No CHANGELOG.md found — users and future-you can't see what changed between versions."
+    },
+    {
+      "ruleId": "docs/env-example-exists",
+      "file": ".env.example",
+      "severity": "warn",
+      "message": "A .env file exists but there's no .env.example — nobody can tell what environment variables this app needs without reading source.",
+      "fixPrompt": "Fix \".env present with no .env.example\" (docs/env-example-exists) at .env.example: A .env file exists but there's no .env.example — nobody can tell what environment variables this app needs without reading source."
+    },
+    {
+      "ruleId": "sec/no-env-in-git",
+      "file": ".env",
+      "severity": "error",
+      "message": "A .env file is present and not git-ignored — it will be committed with real secrets in it.",
+      "fixPrompt": "Fix \".env file tracked in the repo\" (sec/no-env-in-git) at .env: A .env file is present and not git-ignored — it will be committed with real secrets in it."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "supabase/functions/chat/index.ts",
+      "line": 1,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at supabase/functions/chat/index.ts:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "supabase/functions/chat/index.ts",
+      "line": 2,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at supabase/functions/chat/index.ts:2: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "supabase/functions/delete-account/index.ts",
+      "line": 1,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at supabase/functions/delete-account/index.ts:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "tok/ai-ignore-coverage",
+      "file": "package-lock.json",
+      "severity": "warn",
+      "message": "This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore.",
+      "fixPrompt": "Fix \"Heavy/generated artifact not excluded from AI context\" (tok/ai-ignore-coverage) at package-lock.json: This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore. (no AI-ignore file found (looked for .cursorignore, .claudeignore, .aiderignore, .codeiumignore, .windsurfignore, .rooignore))"
+    },
+    {
+      "ruleId": "tok/ai-ignore-coverage",
+      "file": "bun.lockb",
+      "severity": "warn",
+      "message": "This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore.",
+      "fixPrompt": "Fix \"Heavy/generated artifact not excluded from AI context\" (tok/ai-ignore-coverage) at bun.lockb: This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore. (no AI-ignore file found (looked for .cursorignore, .claudeignore, .aiderignore, .codeiumignore, .windsurfignore, .rooignore))"
+    },
+    {
+      "ruleId": "ux/inline-hex-threshold",
+      "file": "src/components/dashboard/AddHabitDialog.tsx",
+      "line": 27,
+      "severity": "warn",
+      "message": "This file has several one-off inline hex colors instead of a shared design-token/theme reference — a sign colors have drifted out of any central palette.",
+      "fixPrompt": "Fix \"Many inline hex colors in one file\" (ux/inline-hex-threshold) at src/components/dashboard/AddHabitDialog.tsx:27: This file has several one-off inline hex colors instead of a shared design-token/theme reference — a sign colors have drifted out of any central palette. (8 occurrences, threshold 5)"
+    },
+    {
+      "ruleId": "ux/inline-hex-threshold",
+      "file": "src/components/dashboard/MoodSelector.tsx",
+      "line": 18,
+      "severity": "warn",
+      "message": "This file has several one-off inline hex colors instead of a shared design-token/theme reference — a sign colors have drifted out of any central palette.",
+      "fixPrompt": "Fix \"Many inline hex colors in one file\" (ux/inline-hex-threshold) at src/components/dashboard/MoodSelector.tsx:18: This file has several one-off inline hex colors instead of a shared design-token/theme reference — a sign colors have drifted out of any central palette. (5 occurrences, threshold 5)"
+    },
+    {
+      "ruleId": "ux/inline-hex-threshold",
+      "file": "src/components/ui/chart.tsx",
+      "line": 48,
+      "severity": "warn",
+      "message": "This file has several one-off inline hex colors instead of a shared design-token/theme reference — a sign colors have drifted out of any central palette.",
+      "fixPrompt": "Fix \"Many inline hex colors in one file\" (ux/inline-hex-threshold) at src/components/ui/chart.tsx:48: This file has several one-off inline hex colors instead of a shared design-token/theme reference — a sign colors have drifted out of any central palette. (5 occurrences, threshold 5)"
+    }
+  ],
+  "warnings": [],
+  "fileCount": 115,
+  "ruleCount": 20
+}

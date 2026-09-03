@@ -1,0 +1,367 @@
+{
+  "composite": 72.98,
+  "categories": [
+    {
+      "category": "security",
+      "score": 100
+    },
+    {
+      "category": "quality",
+      "score": 50
+    },
+    {
+      "category": "docs",
+      "score": 55.56
+    },
+    {
+      "category": "discipline",
+      "score": 50
+    },
+    {
+      "category": "ui-ux",
+      "score": 100
+    },
+    {
+      "category": "tokens",
+      "score": 71.43
+    }
+  ],
+  "findings": [
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "app/api/stripe/webhook/route.ts",
+      "line": 30,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at app/api/stripe/webhook/route.ts:30: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/seed.ts",
+      "line": 7,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/seed.ts:7: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/seed.ts",
+      "line": 39,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/seed.ts:39: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/seed.ts",
+      "line": 58,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/seed.ts:58: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/seed.ts",
+      "line": 82,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/seed.ts:82: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 26,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:26: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 31,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:31: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 36,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:36: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 38,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:38: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 41,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:41: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 46,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:46: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 55,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:55: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 67,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:67: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 68,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:68: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 69,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:69: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 72,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:72: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 73,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:73: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 81,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:81: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 87,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:87: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 91,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:91: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 99,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:99: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 102,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:102: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 107,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:107: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 113,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:113: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 136,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:136: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 138,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:138: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 141,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:141: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 151,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:151: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 152,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:152: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 159,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:159: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 166,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:166: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 173,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:173: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 182,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:182: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 187,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:187: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 193,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:193: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/db/setup.ts",
+      "line": 213,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/db/setup.ts:213: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "docs/api-doc-exists",
+      "file": "API.md",
+      "severity": "warn",
+      "message": "An API surface was detected but no API.md or openapi.* spec documents it.",
+      "fixPrompt": "Fix \"API surface detected with no API.md or openapi spec\" (docs/api-doc-exists) at API.md: An API surface was detected but no API.md or openapi.* spec documents it."
+    },
+    {
+      "ruleId": "docs/changelog-exists",
+      "file": "CHANGELOG.md",
+      "severity": "warn",
+      "message": "No CHANGELOG.md found — users and future-you can't see what changed between versions.",
+      "fixPrompt": "Fix \"CHANGELOG.md missing\" (docs/changelog-exists) at CHANGELOG.md: No CHANGELOG.md found — users and future-you can't see what changed between versions."
+    },
+    {
+      "ruleId": "qual/fetch-has-error-handling",
+      "file": "app/(dashboard)/dashboard/general/page.tsx",
+      "line": 14,
+      "severity": "warn",
+      "message": "This fetch() call isn't wrapped in try/catch, doesn't check response.ok, and has no .catch — a failed or non-2xx request will fail silently.",
+      "fixPrompt": "Fix \"fetch() call with no error handling\" (qual/fetch-has-error-handling) at app/(dashboard)/dashboard/general/page.tsx:14: This fetch() call isn't wrapped in try/catch, doesn't check response.ok, and has no .catch — a failed or non-2xx request will fail silently."
+    },
+    {
+      "ruleId": "qual/fetch-has-error-handling",
+      "file": "app/(dashboard)/dashboard/page.tsx",
+      "line": 28,
+      "severity": "warn",
+      "message": "This fetch() call isn't wrapped in try/catch, doesn't check response.ok, and has no .catch — a failed or non-2xx request will fail silently.",
+      "fixPrompt": "Fix \"fetch() call with no error handling\" (qual/fetch-has-error-handling) at app/(dashboard)/dashboard/page.tsx:28: This fetch() call isn't wrapped in try/catch, doesn't check response.ok, and has no .catch — a failed or non-2xx request will fail silently."
+    },
+    {
+      "ruleId": "qual/fetch-has-error-handling",
+      "file": "app/(dashboard)/layout.tsx",
+      "line": 19,
+      "severity": "warn",
+      "message": "This fetch() call isn't wrapped in try/catch, doesn't check response.ok, and has no .catch — a failed or non-2xx request will fail silently.",
+      "fixPrompt": "Fix \"fetch() call with no error handling\" (qual/fetch-has-error-handling) at app/(dashboard)/layout.tsx:19: This fetch() call isn't wrapped in try/catch, doesn't check response.ok, and has no .catch — a failed or non-2xx request will fail silently."
+    },
+    {
+      "ruleId": "tok/ai-ignore-coverage",
+      "file": "pnpm-lock.yaml",
+      "severity": "warn",
+      "message": "This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore.",
+      "fixPrompt": "Fix \"Heavy/generated artifact not excluded from AI context\" (tok/ai-ignore-coverage) at pnpm-lock.yaml: This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore. (no AI-ignore file found (looked for .cursorignore, .claudeignore, .aiderignore, .codeiumignore, .windsurfignore, .rooignore))"
+    }
+  ],
+  "warnings": [],
+  "fileCount": 54,
+  "ruleCount": 20
+}

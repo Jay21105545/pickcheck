@@ -24,6 +24,12 @@ importers:
         specifier: ^4.1.11
         version: 4.1.11(vite@8.2.2)
 
+  corpus:
+    devDependencies:
+      '@types/node':
+        specifier: ^26.4.1
+        version: 26.4.1
+
   packages/cli:
     dependencies:
       '@ast-grep/napi':

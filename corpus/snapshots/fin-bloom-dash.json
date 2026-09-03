@@ -1,0 +1,207 @@
+{
+  "composite": 59,
+  "categories": [
+    {
+      "category": "security",
+      "score": 50
+    },
+    {
+      "category": "quality",
+      "score": 50
+    },
+    {
+      "category": "docs",
+      "score": 71.43
+    },
+    {
+      "category": "discipline",
+      "score": 100
+    },
+    {
+      "category": "ui-ux",
+      "score": 27.78
+    },
+    {
+      "category": "tokens",
+      "score": 55.56
+    }
+  ],
+  "findings": [
+    {
+      "ruleId": "docs/changelog-exists",
+      "file": "CHANGELOG.md",
+      "severity": "warn",
+      "message": "No CHANGELOG.md found — users and future-you can't see what changed between versions.",
+      "fixPrompt": "Fix \"CHANGELOG.md missing\" (docs/changelog-exists) at CHANGELOG.md: No CHANGELOG.md found — users and future-you can't see what changed between versions."
+    },
+    {
+      "ruleId": "qual/no-empty-catch",
+      "file": "src/components/advisor/LiveRatesCard.tsx",
+      "line": 64,
+      "severity": "error",
+      "message": "Errors are being silently swallowed — the catch block is empty or contains only a comment.",
+      "fixPrompt": "Fix \"Empty catch block\" (qual/no-empty-catch) at src/components/advisor/LiveRatesCard.tsx:64: Errors are being silently swallowed — the catch block is empty or contains only a comment."
+    },
+    {
+      "ruleId": "qual/no-empty-catch",
+      "file": "src/contexts/AppContext.tsx",
+      "line": 38,
+      "severity": "error",
+      "message": "Errors are being silently swallowed — the catch block is empty or contains only a comment.",
+      "fixPrompt": "Fix \"Empty catch block\" (qual/no-empty-catch) at src/contexts/AppContext.tsx:38: Errors are being silently swallowed — the catch block is empty or contains only a comment."
+    },
+    {
+      "ruleId": "qual/no-empty-catch",
+      "file": "src/contexts/CurrencyContext.tsx",
+      "line": 36,
+      "severity": "error",
+      "message": "Errors are being silently swallowed — the catch block is empty or contains only a comment.",
+      "fixPrompt": "Fix \"Empty catch block\" (qual/no-empty-catch) at src/contexts/CurrencyContext.tsx:36: Errors are being silently swallowed — the catch block is empty or contains only a comment."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "playwright-fixture.ts",
+      "line": 3,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at playwright-fixture.ts:3: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "sec/no-hallucinated-imports",
+      "file": "playwright.config.ts",
+      "line": 1,
+      "severity": "error",
+      "message": "This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target).",
+      "fixPrompt": "Fix \"Import of a package absent from package.json\" (sec/no-hallucinated-imports) at playwright.config.ts:1: This import isn't declared in package.json — either the build will fail, or an AI assistant hallucinated a package name (a slopsquatting target)."
+    },
+    {
+      "ruleId": "tok/ai-ignore-coverage",
+      "file": "package-lock.json",
+      "severity": "warn",
+      "message": "This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore.",
+      "fixPrompt": "Fix \"Heavy/generated artifact not excluded from AI context\" (tok/ai-ignore-coverage) at package-lock.json: This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore. (no AI-ignore file found (looked for .cursorignore, .claudeignore, .aiderignore, .codeiumignore, .windsurfignore, .rooignore))"
+    },
+    {
+      "ruleId": "tok/ai-ignore-coverage",
+      "file": "bun.lockb",
+      "severity": "warn",
+      "message": "This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore.",
+      "fixPrompt": "Fix \"Heavy/generated artifact not excluded from AI context\" (tok/ai-ignore-coverage) at bun.lockb: This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore. (no AI-ignore file found (looked for .cursorignore, .claudeignore, .aiderignore, .codeiumignore, .windsurfignore, .rooignore))"
+    },
+    {
+      "ruleId": "ux/fetch-missing-states",
+      "file": "src/components/advisor/MarketTicker.tsx",
+      "line": 33,
+      "severity": "warn",
+      "message": "This component fetches data but nothing in the file suggests it renders a loading, error, or empty state — only the success path appears to be handled.",
+      "fixPrompt": "Fix \"Component fetches data but renders only the success branch\" (ux/fetch-missing-states) at src/components/advisor/MarketTicker.tsx:33: This component fetches data but nothing in the file suggests it renders a loading, error, or empty state — only the success path appears to be handled."
+    },
+    {
+      "ruleId": "ux/fetch-missing-states",
+      "file": "src/components/earn/RegionalPulse.tsx",
+      "line": 17,
+      "severity": "warn",
+      "message": "This component fetches data but nothing in the file suggests it renders a loading, error, or empty state — only the success path appears to be handled.",
+      "fixPrompt": "Fix \"Component fetches data but renders only the success branch\" (ux/fetch-missing-states) at src/components/earn/RegionalPulse.tsx:17: This component fetches data but nothing in the file suggests it renders a loading, error, or empty state — only the success path appears to be handled."
+    },
+    {
+      "ruleId": "ux/fetch-missing-states",
+      "file": "src/components/earn/TrendingTopics.tsx",
+      "line": 13,
+      "severity": "warn",
+      "message": "This component fetches data but nothing in the file suggests it renders a loading, error, or empty state — only the success path appears to be handled.",
+      "fixPrompt": "Fix \"Component fetches data but renders only the success branch\" (ux/fetch-missing-states) at src/components/earn/TrendingTopics.tsx:13: This component fetches data but nothing in the file suggests it renders a loading, error, or empty state — only the success path appears to be handled."
+    },
+    {
+      "ruleId": "ux/fetch-missing-states",
+      "file": "src/components/earn/TrendingTopics.tsx",
+      "line": 14,
+      "severity": "warn",
+      "message": "This component fetches data but nothing in the file suggests it renders a loading, error, or empty state — only the success path appears to be handled.",
+      "fixPrompt": "Fix \"Component fetches data but renders only the success branch\" (ux/fetch-missing-states) at src/components/earn/TrendingTopics.tsx:14: This component fetches data but nothing in the file suggests it renders a loading, error, or empty state — only the success path appears to be handled."
+    },
+    {
+      "ruleId": "ux/fetch-missing-states",
+      "file": "src/components/earn/TrendingTopics.tsx",
+      "line": 15,
+      "severity": "warn",
+      "message": "This component fetches data but nothing in the file suggests it renders a loading, error, or empty state — only the success path appears to be handled.",
+      "fixPrompt": "Fix \"Component fetches data but renders only the success branch\" (ux/fetch-missing-states) at src/components/earn/TrendingTopics.tsx:15: This component fetches data but nothing in the file suggests it renders a loading, error, or empty state — only the success path appears to be handled."
+    },
+    {
+      "ruleId": "ux/form-submit-no-pending",
+      "file": "src/components/transactions/TransactionForm.tsx",
+      "line": 161,
+      "severity": "warn",
+      "message": "This submit button has no disabled attribute — a user can click it repeatedly (double-submitting the form) with no visual sign the request is in flight.",
+      "fixPrompt": "Fix \"Submit button with no pending/disabled state\" (ux/form-submit-no-pending) at src/components/transactions/TransactionForm.tsx:161: This submit button has no disabled attribute — a user can click it repeatedly (double-submitting the form) with no visual sign the request is in flight."
+    },
+    {
+      "ruleId": "ux/inline-hex-threshold",
+      "file": "src/components/ui/chart.tsx",
+      "line": 48,
+      "severity": "warn",
+      "message": "This file has several one-off inline hex colors instead of a shared design-token/theme reference — a sign colors have drifted out of any central palette.",
+      "fixPrompt": "Fix \"Many inline hex colors in one file\" (ux/inline-hex-threshold) at src/components/ui/chart.tsx:48: This file has several one-off inline hex colors instead of a shared design-token/theme reference — a sign colors have drifted out of any central palette. (5 occurrences, threshold 5)"
+    },
+    {
+      "ruleId": "ux/input-missing-label",
+      "file": "src/components/dashboard/BudgetTracker.tsx",
+      "line": 68,
+      "severity": "warn",
+      "message": "This <input> has no aria-label, aria-labelledby, id, or wrapping <label> — assistive technology has no accessible name to announce for it.",
+      "fixPrompt": "Fix \"input element with no associated label\" (ux/input-missing-label) at src/components/dashboard/BudgetTracker.tsx:68: This <input> has no aria-label, aria-labelledby, id, or wrapping <label> — assistive technology has no accessible name to announce for it."
+    },
+    {
+      "ruleId": "ux/input-missing-label",
+      "file": "src/components/transactions/FilterBar.tsx",
+      "line": 31,
+      "severity": "warn",
+      "message": "This <input> has no aria-label, aria-labelledby, id, or wrapping <label> — assistive technology has no accessible name to announce for it.",
+      "fixPrompt": "Fix \"input element with no associated label\" (ux/input-missing-label) at src/components/transactions/FilterBar.tsx:31: This <input> has no aria-label, aria-labelledby, id, or wrapping <label> — assistive technology has no accessible name to announce for it."
+    },
+    {
+      "ruleId": "ux/input-missing-label",
+      "file": "src/components/transactions/FilterBar.tsx",
+      "line": 62,
+      "severity": "warn",
+      "message": "This <input> has no aria-label, aria-labelledby, id, or wrapping <label> — assistive technology has no accessible name to announce for it.",
+      "fixPrompt": "Fix \"input element with no associated label\" (ux/input-missing-label) at src/components/transactions/FilterBar.tsx:62: This <input> has no aria-label, aria-labelledby, id, or wrapping <label> — assistive technology has no accessible name to announce for it."
+    },
+    {
+      "ruleId": "ux/input-missing-label",
+      "file": "src/components/transactions/FilterBar.tsx",
+      "line": 71,
+      "severity": "warn",
+      "message": "This <input> has no aria-label, aria-labelledby, id, or wrapping <label> — assistive technology has no accessible name to announce for it.",
+      "fixPrompt": "Fix \"input element with no associated label\" (ux/input-missing-label) at src/components/transactions/FilterBar.tsx:71: This <input> has no aria-label, aria-labelledby, id, or wrapping <label> — assistive technology has no accessible name to announce for it."
+    },
+    {
+      "ruleId": "ux/input-missing-label",
+      "file": "src/components/transactions/TransactionForm.tsx",
+      "line": 91,
+      "severity": "warn",
+      "message": "This <input> has no aria-label, aria-labelledby, id, or wrapping <label> — assistive technology has no accessible name to announce for it.",
+      "fixPrompt": "Fix \"input element with no associated label\" (ux/input-missing-label) at src/components/transactions/TransactionForm.tsx:91: This <input> has no aria-label, aria-labelledby, id, or wrapping <label> — assistive technology has no accessible name to announce for it."
+    },
+    {
+      "ruleId": "ux/input-missing-label",
+      "file": "src/components/transactions/TransactionForm.tsx",
+      "line": 103,
+      "severity": "warn",
+      "message": "This <input> has no aria-label, aria-labelledby, id, or wrapping <label> — assistive technology has no accessible name to announce for it.",
+      "fixPrompt": "Fix \"input element with no associated label\" (ux/input-missing-label) at src/components/transactions/TransactionForm.tsx:103: This <input> has no aria-label, aria-labelledby, id, or wrapping <label> — assistive technology has no accessible name to announce for it."
+    },
+    {
+      "ruleId": "ux/input-missing-label",
+      "file": "src/components/transactions/TransactionForm.tsx",
+      "line": 116,
+      "severity": "warn",
+      "message": "This <input> has no aria-label, aria-labelledby, id, or wrapping <label> — assistive technology has no accessible name to announce for it.",
+      "fixPrompt": "Fix \"input element with no associated label\" (ux/input-missing-label) at src/components/transactions/TransactionForm.tsx:116: This <input> has no aria-label, aria-labelledby, id, or wrapping <label> — assistive technology has no accessible name to announce for it."
+    }
+  ],
+  "warnings": [],
+  "fileCount": 117,
+  "ruleCount": 20
+}

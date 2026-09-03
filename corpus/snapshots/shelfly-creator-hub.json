@@ -1,0 +1,175 @@
+{
+  "composite": 77.94,
+  "categories": [
+    {
+      "category": "security",
+      "score": 100
+    },
+    {
+      "category": "quality",
+      "score": 100
+    },
+    {
+      "category": "docs",
+      "score": 71.43
+    },
+    {
+      "category": "discipline",
+      "score": 50
+    },
+    {
+      "category": "ui-ux",
+      "score": 41.67
+    },
+    {
+      "category": "tokens",
+      "score": 55.56
+    }
+  ],
+  "findings": [
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "src/App.tsx",
+      "line": 25,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at src/App.tsx:25: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "src/components/layout/Layout.tsx",
+      "line": 15,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at src/components/layout/Layout.tsx:15: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "src/components/layout/Navbar.tsx",
+      "line": 31,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at src/components/layout/Navbar.tsx:31: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "src/components/layout/Navbar.tsx",
+      "line": 36,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at src/components/layout/Navbar.tsx:36: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "src/components/layout/Navbar.tsx",
+      "line": 49,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at src/components/layout/Navbar.tsx:49: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "src/context/ThemeContext.tsx",
+      "line": 17,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at src/context/ThemeContext.tsx:17: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "src/context/ThemeContext.tsx",
+      "line": 26,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at src/context/ThemeContext.tsx:26: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "src/context/ThemeContext.tsx",
+      "line": 33,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at src/context/ThemeContext.tsx:33: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "src/main.tsx",
+      "line": 7,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at src/main.tsx:7: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "docs/changelog-exists",
+      "file": "CHANGELOG.md",
+      "severity": "warn",
+      "message": "No CHANGELOG.md found — users and future-you can't see what changed between versions.",
+      "fixPrompt": "Fix \"CHANGELOG.md missing\" (docs/changelog-exists) at CHANGELOG.md: No CHANGELOG.md found — users and future-you can't see what changed between versions."
+    },
+    {
+      "ruleId": "tok/ai-ignore-coverage",
+      "file": "package-lock.json",
+      "severity": "warn",
+      "message": "This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore.",
+      "fixPrompt": "Fix \"Heavy/generated artifact not excluded from AI context\" (tok/ai-ignore-coverage) at package-lock.json: This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore. (no AI-ignore file found (looked for .cursorignore, .claudeignore, .aiderignore, .codeiumignore, .windsurfignore, .rooignore))"
+    },
+    {
+      "ruleId": "tok/ai-ignore-coverage",
+      "file": "bun.lockb",
+      "severity": "warn",
+      "message": "This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore.",
+      "fixPrompt": "Fix \"Heavy/generated artifact not excluded from AI context\" (tok/ai-ignore-coverage) at bun.lockb: This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore. (no AI-ignore file found (looked for .cursorignore, .claudeignore, .aiderignore, .codeiumignore, .windsurfignore, .rooignore))"
+    },
+    {
+      "ruleId": "ux/inline-hex-threshold",
+      "file": "src/components/ui/chart.tsx",
+      "line": 53,
+      "severity": "warn",
+      "message": "This file has several one-off inline hex colors instead of a shared design-token/theme reference — a sign colors have drifted out of any central palette.",
+      "fixPrompt": "Fix \"Many inline hex colors in one file\" (ux/inline-hex-threshold) at src/components/ui/chart.tsx:53: This file has several one-off inline hex colors instead of a shared design-token/theme reference — a sign colors have drifted out of any central palette. (5 occurrences, threshold 5)"
+    },
+    {
+      "ruleId": "ux/inline-hex-threshold",
+      "file": "src/config/theme.ts",
+      "line": 8,
+      "severity": "warn",
+      "message": "This file has several one-off inline hex colors instead of a shared design-token/theme reference — a sign colors have drifted out of any central palette.",
+      "fixPrompt": "Fix \"Many inline hex colors in one file\" (ux/inline-hex-threshold) at src/config/theme.ts:8: This file has several one-off inline hex colors instead of a shared design-token/theme reference — a sign colors have drifted out of any central palette. (11 occurrences, threshold 5)"
+    },
+    {
+      "ruleId": "ux/input-missing-label",
+      "file": "src/components/products/ProductDetail.tsx",
+      "line": 243,
+      "severity": "warn",
+      "message": "This <input> has no aria-label, aria-labelledby, id, or wrapping <label> — assistive technology has no accessible name to announce for it.",
+      "fixPrompt": "Fix \"input element with no associated label\" (ux/input-missing-label) at src/components/products/ProductDetail.tsx:243: This <input> has no aria-label, aria-labelledby, id, or wrapping <label> — assistive technology has no accessible name to announce for it."
+    },
+    {
+      "ruleId": "ux/input-missing-label",
+      "file": "src/components/products/ProductDetail.tsx",
+      "line": 249,
+      "severity": "warn",
+      "message": "This <input> has no aria-label, aria-labelledby, id, or wrapping <label> — assistive technology has no accessible name to announce for it.",
+      "fixPrompt": "Fix \"input element with no associated label\" (ux/input-missing-label) at src/components/products/ProductDetail.tsx:249: This <input> has no aria-label, aria-labelledby, id, or wrapping <label> — assistive technology has no accessible name to announce for it."
+    },
+    {
+      "ruleId": "ux/input-missing-label",
+      "file": "src/pages/PricingPage.tsx",
+      "line": 199,
+      "severity": "warn",
+      "message": "This <input> has no aria-label, aria-labelledby, id, or wrapping <label> — assistive technology has no accessible name to announce for it.",
+      "fixPrompt": "Fix \"input element with no associated label\" (ux/input-missing-label) at src/pages/PricingPage.tsx:199: This <input> has no aria-label, aria-labelledby, id, or wrapping <label> — assistive technology has no accessible name to announce for it."
+    },
+    {
+      "ruleId": "ux/input-missing-label",
+      "file": "src/pages/PricingPage.tsx",
+      "line": 205,
+      "severity": "warn",
+      "message": "This <input> has no aria-label, aria-labelledby, id, or wrapping <label> — assistive technology has no accessible name to announce for it.",
+      "fixPrompt": "Fix \"input element with no associated label\" (ux/input-missing-label) at src/pages/PricingPage.tsx:205: This <input> has no aria-label, aria-labelledby, id, or wrapping <label> — assistive technology has no accessible name to announce for it."
+    }
+  ],
+  "warnings": [],
+  "fileCount": 110,
+  "ruleCount": 20
+}

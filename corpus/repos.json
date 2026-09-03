@@ -1,0 +1,58 @@
+[
+  {
+    "name": "taxonomy",
+    "url": "https://github.com/shadcn-ui/taxonomy.git",
+    "sha": "298a8857c7128a0d121e7f699dfd729f23b3966d",
+    "category": "control",
+    "note": "Reference Next.js App Router app — auth, dashboard, post CRUD, delete flows."
+  },
+  {
+    "name": "saas-starter",
+    "url": "https://github.com/nextjs/saas-starter.git",
+    "sha": "6e33e58b1e553a41fe22e6b941a7229a002de361",
+    "category": "control",
+    "note": "Official Vercel SaaS template — team dashboard, Stripe, sign-out."
+  },
+  {
+    "name": "commerce",
+    "url": "https://github.com/vercel/commerce.git",
+    "sha": "3761e52e60df9c6a316e067dbfd7032e494d3634",
+    "category": "control",
+    "note": "Shopify storefront — product fetching, cart mutations, search, filters."
+  },
+  {
+    "name": "precedent",
+    "url": "https://github.com/steven-tey/precedent.git",
+    "sha": "3be40205d7cdf56082cd284f07f12251b9208f79",
+    "category": "control",
+    "note": "SaaS starter kit — closest control-set proxy for a template-ish, commonly-forked AI-assisted-build base."
+  },
+  {
+    "name": "sports-on-the-go",
+    "url": "https://github.com/SudarshanaSRao/sports-on-the-go-4c575e84.git",
+    "sha": "b5bf7b934ce46094df3efbdfc67a3447770996e1",
+    "category": "ai-generated",
+    "note": "Lovable-generated (lovable-dev topic) — React/Supabase, real-time pickup-game discovery, OAuth."
+  },
+  {
+    "name": "fin-bloom-dash",
+    "url": "https://github.com/Gowtham3424/fin-bloom-dash.git",
+    "sha": "007de6882014a72c58e84de393d5aa3a726ef817",
+    "category": "ai-generated",
+    "note": "Lovable-generated (lovable-dev topic) — personal finance management dashboard."
+  },
+  {
+    "name": "shelfly-creator-hub",
+    "url": "https://github.com/beyagency/shelfly-creator-hub.git",
+    "sha": "2afcadff42f35091528c3aa3e47f882cb0993318",
+    "category": "ai-generated",
+    "note": "Lovable-generated (lovable-dev topic) — digital-product storefront with a checkout flow."
+  },
+  {
+    "name": "mindtrack-personalwellness",
+    "url": "https://github.com/Shivshanker869/mindtrack-personalwellness.git",
+    "sha": "e1fdacf717412c78d5e174959931e558b639726a",
+    "category": "ai-generated",
+    "note": "Lovable-generated (lovable-dev topic) — habit/mood tracking dashboard."
+  }
+]

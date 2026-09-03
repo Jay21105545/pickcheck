@@ -4,3 +4,4 @@ coverage/
 .pickcheck/
 *.log
 .DS_Store
+corpus/.cache/

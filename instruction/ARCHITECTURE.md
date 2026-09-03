@@ -23,6 +23,10 @@ pickcheck/
 ├── docs-kit/         # templates copied by `init`
 ├── generators/       # prompt templates used by `gen`
 ├── examples/broken-app/   # deliberately bad demo repo
+├── corpus/           # backtest corpus (EXECUTION.md's Stress-Test &
+│   │                 # Backtest Protocol) — repos.json (pinned by SHA),
+│   │                 # snapshots/ (committed), .cache/ (gitignored
+│   │                 # clones), run.ts driver (`pnpm corpus`)
 ├── DECISIONS/        # ADRs
 └── apps/docs/        # Next.js docs site (phase 4+)
 ```
