@@ -1,9 +1,9 @@
 {
-  "composite": 80.42,
+  "composite": 59,
   "categories": [
     {
       "category": "security",
-      "score": 100
+      "score": 50
     },
     {
       "category": "quality",
@@ -107,6 +107,110 @@
       "fixPrompt": "Fix \"CHANGELOG.md missing\" (docs/changelog-exists) at CHANGELOG.md: No CHANGELOG.md found — users and future-you can't see what changed between versions."
     },
     {
+      "ruleId": "sec/raw-card-input-no-payment-sdk",
+      "file": "src/components/products/ProductDetail.tsx",
+      "line": 232,
+      "severity": "error",
+      "message": "A form field is named/labeled like a raw card number, CVV/CVC, or expiry date, and no payment SDK (Stripe, Braintree, Square, PayPal, Adyen, Razorpay) is declared in this project — collecting raw card data yourself is a PCI-DSS violation. Use a hosted, tokenized checkout instead (Stripe Checkout, the Payment Element, or your provider's equivalent embedded field) rather than validating or storing the raw input.",
+      "fixPrompt": "Fix \"Raw card input field with no payment SDK\" (sec/raw-card-input-no-payment-sdk) at src/components/products/ProductDetail.tsx:232: A form field is named/labeled like a raw card number, CVV/CVC, or expiry date, and no payment SDK (Stripe, Braintree, Square, PayPal, Adyen, Razorpay) is declared in this project — collecting raw card data yourself is a PCI-DSS violation. Use a hosted, tokenized checkout instead (Stripe Checkout, the Payment Element, or your provider's equivalent embedded field) rather than validating or storing the raw input."
+    },
+    {
+      "ruleId": "sec/raw-card-input-no-payment-sdk",
+      "file": "src/components/products/ProductDetail.tsx",
+      "line": 237,
+      "severity": "error",
+      "message": "A form field is named/labeled like a raw card number, CVV/CVC, or expiry date, and no payment SDK (Stripe, Braintree, Square, PayPal, Adyen, Razorpay) is declared in this project — collecting raw card data yourself is a PCI-DSS violation. Use a hosted, tokenized checkout instead (Stripe Checkout, the Payment Element, or your provider's equivalent embedded field) rather than validating or storing the raw input.",
+      "fixPrompt": "Fix \"Raw card input field with no payment SDK\" (sec/raw-card-input-no-payment-sdk) at src/components/products/ProductDetail.tsx:237: A form field is named/labeled like a raw card number, CVV/CVC, or expiry date, and no payment SDK (Stripe, Braintree, Square, PayPal, Adyen, Razorpay) is declared in this project — collecting raw card data yourself is a PCI-DSS violation. Use a hosted, tokenized checkout instead (Stripe Checkout, the Payment Element, or your provider's equivalent embedded field) rather than validating or storing the raw input."
+    },
+    {
+      "ruleId": "sec/raw-card-input-no-payment-sdk",
+      "file": "src/pages/CheckoutPage.tsx",
+      "line": 132,
+      "severity": "error",
+      "message": "A form field is named/labeled like a raw card number, CVV/CVC, or expiry date, and no payment SDK (Stripe, Braintree, Square, PayPal, Adyen, Razorpay) is declared in this project — collecting raw card data yourself is a PCI-DSS violation. Use a hosted, tokenized checkout instead (Stripe Checkout, the Payment Element, or your provider's equivalent embedded field) rather than validating or storing the raw input.",
+      "fixPrompt": "Fix \"Raw card input field with no payment SDK\" (sec/raw-card-input-no-payment-sdk) at src/pages/CheckoutPage.tsx:132: A form field is named/labeled like a raw card number, CVV/CVC, or expiry date, and no payment SDK (Stripe, Braintree, Square, PayPal, Adyen, Razorpay) is declared in this project — collecting raw card data yourself is a PCI-DSS violation. Use a hosted, tokenized checkout instead (Stripe Checkout, the Payment Element, or your provider's equivalent embedded field) rather than validating or storing the raw input."
+    },
+    {
+      "ruleId": "sec/raw-card-input-no-payment-sdk",
+      "file": "src/pages/CheckoutPage.tsx",
+      "line": 134,
+      "severity": "error",
+      "message": "A form field is named/labeled like a raw card number, CVV/CVC, or expiry date, and no payment SDK (Stripe, Braintree, Square, PayPal, Adyen, Razorpay) is declared in this project — collecting raw card data yourself is a PCI-DSS violation. Use a hosted, tokenized checkout instead (Stripe Checkout, the Payment Element, or your provider's equivalent embedded field) rather than validating or storing the raw input.",
+      "fixPrompt": "Fix \"Raw card input field with no payment SDK\" (sec/raw-card-input-no-payment-sdk) at src/pages/CheckoutPage.tsx:134: A form field is named/labeled like a raw card number, CVV/CVC, or expiry date, and no payment SDK (Stripe, Braintree, Square, PayPal, Adyen, Razorpay) is declared in this project — collecting raw card data yourself is a PCI-DSS violation. Use a hosted, tokenized checkout instead (Stripe Checkout, the Payment Element, or your provider's equivalent embedded field) rather than validating or storing the raw input."
+    },
+    {
+      "ruleId": "sec/raw-card-input-no-payment-sdk",
+      "file": "src/pages/CheckoutPage.tsx",
+      "line": 135,
+      "severity": "error",
+      "message": "A form field is named/labeled like a raw card number, CVV/CVC, or expiry date, and no payment SDK (Stripe, Braintree, Square, PayPal, Adyen, Razorpay) is declared in this project — collecting raw card data yourself is a PCI-DSS violation. Use a hosted, tokenized checkout instead (Stripe Checkout, the Payment Element, or your provider's equivalent embedded field) rather than validating or storing the raw input.",
+      "fixPrompt": "Fix \"Raw card input field with no payment SDK\" (sec/raw-card-input-no-payment-sdk) at src/pages/CheckoutPage.tsx:135: A form field is named/labeled like a raw card number, CVV/CVC, or expiry date, and no payment SDK (Stripe, Braintree, Square, PayPal, Adyen, Razorpay) is declared in this project — collecting raw card data yourself is a PCI-DSS violation. Use a hosted, tokenized checkout instead (Stripe Checkout, the Payment Element, or your provider's equivalent embedded field) rather than validating or storing the raw input."
+    },
+    {
+      "ruleId": "sec/raw-card-input-no-payment-sdk",
+      "file": "src/pages/CheckoutPage.tsx",
+      "line": 145,
+      "severity": "error",
+      "message": "A form field is named/labeled like a raw card number, CVV/CVC, or expiry date, and no payment SDK (Stripe, Braintree, Square, PayPal, Adyen, Razorpay) is declared in this project — collecting raw card data yourself is a PCI-DSS violation. Use a hosted, tokenized checkout instead (Stripe Checkout, the Payment Element, or your provider's equivalent embedded field) rather than validating or storing the raw input.",
+      "fixPrompt": "Fix \"Raw card input field with no payment SDK\" (sec/raw-card-input-no-payment-sdk) at src/pages/CheckoutPage.tsx:145: A form field is named/labeled like a raw card number, CVV/CVC, or expiry date, and no payment SDK (Stripe, Braintree, Square, PayPal, Adyen, Razorpay) is declared in this project — collecting raw card data yourself is a PCI-DSS violation. Use a hosted, tokenized checkout instead (Stripe Checkout, the Payment Element, or your provider's equivalent embedded field) rather than validating or storing the raw input."
+    },
+    {
+      "ruleId": "sec/raw-card-input-no-payment-sdk",
+      "file": "src/pages/CheckoutPage.tsx",
+      "line": 147,
+      "severity": "error",
+      "message": "A form field is named/labeled like a raw card number, CVV/CVC, or expiry date, and no payment SDK (Stripe, Braintree, Square, PayPal, Adyen, Razorpay) is declared in this project — collecting raw card data yourself is a PCI-DSS violation. Use a hosted, tokenized checkout instead (Stripe Checkout, the Payment Element, or your provider's equivalent embedded field) rather than validating or storing the raw input.",
+      "fixPrompt": "Fix \"Raw card input field with no payment SDK\" (sec/raw-card-input-no-payment-sdk) at src/pages/CheckoutPage.tsx:147: A form field is named/labeled like a raw card number, CVV/CVC, or expiry date, and no payment SDK (Stripe, Braintree, Square, PayPal, Adyen, Razorpay) is declared in this project — collecting raw card data yourself is a PCI-DSS violation. Use a hosted, tokenized checkout instead (Stripe Checkout, the Payment Element, or your provider's equivalent embedded field) rather than validating or storing the raw input."
+    },
+    {
+      "ruleId": "sec/raw-card-input-no-payment-sdk",
+      "file": "src/pages/CheckoutPage.tsx",
+      "line": 148,
+      "severity": "error",
+      "message": "A form field is named/labeled like a raw card number, CVV/CVC, or expiry date, and no payment SDK (Stripe, Braintree, Square, PayPal, Adyen, Razorpay) is declared in this project — collecting raw card data yourself is a PCI-DSS violation. Use a hosted, tokenized checkout instead (Stripe Checkout, the Payment Element, or your provider's equivalent embedded field) rather than validating or storing the raw input.",
+      "fixPrompt": "Fix \"Raw card input field with no payment SDK\" (sec/raw-card-input-no-payment-sdk) at src/pages/CheckoutPage.tsx:148: A form field is named/labeled like a raw card number, CVV/CVC, or expiry date, and no payment SDK (Stripe, Braintree, Square, PayPal, Adyen, Razorpay) is declared in this project — collecting raw card data yourself is a PCI-DSS violation. Use a hosted, tokenized checkout instead (Stripe Checkout, the Payment Element, or your provider's equivalent embedded field) rather than validating or storing the raw input."
+    },
+    {
+      "ruleId": "sec/raw-card-input-no-payment-sdk",
+      "file": "src/pages/CheckoutPage.tsx",
+      "line": 156,
+      "severity": "error",
+      "message": "A form field is named/labeled like a raw card number, CVV/CVC, or expiry date, and no payment SDK (Stripe, Braintree, Square, PayPal, Adyen, Razorpay) is declared in this project — collecting raw card data yourself is a PCI-DSS violation. Use a hosted, tokenized checkout instead (Stripe Checkout, the Payment Element, or your provider's equivalent embedded field) rather than validating or storing the raw input.",
+      "fixPrompt": "Fix \"Raw card input field with no payment SDK\" (sec/raw-card-input-no-payment-sdk) at src/pages/CheckoutPage.tsx:156: A form field is named/labeled like a raw card number, CVV/CVC, or expiry date, and no payment SDK (Stripe, Braintree, Square, PayPal, Adyen, Razorpay) is declared in this project — collecting raw card data yourself is a PCI-DSS violation. Use a hosted, tokenized checkout instead (Stripe Checkout, the Payment Element, or your provider's equivalent embedded field) rather than validating or storing the raw input."
+    },
+    {
+      "ruleId": "sec/raw-card-input-no-payment-sdk",
+      "file": "src/pages/CheckoutPage.tsx",
+      "line": 158,
+      "severity": "error",
+      "message": "A form field is named/labeled like a raw card number, CVV/CVC, or expiry date, and no payment SDK (Stripe, Braintree, Square, PayPal, Adyen, Razorpay) is declared in this project — collecting raw card data yourself is a PCI-DSS violation. Use a hosted, tokenized checkout instead (Stripe Checkout, the Payment Element, or your provider's equivalent embedded field) rather than validating or storing the raw input.",
+      "fixPrompt": "Fix \"Raw card input field with no payment SDK\" (sec/raw-card-input-no-payment-sdk) at src/pages/CheckoutPage.tsx:158: A form field is named/labeled like a raw card number, CVV/CVC, or expiry date, and no payment SDK (Stripe, Braintree, Square, PayPal, Adyen, Razorpay) is declared in this project — collecting raw card data yourself is a PCI-DSS violation. Use a hosted, tokenized checkout instead (Stripe Checkout, the Payment Element, or your provider's equivalent embedded field) rather than validating or storing the raw input."
+    },
+    {
+      "ruleId": "sec/raw-card-input-no-payment-sdk",
+      "file": "src/pages/CheckoutPage.tsx",
+      "line": 159,
+      "severity": "error",
+      "message": "A form field is named/labeled like a raw card number, CVV/CVC, or expiry date, and no payment SDK (Stripe, Braintree, Square, PayPal, Adyen, Razorpay) is declared in this project — collecting raw card data yourself is a PCI-DSS violation. Use a hosted, tokenized checkout instead (Stripe Checkout, the Payment Element, or your provider's equivalent embedded field) rather than validating or storing the raw input.",
+      "fixPrompt": "Fix \"Raw card input field with no payment SDK\" (sec/raw-card-input-no-payment-sdk) at src/pages/CheckoutPage.tsx:159: A form field is named/labeled like a raw card number, CVV/CVC, or expiry date, and no payment SDK (Stripe, Braintree, Square, PayPal, Adyen, Razorpay) is declared in this project — collecting raw card data yourself is a PCI-DSS violation. Use a hosted, tokenized checkout instead (Stripe Checkout, the Payment Element, or your provider's equivalent embedded field) rather than validating or storing the raw input."
+    },
+    {
+      "ruleId": "sec/raw-card-input-no-payment-sdk",
+      "file": "src/pages/PricingPage.tsx",
+      "line": 188,
+      "severity": "error",
+      "message": "A form field is named/labeled like a raw card number, CVV/CVC, or expiry date, and no payment SDK (Stripe, Braintree, Square, PayPal, Adyen, Razorpay) is declared in this project — collecting raw card data yourself is a PCI-DSS violation. Use a hosted, tokenized checkout instead (Stripe Checkout, the Payment Element, or your provider's equivalent embedded field) rather than validating or storing the raw input.",
+      "fixPrompt": "Fix \"Raw card input field with no payment SDK\" (sec/raw-card-input-no-payment-sdk) at src/pages/PricingPage.tsx:188: A form field is named/labeled like a raw card number, CVV/CVC, or expiry date, and no payment SDK (Stripe, Braintree, Square, PayPal, Adyen, Razorpay) is declared in this project — collecting raw card data yourself is a PCI-DSS violation. Use a hosted, tokenized checkout instead (Stripe Checkout, the Payment Element, or your provider's equivalent embedded field) rather than validating or storing the raw input."
+    },
+    {
+      "ruleId": "sec/raw-card-input-no-payment-sdk",
+      "file": "src/pages/PricingPage.tsx",
+      "line": 193,
+      "severity": "error",
+      "message": "A form field is named/labeled like a raw card number, CVV/CVC, or expiry date, and no payment SDK (Stripe, Braintree, Square, PayPal, Adyen, Razorpay) is declared in this project — collecting raw card data yourself is a PCI-DSS violation. Use a hosted, tokenized checkout instead (Stripe Checkout, the Payment Element, or your provider's equivalent embedded field) rather than validating or storing the raw input.",
+      "fixPrompt": "Fix \"Raw card input field with no payment SDK\" (sec/raw-card-input-no-payment-sdk) at src/pages/PricingPage.tsx:193: A form field is named/labeled like a raw card number, CVV/CVC, or expiry date, and no payment SDK (Stripe, Braintree, Square, PayPal, Adyen, Razorpay) is declared in this project — collecting raw card data yourself is a PCI-DSS violation. Use a hosted, tokenized checkout instead (Stripe Checkout, the Payment Element, or your provider's equivalent embedded field) rather than validating or storing the raw input."
+    },
+    {
       "ruleId": "ux/inline-hex-threshold",
       "file": "src/components/ui/chart.tsx",
       "line": 53,
@@ -157,7 +261,7 @@
   ],
   "warnings": [],
   "fileCount": 110,
-  "ruleCount": 19,
+  "ruleCount": 20,
   "tokenSurface": {
     "files": [],
     "totalTokens": 0,
