@@ -1,0 +1,21 @@
+id: ux/destructive-no-confirm
+category: ui-ux
+severity: warn
+tier: regex
+title: Destructive action with no confirmation step
+files:
+  - "**/*.{tsx,jsx}"
+  - "!**/*.test.*"
+  - "!**/*.spec.*"
+  - "!**/__tests__/**"
+  - "!**/test/**"
+  - "!**/tests/**"
+  - "!**/fixtures/**"
+  - "!**/api/**"
+message: "This component calls a DELETE endpoint with no confirmation step anywhere in the file — a single accidental click permanently destroys data."
+weight: 2
+pattern:
+  regex: 'axios\.delete\(|method:\s*["'']DELETE["'']'
+  unless:
+    regex: '\b(confirm|window\.confirm|useConfirm|ConfirmDialog|AlertDialog|areYouSure|isConfirmOpen)\b'
+    flags: i

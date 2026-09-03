@@ -63,6 +63,14 @@ const regexRuleSchema = baseRuleSchema.extend({
         flags: z.string().optional(),
       })
       .optional(),
+    // Optional per-file occurrence threshold: when set, a matched file
+    // produces at most one finding, and only once `regex` has matched at
+    // least `minCount` times across the *whole file* (not per line) — a
+    // handful of one-off matches is normal, many in one file is the
+    // actual signal (e.g. design-token drift from repeated inline hex
+    // colors). Unset preserves the original per-line-match behavior
+    // every regex rule before this field had — see DECISIONS/0011.
+    minCount: z.number().int().positive().optional(),
   }),
 });
 
@@ -74,11 +82,51 @@ const astgrepRuleSchema = baseRuleSchema.extend({
   pattern: z.record(z.string(), z.unknown()),
 });
 
+// The tokens tier covers three distinct checks under one tier (all about
+// AI-context-surface hygiene, per IDEA.md's "Tokens" category) rather than
+// three tiers, since the only real difference between them is the shape of
+// `pattern` — same "discriminate the pattern payload, not the tier" move
+// the exists tier's `mode` and the regex tier's `unless`/`minCount` already
+// make. See DECISIONS/0012.
+const tokensBudgetPattern = z.object({
+  check: z.literal("budget"),
+  // Token budget per matched file (gpt-tokenizer, lazy-loaded — see
+  // DECISIONS/0012). A file's own token count exceeding this is the
+  // finding.
+  budget: z.number().positive(),
+});
+
+const tokensDuplicatePattern = z.object({
+  check: z.literal("duplicate"),
+  // Minimum character length a shared paragraph must reach to count as
+  // meaningful duplicated content rather than incidental boilerplate
+  // (e.g. two files coincidentally sharing a short heading like "##
+  // Setup"). Matched files are compared pairwise; a paragraph appearing
+  // verbatim (whitespace-normalized) in two different matched files at
+  // or above this length is a finding.
+  minChars: z.number().int().positive().default(200),
+});
+
+const tokensIgnoreCoveragePattern = z.object({
+  check: z.literal("ignore-coverage"),
+  // Candidate AI-ignore file names read directly off disk (independent
+  // of `files`, which instead gates this rule's applicability — see the
+  // rule's own README for why) and combined (union) into one `ignore()`
+  // filter.
+  ignoreFiles: z.array(z.string().min(1)).min(1),
+  // Repo-root-relative artifact paths (literal names, not globs — see
+  // README) that, if present on disk, must be covered by the combined
+  // ignoreFiles filter above.
+  requiredPatterns: z.array(z.string().min(1)).min(1),
+});
+
 const tokensRuleSchema = baseRuleSchema.extend({
   tier: z.literal("tokens"),
-  pattern: z.object({
-    budget: z.number().positive(),
-  }),
+  pattern: z.discriminatedUnion("check", [
+    tokensBudgetPattern,
+    tokensDuplicatePattern,
+    tokensIgnoreCoveragePattern,
+  ]),
 });
 
 const manifestRuleSchema = baseRuleSchema.extend({

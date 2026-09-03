@@ -12,7 +12,8 @@
       "!**/dist",
       "!**/node_modules",
       "!**/coverage",
-      "!packages/rules/**/fixtures"
+      "!packages/rules/**/fixtures",
+      "!examples"
     ]
   },
   "formatter": {

@@ -19,6 +19,7 @@ export async function runRegexTier(
   const unless = rule.pattern.unless;
   const unlessRegex =
     unless === undefined ? undefined : new RegExp(unless.regex, unless.flags);
+  const minCount = rule.pattern.minCount;
   const findings: Finding[] = [];
   const warnings: string[] = [];
 
@@ -40,6 +41,14 @@ export async function runRegexTier(
       }
     }
 
+    if (minCount !== undefined) {
+      const finding = findThresholdCrossing(rule, file, content, minCount);
+      if (finding !== undefined) {
+        findings.push(finding);
+      }
+      continue;
+    }
+
     const lines = content.split("\n");
     for (const [index, line] of lines.entries()) {
       regex.lastIndex = 0; // reset stateful global/sticky regex between lines
@@ -58,4 +67,45 @@ export async function runRegexTier(
   }
 
   return { findings, warnings };
+}
+
+/**
+ * `minCount` mode (DECISIONS/0011): counts every occurrence of `regex`
+ * across the whole file (not just matching lines), and produces a single
+ * finding — anchored at the threshold-crossing occurrence's line — once
+ * that count reaches `minCount`. Below it, the file is silently fine: a
+ * handful of one-off matches is normal, only volume is the signal.
+ */
+function findThresholdCrossing(
+  rule: RegexRule,
+  file: string,
+  content: string,
+  minCount: number,
+): Finding | undefined {
+  const flags = rule.pattern.flags?.includes("g")
+    ? rule.pattern.flags
+    : `${rule.pattern.flags ?? ""}g`;
+  const globalRegex = new RegExp(rule.pattern.regex, flags);
+  const occurrences = [...content.matchAll(globalRegex)];
+  if (occurrences.length < minCount) {
+    return undefined;
+  }
+
+  const thresholdMatch = occurrences[minCount - 1];
+  const matchIndex = thresholdMatch?.index ?? 0;
+  const lineNumber = content.slice(0, matchIndex).split("\n").length;
+
+  return {
+    ruleId: rule.id,
+    file,
+    line: lineNumber,
+    severity: rule.severity,
+    message: rule.message,
+    fixPrompt: buildFixPrompt(
+      rule,
+      file,
+      lineNumber,
+      `${occurrences.length} occurrences, threshold ${minCount}`,
+    ),
+  };
 }

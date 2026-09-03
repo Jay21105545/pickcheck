@@ -1,0 +1,18 @@
+id: tok/context-duplication
+category: tokens
+severity: warn
+tier: tokens
+title: Duplicated content across AI context files
+files:
+  - "CLAUDE.md"
+  - "AGENTS.md"
+  - ".cursorrules"
+  - ".cursor/rules/**/*.mdc"
+  - ".windsurfrules"
+  - ".clinerules"
+  - ".github/copilot-instructions.md"
+message: "This paragraph appears verbatim in another AI context file — every AI tool that reads both pays for the same guidance twice, and the two copies will eventually drift out of sync."
+weight: 2
+pattern:
+  check: duplicate
+  minChars: 200

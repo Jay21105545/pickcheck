@@ -1,0 +1,16 @@
+id: ux/inline-hex-threshold
+category: ui-ux
+severity: warn
+tier: regex
+title: Many inline hex colors in one file
+files:
+  - "**/*.{ts,tsx,js,jsx,css,scss}"
+  - "!**/*.test.*"
+  - "!**/*.spec.*"
+  - "!**/*.config.*"
+  - "!**/fixtures/**"
+message: "This file has several one-off inline hex colors instead of a shared design-token/theme reference — a sign colors have drifted out of any central palette."
+weight: 1
+pattern:
+  regex: '#[0-9a-fA-F]{3,8}\b'
+  minCount: 5

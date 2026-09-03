@@ -150,4 +150,59 @@ describe("runRegexTier", () => {
       await dir.cleanup();
     }
   });
+
+  describe("pattern.minCount", () => {
+    it("stays quiet below the threshold", async () => {
+      const dir = await createTempDir("regex-mincount-under");
+      try {
+        await dir.write("src/a.ts", "const c = '#fff';\nconst d = '#000';\n");
+
+        const result = await runRegexTier(
+          rule({ pattern: { regex: "#[0-9a-fA-F]{3,6}", minCount: 3 } }),
+          { cwd: dir.path, scannedFiles: ["src/a.ts"] },
+        );
+
+        expect(result).toEqual({ findings: [], warnings: [] });
+      } finally {
+        await dir.cleanup();
+      }
+    });
+
+    it("produces exactly one finding, at the threshold-crossing occurrence, once met", async () => {
+      const dir = await createTempDir("regex-mincount-over");
+      try {
+        await dir.write(
+          "src/a.ts",
+          "const a = '#111';\nconst b = '#222';\nconst c = '#333';\nconst d = '#444';\n",
+        );
+
+        const result = await runRegexTier(
+          rule({ pattern: { regex: "#[0-9a-fA-F]{3,6}", minCount: 3 } }),
+          { cwd: dir.path, scannedFiles: ["src/a.ts"] },
+        );
+
+        expect(result.findings).toHaveLength(1);
+        expect(result.findings[0]).toMatchObject({ file: "src/a.ts", line: 3 });
+        expect(result.findings[0]?.fixPrompt).toMatch(/4 occurrences, threshold 3/);
+      } finally {
+        await dir.cleanup();
+      }
+    });
+
+    it("counts occurrences across the whole file, not per line", async () => {
+      const dir = await createTempDir("regex-mincount-same-line");
+      try {
+        await dir.write("src/a.ts", "const pair = ['#111', '#222', '#333'];\n");
+
+        const result = await runRegexTier(
+          rule({ pattern: { regex: "#[0-9a-fA-F]{3,6}", minCount: 3 } }),
+          { cwd: dir.path, scannedFiles: ["src/a.ts"] },
+        );
+
+        expect(result.findings).toHaveLength(1);
+      } finally {
+        await dir.cleanup();
+      }
+    });
+  });
 });

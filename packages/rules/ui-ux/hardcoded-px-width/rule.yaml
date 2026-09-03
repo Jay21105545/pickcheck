@@ -1,0 +1,15 @@
+id: ux/hardcoded-px-width
+category: ui-ux
+severity: warn
+tier: regex
+title: Hardcoded large pixel width (responsive smell)
+files:
+  - "**/*.{tsx,jsx,css,scss}"
+  - "!**/*.test.*"
+  - "!**/*.spec.*"
+  - "!**/*.config.*"
+  - "!**/fixtures/**"
+message: "A container width is hardcoded to a large fixed pixel value instead of a relative/responsive unit — it won't adapt to narrower viewports."
+weight: 1
+pattern:
+  regex: 'width\s*:\s*[''"]?([2-9]\d{2}|\d{4,})px\b|w-\[([2-9]\d{2}|\d{4,})px\]'

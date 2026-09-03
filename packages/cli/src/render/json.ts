@@ -7,6 +7,7 @@ export interface JsonReport {
   warnings: string[];
   fileCount: number;
   ruleCount: number;
+  tokenSurface: AuditResult["tokenSurface"];
 }
 
 export function toJsonReport(result: AuditResult): JsonReport {
@@ -17,6 +18,7 @@ export function toJsonReport(result: AuditResult): JsonReport {
     warnings: result.warnings,
     fileCount: result.fileCount,
     ruleCount: result.rules.length,
+    tokenSurface: result.tokenSurface,
   };
 }
 

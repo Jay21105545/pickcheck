@@ -1,0 +1,21 @@
+id: ux/fetch-missing-states
+category: ui-ux
+severity: warn
+tier: regex
+title: Component fetches data but renders only the success branch
+files:
+  - "**/*.{tsx,jsx}"
+  - "!**/*.test.*"
+  - "!**/*.spec.*"
+  - "!**/__tests__/**"
+  - "!**/test/**"
+  - "!**/tests/**"
+  - "!**/fixtures/**"
+  - "!**/api/**"
+message: "This component fetches data but nothing in the file suggests it renders a loading, error, or empty state — only the success path appears to be handled."
+weight: 2
+pattern:
+  regex: '\b(fetch|axios\.\w+|useQuery|useSWR)\s*\('
+  unless:
+    regex: '\b(loading|isLoading|isPending|pending|skeleton|Spinner|Suspense|isError|error|catch|failed|fallback|empty|EmptyState|noResults|no\s+results)\b'
+    flags: i

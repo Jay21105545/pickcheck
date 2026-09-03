@@ -1,0 +1,29 @@
+id: ux/img-missing-alt
+category: ui-ux
+severity: warn
+tier: astgrep
+title: img element missing an alt attribute
+files:
+  - "**/*.{tsx,jsx}"
+  - "!**/fixtures/**"
+message: "This <img> has no alt attribute — screen readers announce it by filename or skip it, and it fails automated accessibility audits."
+weight: 2
+pattern:
+  rule:
+    any:
+      - kind: jsx_self_closing_element
+      - kind: jsx_opening_element
+    has:
+      kind: identifier
+      regex: "^img$"
+    not:
+      any:
+        - has:
+            kind: jsx_attribute
+            has:
+              kind: property_identifier
+              regex: "^alt$"
+        - has:
+            kind: jsx_expression
+            has:
+              kind: spread_element

@@ -28,6 +28,10 @@ exports[`renderTerminal > matches the snapshot for a dumb terminal (ascii glyphs
 | 2 rules * 42 files * 2 findings
 +-
 
+AI context surface: 1092 tokens across 2 files · est. 5.5% waste
+  CLAUDE.md — 612 tokens
+  AGENTS.md — 480 tokens
+
 security (92)
   x src/config.ts - A secret looks hardcoded.
     -> fix: Fix "Hardcoded secret" (sec/no-secrets-in-code) at src/config.ts: A secret looks ...
@@ -52,6 +56,10 @@ exports[`renderTerminal > matches the snapshot for a result with findings and wa
 │ tokens      [██████████████] 100
 │ 2 rules · 42 files · 2 findings
 └─
+
+AI context surface: 1092 tokens across 2 files · est. 5.5% waste
+  CLAUDE.md — 612 tokens
+  AGENTS.md — 480 tokens
 
 security (92)
   ✖ src/config.ts — A secret looks hardcoded.

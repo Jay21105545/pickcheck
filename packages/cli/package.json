@@ -23,6 +23,7 @@
     "@pickcheck/rules": "workspace:^",
     "commander": "^15.0.0",
     "fast-glob": "^3.3.3",
+    "gpt-tokenizer": "^4.0.0",
     "ignore": "^7.0.8",
     "micromatch": "^4.0.8",
     "picocolors": "^1.1.1",

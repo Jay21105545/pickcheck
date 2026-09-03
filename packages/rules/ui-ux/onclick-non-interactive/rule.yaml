@@ -1,0 +1,34 @@
+id: ux/onclick-non-interactive
+category: ui-ux
+severity: warn
+tier: astgrep
+title: onClick on a non-interactive element with no role and tabIndex
+files:
+  - "**/*.{tsx,jsx}"
+  - "!**/fixtures/**"
+message: "This <div>/<span> has an onClick handler but no role and tabIndex — it isn't keyboard-focusable or announced as interactive to assistive technology."
+weight: 2
+pattern:
+  rule:
+    kind: jsx_opening_element
+    has:
+      kind: identifier
+      regex: "^(div|span)$"
+    all:
+      - has:
+          kind: jsx_attribute
+          has:
+            kind: property_identifier
+            regex: "^onClick$"
+      - not:
+          all:
+            - has:
+                kind: jsx_attribute
+                has:
+                  kind: property_identifier
+                  regex: "^role$"
+            - has:
+                kind: jsx_attribute
+                has:
+                  kind: property_identifier
+                  regex: "^tabIndex$"

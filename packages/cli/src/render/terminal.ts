@@ -102,7 +102,11 @@ export function renderTerminal(
   const glyphs = (options.ascii ?? detected.ascii) ? ASCII_GLYPHS : UNICODE_GLYPHS;
   const ruleById = new Map(result.rules.map((rule) => [rule.id, rule]));
 
-  const lines: string[] = [...renderSummaryCard(result, styles, glyphs), ""];
+  const lines: string[] = [
+    ...renderSummaryCard(result, styles, glyphs),
+    "",
+    ...renderTokenSurface(result, styles),
+  ];
 
   if (result.findings.length === 0) {
     lines.push(styles.dim("No findings."));
@@ -161,6 +165,27 @@ export function renderQuietSummary(
   const composite = result.score.composite;
   const scoreText = styles.bold(styles.accent(`${composite}/100`));
   return `${scoreText}${glyphs.separator}${result.rules.length} rules${glyphs.separator}${result.fileCount} files${glyphs.separator}${result.findings.length} findings\n`;
+}
+
+/** Unscored AI-context-surface stat (DECISIONS/0013) — omitted entirely when there's nothing to report. */
+function renderTokenSurface(result: AuditResult, styles: Styles): string[] {
+  const surface = result.tokenSurface;
+  if (surface === undefined) {
+    return [];
+  }
+
+  const fileCount = surface.files.length;
+  const fileWord = fileCount === 1 ? "file" : "files";
+  const lines = [
+    styles.dim(
+      `AI context surface: ${surface.totalTokens} tokens across ${fileCount} ${fileWord} · est. ${surface.estimatedWastePercent}% waste`,
+    ),
+  ];
+  for (const file of surface.files) {
+    lines.push(styles.dim(`  ${file.file} — ${file.tokens} tokens`));
+  }
+  lines.push("");
+  return lines;
 }
 
 function renderSummaryCard(

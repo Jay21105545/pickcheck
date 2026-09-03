@@ -1,0 +1,46 @@
+id: ux/input-missing-label
+category: ui-ux
+severity: warn
+tier: astgrep
+title: input element with no associated label
+files:
+  - "**/*.{tsx,jsx}"
+  - "!**/fixtures/**"
+message: "This <input> has no aria-label, aria-labelledby, id, or wrapping <label> — assistive technology has no accessible name to announce for it."
+weight: 2
+pattern:
+  rule:
+    any:
+      - kind: jsx_self_closing_element
+      - kind: jsx_opening_element
+    has:
+      kind: identifier
+      regex: "^input$"
+    not:
+      any:
+        - has:
+            kind: jsx_attribute
+            has:
+              kind: property_identifier
+              regex: "^aria-label$"
+        - has:
+            kind: jsx_attribute
+            has:
+              kind: property_identifier
+              regex: "^aria-labelledby$"
+        - has:
+            kind: jsx_attribute
+            has:
+              kind: property_identifier
+              regex: "^id$"
+        - has:
+            kind: jsx_attribute
+            regex: '^type\s*=\s*"(hidden|submit|button)"$'
+        - inside:
+            kind: jsx_element
+            stopBy: end
+            has:
+              kind: jsx_opening_element
+              has:
+                kind: identifier
+                regex: "^label$"

@@ -1,0 +1,13 @@
+.header {
+  color: var(--color-fg);
+  background: var(--color-bg);
+}
+.button {
+  background: var(--color-accent);
+}
+.button:hover {
+  background: var(--color-accent-hover);
+}
+.footer {
+  color: var(--color-fg-muted);
+}

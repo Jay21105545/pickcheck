@@ -63,6 +63,14 @@ export const sampleResult: AuditResult = {
     "qual/no-empty-catch: astgrep tier not implemented yet (TODO phase-1.1) — skipped",
   ],
   fileCount: 42,
+  tokenSurface: {
+    files: [
+      { file: "CLAUDE.md", tokens: 612 },
+      { file: "AGENTS.md", tokens: 480 },
+    ],
+    totalTokens: 1092,
+    estimatedWastePercent: 5.5,
+  },
 };
 
 /** A perfect, warning-free result, for the empty render path. */
@@ -82,4 +90,5 @@ export const emptyResult: AuditResult = {
   },
   warnings: [],
   fileCount: 10,
+  tokenSurface: undefined,
 };

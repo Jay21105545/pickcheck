@@ -39,13 +39,51 @@ describe("ruleSchema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("accepts a valid tokens rule", () => {
+  it("accepts a valid tokens rule (budget check)", () => {
     const result = ruleSchema.safeParse({
       ...base,
       tier: "tokens",
-      pattern: { budget: 2000 },
+      pattern: { check: "budget", budget: 2000 },
     });
     expect(result.success).toBe(true);
+  });
+
+  it("accepts a valid tokens rule (duplicate check) and defaults minChars", () => {
+    const result = ruleSchema.safeParse({
+      ...base,
+      tier: "tokens",
+      pattern: { check: "duplicate" },
+    });
+    expect(result.success).toBe(true);
+    if (
+      result.success &&
+      result.data.tier === "tokens" &&
+      result.data.pattern.check === "duplicate"
+    ) {
+      expect(result.data.pattern.minChars).toBe(200);
+    }
+  });
+
+  it("accepts a valid tokens rule (ignore-coverage check)", () => {
+    const result = ruleSchema.safeParse({
+      ...base,
+      tier: "tokens",
+      pattern: {
+        check: "ignore-coverage",
+        ignoreFiles: [".cursorignore"],
+        requiredPatterns: ["node_modules"],
+      },
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects a tokens rule with an unknown check discriminant", () => {
+    const result = ruleSchema.safeParse({
+      ...base,
+      tier: "tokens",
+      pattern: { check: "unknown-check" },
+    });
+    expect(result.success).toBe(false);
   });
 
   it("accepts a valid manifest rule and defaults manifestFile to package.json", () => {

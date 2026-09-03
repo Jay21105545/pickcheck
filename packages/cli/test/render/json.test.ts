@@ -20,6 +20,7 @@ describe("renderJson", () => {
         "fileCount",
         "findings",
         "ruleCount",
+        "tokenSurface",
         "warnings",
       ].sort(),
     );

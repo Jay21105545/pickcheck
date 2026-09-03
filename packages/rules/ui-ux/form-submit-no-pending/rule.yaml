@@ -1,0 +1,28 @@
+id: ux/form-submit-no-pending
+category: ui-ux
+severity: warn
+tier: astgrep
+title: Submit button with no pending/disabled state
+files:
+  - "**/*.{tsx,jsx}"
+  - "!**/fixtures/**"
+message: "This submit button has no disabled attribute — a user can click it repeatedly (double-submitting the form) with no visual sign the request is in flight."
+weight: 2
+pattern:
+  rule:
+    any:
+      - kind: jsx_self_closing_element
+      - kind: jsx_opening_element
+    has:
+      kind: identifier
+      regex: "^button$"
+    all:
+      - has:
+          kind: jsx_attribute
+          regex: '^type\s*=\s*"submit"$'
+      - not:
+          has:
+            kind: jsx_attribute
+            has:
+              kind: property_identifier
+              regex: "^disabled$"

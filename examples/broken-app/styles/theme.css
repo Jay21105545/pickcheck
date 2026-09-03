@@ -1,0 +1,16 @@
+.header {
+  color: #1a1a1a;
+  background: #ffffff;
+}
+.button {
+  background: #ff5733;
+}
+.button:hover {
+  background: #cc4626;
+}
+.footer {
+  color: #333333;
+}
+.link {
+  color: #0066cc;
+}

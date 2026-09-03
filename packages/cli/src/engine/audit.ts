@@ -3,6 +3,8 @@ import { scanRepo } from "./scan.js";
 import type { ScoreResult } from "./scorer.js";
 import { scoreFindings } from "./scorer.js";
 import { dispatchTier } from "./tiers/index.js";
+import type { TokenSurfaceReport } from "./token-surface.js";
+import { computeTokenSurface } from "./token-surface.js";
 import type { Finding, Rule } from "./types.js";
 
 export interface AuditOptions {
@@ -18,6 +20,8 @@ export interface AuditResult {
   score: ScoreResult;
   warnings: string[];
   fileCount: number;
+  /** Unscored AI-context-surface stat (DECISIONS/0013) — undefined if no context files were found. */
+  tokenSurface: TokenSurfaceReport | undefined;
 }
 
 /** The full engine pipeline: scan -> load rules -> dispatch tiers -> score. */
@@ -37,6 +41,8 @@ export async function runAudit(options: AuditOptions): Promise<AuditResult> {
   }
 
   const score = scoreFindings(findings, loadResult.rules, scannedFiles);
+  const tokenSurfaceResult = await computeTokenSurface(options.cwd, scannedFiles);
+  warnings.push(...tokenSurfaceResult.warnings);
 
   return {
     findings,
@@ -44,5 +50,6 @@ export async function runAudit(options: AuditOptions): Promise<AuditResult> {
     score,
     warnings,
     fileCount: scannedFiles.length,
+    tokenSurface: tokenSurfaceResult.report,
   };
 }

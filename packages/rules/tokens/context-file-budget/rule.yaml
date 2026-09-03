@@ -1,0 +1,18 @@
+id: tok/context-file-budget
+category: tokens
+severity: warn
+tier: tokens
+title: AI context file exceeds its token budget
+files:
+  - "CLAUDE.md"
+  - "AGENTS.md"
+  - ".cursorrules"
+  - ".cursor/rules/**/*.mdc"
+  - ".windsurfrules"
+  - ".clinerules"
+  - ".github/copilot-instructions.md"
+message: "This context file is large enough that most of an AI assistant's context window is spent re-reading it every session before any real work starts."
+weight: 2
+pattern:
+  check: budget
+  budget: 4000

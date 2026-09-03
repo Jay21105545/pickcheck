@@ -9,6 +9,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **UI/UX rules (Phase 3)**: `ux/fetch-missing-states` (a component
+  fetches data but nothing in the file suggests it renders a loading,
+  error, or empty state — the signature AI happy-path-only failure),
+  `ux/img-missing-alt`, `ux/input-missing-label`,
+  `ux/onclick-non-interactive` (`onClick` on a `<div>`/`<span>` with no
+  `role`+`tabIndex`), `ux/form-submit-no-pending`,
+  `ux/destructive-no-confirm` (a DELETE call with no confirmation step),
+  `ux/inline-hex-threshold`, and `ux/hardcoded-px-width`. All eight ship
+  as `warn` with honest README limits — see each rule's own README for
+  its specific false-positive tradeoffs.
+- **Tokens tier, implemented for real** (replacing the Phase-1 stub):
+  `pattern.check` now discriminates three checks —
+  `tok/context-file-budget` (a CLAUDE.md/AGENTS.md/.cursorrules/etc. over
+  a token budget, via `gpt-tokenizer`, lazy-loaded and fully local),
+  `tok/context-duplication` (verbatim paragraphs shared across two
+  context files), and `tok/ai-ignore-coverage` (a lockfile/node_modules/
+  build dir present on disk with no `.cursorignore`/`.claudeignore`/
+  equivalent covering it) — see [ADR 0012](DECISIONS/0012-tokens-tier-discriminated-checks.md).
+- **AI-context-surface report**: `audit` now prints an unscored "AI
+  context surface: N tokens across M files · est. W% waste" block (with
+  a per-file breakdown) whenever context files are found — informational
+  only, never affects the composite or category scores — see
+  [ADR 0013](DECISIONS/0013-unscored-token-surface-report.md).
+- **Regex tier gains `pattern.minCount`**: an optional per-file
+  occurrence threshold — a rule fires once, not once per line, only once
+  a pattern crosses a repeat count across the whole file (used by
+  `ux/inline-hex-threshold`) — see [ADR 0011](DECISIONS/0011-regex-mincount-threshold.md).
+- `examples/broken-app` extended with components/styles that trigger all
+  eight new UI/UX rules and all three tokens rules, documented in its
+  own README. `biome.json` now excludes `examples/` from linting the same
+  way it already excludes `packages/rules/**/fixtures` — deliberately bad
+  demo content per DECISIONS/0006, not real source held to the repo's own
+  quality bar (its new a11y-violating components tripped Biome's own
+  `useAltText`/`useButtonType`/`useKeyWithClickEvents` rules, which is the
+  point).
+- This repo's own `.cursorignore`/`.claudeignore` added at the root so
+  pickcheck's self-audit passes `tok/ai-ignore-coverage` honestly (it
+  already had a tracked `pnpm-lock.yaml` and `node_modules`, neither
+  previously excluded from AI-assistant context).
 - **`pickcheck init`**: an interactive (`@clack/prompts`, see
   [ADR 0010](DECISIONS/0010-clack-prompts-for-init.md)) scaffolder that
   detects the target repo's stack (`package.json` or `requirements.txt` —

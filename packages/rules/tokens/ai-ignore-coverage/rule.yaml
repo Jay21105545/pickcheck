@@ -1,0 +1,32 @@
+id: tok/ai-ignore-coverage
+category: tokens
+severity: warn
+tier: tokens
+title: Heavy/generated artifact not excluded from AI context
+files:
+  - "package-lock.json"
+  - "pnpm-lock.yaml"
+  - "yarn.lock"
+  - "bun.lockb"
+message: "This artifact is present in the repo but isn't excluded from AI-assistant context via .cursorignore/.claudeignore (or equivalent) — most AI coding tools index or attach files regardless of .gitignore."
+weight: 2
+pattern:
+  check: ignore-coverage
+  ignoreFiles:
+    - ".cursorignore"
+    - ".claudeignore"
+    - ".aiderignore"
+    - ".codeiumignore"
+    - ".windsurfignore"
+    - ".rooignore"
+  requiredPatterns:
+    - "package-lock.json"
+    - "pnpm-lock.yaml"
+    - "yarn.lock"
+    - "bun.lockb"
+    - "node_modules"
+    - "dist"
+    - "build"
+    - ".next"
+    - ".turbo"
+    - "coverage"
