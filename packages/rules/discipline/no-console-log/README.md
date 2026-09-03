@@ -11,20 +11,32 @@ review — but a production server printing arbitrary debug output pollutes
 logs, can leak request/response bodies containing user data, and drowns
 out the log lines that actually matter during an incident.
 
-**Detection:** regex tier, matching `console.log(` in application source
-(`.ts`/`.tsx`/`.js`/`.jsx`), excluding tests, `scripts/`, and
+**Detection:** `astgrep` tier, matching `console.log($$$ARGS)` structurally
+— exactly as RULESET.md specs it. Excludes tests, `scripts/`, and
 `*.config.*` files, where a stray print statement is expected and
-harmless. RULESET.md specs this rule as `astgrep` tier (matching
-`console.log($$$)` structurally, i.e. any call regardless of formatting).
-The astgrep tier isn't implemented yet (`packages/cli/src/engine/tiers/
-astgrep.ts` is a stub — see DECISIONS/0005), so this ships as a regex
-match on the literal `console.log(` call-open instead. Known limit
-inherited from the tier, not the pattern: it's a per-line regex, so it
-won't catch a call broken across multiple lines
-(`console\n  .log(...)`) or one going through an alias
-(`const log = console.log; log(...)`) the way a structural astgrep match
-would. It also can't distinguish a real call from one inside a
-same-line comment.
+harmless. This rule shipped as a `regex` tier in an earlier phase (see
+[ADR 0005](../../../../DECISIONS/0005-conditional-exists-precondition.md),
+written back when `tiers/astgrep.ts` was still a stub) matching the
+literal text `console.log(` per line; now that the astgrep tier is
+implemented, it's upgraded to the tier RULESET.md always specified. Two
+concrete wins from the upgrade, both covered by fixtures: a call broken
+across multiple lines (`console\n  .log(...)`, `fixtures/bad/src/
+multiline.ts`) now matches — a per-line regex physically can't see a call
+whose `console` and `.log(` tokens are on different lines — and a
+`console.log(...)` sitting inside a `//` or `/* */` comment
+(`fixtures/good/src/commented-out.ts`) is correctly ignored, since ast-grep
+matches real syntax nodes, not text that merely looks like a call.
+Formatting is irrelevant either way: a minified, whitespace-free call
+(`fixtures/bad/src/minified.js`) matches identically to a nicely spaced
+one.
+
+**Known limit, unchanged by the upgrade:** a call reached through an alias
+— `const log = console.log; log(x)` — still isn't caught. The pattern
+matches the literal AST shape `console.log(...)`; once the reference is
+reassigned to a plain identifier, that shape is gone. Catching this would
+mean tracking variable bindings back to their origin (real dataflow
+analysis), not structural pattern matching — genuinely out of scope for
+this tier, not an oversight.
 
 ## Fix prompt
 > Remove the `console.log` call at {{file}}:{{line}}, or replace it with
