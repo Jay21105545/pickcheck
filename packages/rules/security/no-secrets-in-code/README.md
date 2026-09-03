@@ -24,6 +24,21 @@ is the price of not needing a full parser. Markdown files and this rule's
 own fixtures are excluded from the file scope, so docs and this repo's
 test samples don't get flagged as if they were real leaks.
 
+A secret pasted whole into a template literal is still caught
+(`fixtures/bad/template-string.ts`) — the pattern doesn't care which quote
+character surrounds a matching run of characters, so backticks are no
+safer than quotes. **Known limit this tier provably can't close:** a
+secret whose characters are *split across template-literal
+interpolation* — `` `sk-${"1234567890"}${"abcdefghijklmnop"}` `` — leaves
+no single contiguous run of 20+ matching characters anywhere in the
+source text, so the pattern has nothing to match. This isn't fixed here
+with a fixture that pretends otherwise; closing it needs either
+string-constant-folding (evaluate what the template literal would
+concatenate to) or a much lower-precision "any template literal touching
+a variable named like a secret" heuristic that would trade this false
+negative for a flood of false positives on unrelated string building.
+Deferred honestly rather than faked.
+
 ## Fix prompt
 > Remove the hardcoded secret at {{file}} and replace it with a read from
 > `process.env` (or your framework's config/secrets mechanism). Add the
