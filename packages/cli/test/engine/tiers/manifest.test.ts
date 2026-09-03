@@ -1,6 +1,6 @@
 import type { ManifestRule } from "@pickcheck/rules/schema";
 import { describe, expect, it } from "vitest";
-import { runManifestTier } from "../../../src/engine/tiers/manifest.js";
+import { runManifestTier, stripComments } from "../../../src/engine/tiers/manifest.js";
 import { createTempDir } from "../../helpers/temp-dir.js";
 
 function rule(overrides: Partial<ManifestRule> = {}): ManifestRule {
@@ -238,5 +238,238 @@ describe("runManifestTier", () => {
     } finally {
       await dir.cleanup();
     }
+  });
+
+  it("exempts a bare specifier resolved via tsconfig's baseUrl (DECISIONS/0015)", async () => {
+    const dir = await createTempDir("manifest-baseurl");
+    try {
+      await dir.write(
+        "package.json",
+        JSON.stringify({ dependencies: { lodash: "^4.0.0" } }),
+      );
+      await dir.write(
+        "tsconfig.json",
+        JSON.stringify({ compilerOptions: { baseUrl: "." } }),
+      );
+      await dir.write("types/index.d.ts", "export interface Thing {}\n");
+      await dir.write("config/site.ts", "export const site = { name: 'demo' };\n");
+      await dir.write(
+        "src/a.ts",
+        "import type { Thing } from 'types';\nimport { site } from 'config/site';\n",
+      );
+
+      const result = await runManifestTier(rule(), {
+        cwd: dir.path,
+        scannedFiles: [
+          "package.json",
+          "tsconfig.json",
+          "types/index.d.ts",
+          "config/site.ts",
+          "src/a.ts",
+        ],
+      });
+
+      expect(result.findings).toEqual([]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("falls back to resolving bare specifiers against the repo root when no tsconfig exists", async () => {
+    const dir = await createTempDir("manifest-rootfallback");
+    try {
+      await dir.write(
+        "package.json",
+        JSON.stringify({ dependencies: { lodash: "^4.0.0" } }),
+      );
+      await dir.write("lib/shopify.ts", "export function getProducts() {}\n");
+      await dir.write("app/page.tsx", "import { getProducts } from 'lib/shopify';\n");
+
+      const result = await runManifestTier(rule(), {
+        cwd: dir.path,
+        scannedFiles: ["package.json", "lib/shopify.ts", "app/page.tsx"],
+      });
+
+      expect(result.findings).toEqual([]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("still flags a bare specifier that resolves neither to a dependency nor a local file, even with baseUrl configured", async () => {
+    const dir = await createTempDir("manifest-baseurl-miss");
+    try {
+      await dir.write(
+        "package.json",
+        JSON.stringify({ dependencies: { lodash: "^4.0.0" } }),
+      );
+      await dir.write(
+        "tsconfig.json",
+        JSON.stringify({ compilerOptions: { baseUrl: "." } }),
+      );
+      await dir.write(
+        "src/a.ts",
+        "import { helper } from 'totally-not-a-real-helper';\n",
+      );
+
+      const result = await runManifestTier(rule(), {
+        cwd: dir.path,
+        scannedFiles: ["package.json", "tsconfig.json", "src/a.ts"],
+      });
+
+      expect(result.findings).toEqual([
+        expect.objectContaining({ file: "src/a.ts", line: 1 }),
+      ]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("exempts URL-scheme and npm:/jsr: specifiers — Deno/edge-function imports (DECISIONS/0015)", async () => {
+    const dir = await createTempDir("manifest-url-imports");
+    try {
+      await dir.write(
+        "package.json",
+        JSON.stringify({ dependencies: { lodash: "^4.0.0" } }),
+      );
+      await dir.write(
+        "supabase/functions/hello/index.ts",
+        [
+          "import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';",
+          "import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';",
+          "import chalk from 'npm:chalk@5';",
+          "import data from 'jsr:@std/json';",
+          "serve(() => new Response('ok'));",
+          "",
+        ].join("\n"),
+      );
+
+      const result = await runManifestTier(rule(), {
+        cwd: dir.path,
+        scannedFiles: ["package.json", "supabase/functions/hello/index.ts"],
+      });
+
+      expect(result.findings).toEqual([]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("does not read a hallucinated-looking specifier out of a line comment", async () => {
+    const dir = await createTempDir("manifest-line-comment");
+    try {
+      await dir.write(
+        "package.json",
+        JSON.stringify({ dependencies: { lodash: "^4.0.0" } }),
+      );
+      await dir.write(
+        "src/a.ts",
+        [
+          '// Clear the flag when switching away from "Other"',
+          "export const OTHER = 'Other';",
+          "",
+        ].join("\n"),
+      );
+
+      const result = await runManifestTier(rule(), {
+        cwd: dir.path,
+        scannedFiles: ["package.json", "src/a.ts"],
+      });
+
+      expect(result.findings).toEqual([]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("does not read a hallucinated-looking specifier out of a JSDoc block-comment type annotation", async () => {
+    const dir = await createTempDir("manifest-block-comment");
+    try {
+      await dir.write(
+        "package.json",
+        JSON.stringify({ dependencies: { postcss: "^8.0.0" } }),
+      );
+      await dir.write(
+        "postcss.config.mjs",
+        [
+          "/** @type {import('postcss-load-config').Config} */",
+          "export default {",
+          "  plugins: {},",
+          "};",
+          "",
+        ].join("\n"),
+      );
+
+      const result = await runManifestTier(rule(), {
+        cwd: dir.path,
+        scannedFiles: ["package.json", "postcss.config.mjs"],
+      });
+
+      expect(result.findings).toEqual([]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("still flags a real hallucinated import on the line right after a comment mentioning an unrelated package name", async () => {
+    const dir = await createTempDir("manifest-comment-adjacent");
+    try {
+      await dir.write(
+        "package.json",
+        JSON.stringify({ dependencies: { lodash: "^4.0.0" } }),
+      );
+      await dir.write(
+        "src/a.ts",
+        [
+          '// This comment mentions "fake-package-name" but is just a comment',
+          "import { thing } from 'another-fake-package';",
+          "",
+        ].join("\n"),
+      );
+
+      const result = await runManifestTier(rule(), {
+        cwd: dir.path,
+        scannedFiles: ["package.json", "src/a.ts"],
+      });
+
+      expect(result.findings).toEqual([
+        expect.objectContaining({ file: "src/a.ts", line: 2 }),
+      ]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+});
+
+describe("stripComments", () => {
+  it("blanks out a line comment but preserves the newline and overall length", () => {
+    const input = "const a = 1; // trailing comment\nconst b = 2;";
+    const result = stripComments(input);
+    expect(result).toHaveLength(input.length);
+    expect(result.split("\n")).toHaveLength(2);
+    expect(result).not.toContain("trailing");
+    expect(result.startsWith("const a = 1;")).toBe(true);
+    expect(result.endsWith("const b = 2;")).toBe(true);
+  });
+
+  it("blanks out a block comment across multiple lines, preserving line count", () => {
+    const input = "before /* line one\nline two */ after";
+    const result = stripComments(input);
+    expect(result.split("\n")).toHaveLength(2);
+    expect(result).not.toContain("line one");
+    expect(result).not.toContain("line two");
+    expect(result).toContain("before");
+    expect(result).toContain("after");
+  });
+
+  it("does not treat // inside a string literal as a comment", () => {
+    const input = 'import { serve } from "https://deno.land/std/http/server.ts";';
+    expect(stripComments(input)).toBe(input);
+  });
+
+  it("does not treat a quote inside a comment as opening a string", () => {
+    const input = '// switching away from "Other"\nconst x = 1;';
+    const result = stripComments(input);
+    expect(result.split("\n")[1]).toBe("const x = 1;");
   });
 });

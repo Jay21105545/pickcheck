@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import { builtinModules } from "node:module";
 import { join } from "node:path";
 import { dirname as posixDirname } from "node:path/posix";
@@ -25,7 +25,8 @@ const BUILTIN_MODULES = new Set(builtinModules);
  * false positives on real dependencies declared at the other level. See
  * DECISIONS/0007. The extraction pattern is rule data; only the manifest
  * lookup and the specifier-shape rules below (built-ins, relative paths,
- * subpaths, scoped packages) are generic engine capability.
+ * subpaths, scoped packages, URL/scheme imports, and baseUrl-resolved
+ * local modules — DECISIONS/0015) are generic engine capability.
  */
 export async function runManifestTier(
   rule: ManifestRule,
@@ -41,11 +42,13 @@ export async function runManifestTier(
   const findings: Finding[] = [];
   const warnings: string[] = [];
   const manifestCache = new Map<string, Set<string>>();
+  const baseDirCache = new Map<string, string>();
 
   for (const file of matches) {
+    const fileDir = posixDirname(file);
     const declared = await declaredDependenciesForFile(
       ctx.cwd,
-      posixDirname(file),
+      fileDir,
       rule,
       manifestCache,
     );
@@ -66,12 +69,16 @@ export async function runManifestTier(
       continue;
     }
 
-    const lines = content.split("\n");
+    const baseDir = await resolveBaseDir(ctx.cwd, fileDir, baseDirCache);
+    const lines = stripComments(content).split("\n");
     for (const [index, line] of lines.entries()) {
       regex.lastIndex = 0;
       for (const match of line.matchAll(regex)) {
         const specifier = match[1];
-        if (specifier === undefined || !isHallucinated(specifier, declared)) {
+        if (specifier === undefined) {
+          continue;
+        }
+        if (!(await isHallucinated(specifier, declared, baseDir))) {
           continue;
         }
         const lineNumber = index + 1;
@@ -177,30 +184,50 @@ async function tryReadManifest(
   return declared;
 }
 
-/** A bare specifier absent from `declared`, that isn't a Node builtin, relative import, or local path alias. */
-function isHallucinated(specifier: string, declared: Set<string>): boolean {
+/**
+ * A bare specifier absent from `declared`, that isn't a Node builtin, a
+ * relative import, a URL/scheme import, a local path alias, or a bare
+ * specifier that resolves to a real file/directory relative to `baseDir`
+ * (DECISIONS/0015) — the same "isn't actually a package" question,
+ * answered a fourth way.
+ */
+async function isHallucinated(
+  specifier: string,
+  declared: Set<string>,
+  baseDir: string,
+): Promise<boolean> {
   const packageName = derivePackageName(specifier);
   if (packageName === undefined) {
     return false;
   }
-  if (
-    BUILTIN_MODULES.has(packageName) ||
-    BUILTIN_MODULES.has(stripNodePrefix(specifier))
-  ) {
+  if (BUILTIN_MODULES.has(packageName)) {
     return false;
   }
-  return !declared.has(packageName);
+  if (declared.has(packageName)) {
+    return false;
+  }
+  return !(await resolvesLocally(baseDir, specifier));
 }
+
+/** A scheme prefix (`https:`, `http:`, `npm:`, `jsr:`, `node:`, …) — never a bare npm specifier. */
+const SCHEME_SPECIFIER = /^[a-z][a-z0-9+.-]*:/i;
 
 /**
  * Extracts the installable package name from an import specifier, or
- * `undefined` if the specifier isn't a package import at all (a relative
- * path, an absolute path, or a `@/`-style local alias, as used by
+ * `undefined` if the specifier isn't a package import at all: a relative
+ * path, an absolute path, a scheme-prefixed specifier (`https://…`/
+ * `http://…` — Deno/edge-function URL imports, resolved by the Deno
+ * runtime, never package.json; `npm:`/`jsr:` — Deno's own package-registry
+ * schemes; `node:` — already exempted as a builtin below, but harmless to
+ * short-circuit here too), or a `@/`-style local alias, as used by
  * Next.js/tsconfig `paths` — that's a single-segment "scope" with nothing
- * after it, never a real npm scope).
+ * after it, never a real npm scope.
  */
 function derivePackageName(specifier: string): string | undefined {
   if (specifier.startsWith(".") || specifier.startsWith("/")) {
+    return undefined;
+  }
+  if (SCHEME_SPECIFIER.test(specifier)) {
     return undefined;
   }
   const segments = specifier.split("/");
@@ -214,6 +241,212 @@ function derivePackageName(specifier: string): string | undefined {
   return segments[0];
 }
 
-function stripNodePrefix(specifier: string): string {
-  return specifier.startsWith("node:") ? specifier.slice("node:".length) : specifier;
+/** File extensions tried, in order, when resolving a bare specifier to an on-disk local module. */
+const RESOLVABLE_EXTENSIONS = [
+  "",
+  ".ts",
+  ".tsx",
+  ".d.ts",
+  ".js",
+  ".jsx",
+  ".mjs",
+  ".cjs",
+];
+
+/**
+ * Whether `specifier` resolves to a real file or directory under `baseDir`
+ * — the same resolution a bundler performs for a bare specifier once a
+ * `baseUrl` (or an equivalent root-relative convention) is in play, e.g.
+ * `"components/carousel"` under `baseDir = <repo root>` resolving to
+ * `components/carousel.tsx`, or `"types"` resolving to `types/index.d.ts`.
+ * Deliberately permissive about *how* it resolves (exact file, `/index`,
+ * or a bare directory) — this tier isn't a real module resolver, just
+ * asking "does something at this path plausibly exist," the same
+ * plausibility bar the manifest cross-reference itself uses.
+ */
+async function resolvesLocally(baseDir: string, specifier: string): Promise<boolean> {
+  const target = join(baseDir, specifier);
+  for (const ext of RESOLVABLE_EXTENSIONS) {
+    if (await isFile(`${target}${ext}`)) {
+      return true;
+    }
+  }
+  for (const ext of RESOLVABLE_EXTENSIONS) {
+    if (await isFile(join(target, `index${ext}`))) {
+      return true;
+    }
+  }
+  return isDirectory(target);
+}
+
+/**
+ * The directory bare specifiers resolve against for a given file's
+ * directory: the `baseUrl` of the nearest ancestor `tsconfig.json`/
+ * `jsconfig.json` (up to the scanned root), or the scanned root itself if
+ * none declares one — DECISIONS/0015. This intentionally does *not* union
+ * across ancestors the way manifest dependency lookup does: `baseUrl` is a
+ * single resolved value from whichever config actually applies, not a
+ * cumulative set. Falling back to the scanned root (rather than "no
+ * baseUrl, so nothing resolves locally") also covers bundler setups
+ * (Vite's default root resolution, `webpack`'s `resolve.modules`) that
+ * allow root-relative bare imports with no `tsconfig.json` in the picture
+ * at all.
+ */
+async function resolveBaseDir(
+  cwd: string,
+  dir: string,
+  cache: Map<string, string>,
+): Promise<string> {
+  const cached = cache.get(dir);
+  if (cached !== undefined) {
+    return cached;
+  }
+
+  const ownBaseUrl = await tryReadTsconfigBaseUrl(join(cwd, dir));
+  let result: string;
+  if (ownBaseUrl !== undefined) {
+    result = join(cwd, dir, ownBaseUrl);
+  } else if (dir === ".") {
+    result = cwd;
+  } else {
+    result = await resolveBaseDir(cwd, posixDirname(dir), cache);
+  }
+
+  cache.set(dir, result);
+  return result;
+}
+
+/** Reads `compilerOptions.baseUrl` out of a `tsconfig.json`/`jsconfig.json` in `absDir`, tolerating JSONC comments. */
+async function tryReadTsconfigBaseUrl(absDir: string): Promise<string | undefined> {
+  for (const name of ["tsconfig.json", "jsconfig.json"]) {
+    const baseUrl = await tryParseBaseUrl(join(absDir, name));
+    if (baseUrl !== undefined) {
+      return baseUrl;
+    }
+  }
+  return undefined;
+}
+
+/** Reads and parses a single tsconfig/jsconfig candidate, or `undefined` if it's missing, unparsable, or declares no `baseUrl` — same silent-skip philosophy as `tryReadManifest` for an unparsable package.json. */
+async function tryParseBaseUrl(path: string): Promise<string | undefined> {
+  const raw = await tryReadFile(path);
+  if (raw === undefined) {
+    return undefined;
+  }
+  try {
+    const parsed = JSON.parse(stripComments(raw)) as {
+      compilerOptions?: { baseUrl?: unknown };
+    };
+    const baseUrl = parsed.compilerOptions?.baseUrl;
+    return typeof baseUrl === "string" ? baseUrl : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+async function tryReadFile(path: string): Promise<string | undefined> {
+  try {
+    return await readFile(path, "utf-8");
+  } catch {
+    return undefined;
+  }
+}
+
+async function isFile(path: string): Promise<boolean> {
+  try {
+    return (await stat(path)).isFile();
+  } catch {
+    return false;
+  }
+}
+
+async function isDirectory(path: string): Promise<boolean> {
+  try {
+    return (await stat(path)).isDirectory();
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Neutralizes `//` line comments and `/* … *\/` block comments — including
+ * JSDoc type annotations like `/** @type {import('pkg')} *\/` — by
+ * replacing their content (never their newlines) with spaces, so the
+ * per-line specifier-extraction regex can no longer read commented-out
+ * code or plain English prose as a live import (DECISIONS/0015). A quote
+ * character only opens a string when it isn't already inside a comment,
+ * and `//`/`/*` only open a comment when they aren't already inside a
+ * string — this is a character-scan, not a real lexer, so it doesn't
+ * handle every edge case (nested template-literal expressions, regex
+ * literals containing `//`), but it correctly leaves a URL like
+ * `"https://deno.land/…"` alone (the `//` is inside an open string) while
+ * still stripping a genuine line comment or JSDoc block.
+ */
+export function stripComments(content: string): string {
+  let result = "";
+  let quote: "'" | '"' | "`" | undefined;
+  let inLineComment = false;
+  let inBlockComment = false;
+
+  for (let i = 0; i < content.length; i++) {
+    const ch = content[i];
+    const next = content[i + 1];
+
+    if (inLineComment) {
+      if (ch === "\n") {
+        inLineComment = false;
+        result += ch;
+      } else {
+        result += " ";
+      }
+      continue;
+    }
+
+    if (inBlockComment) {
+      if (ch === "*" && next === "/") {
+        inBlockComment = false;
+        result += "  ";
+        i++;
+      } else if (ch === "\n") {
+        result += "\n";
+      } else {
+        result += " ";
+      }
+      continue;
+    }
+
+    if (quote !== undefined) {
+      result += ch;
+      if (ch === "\\" && next !== undefined) {
+        result += next;
+        i++;
+        continue;
+      }
+      if (ch === quote) {
+        quote = undefined;
+      }
+      continue;
+    }
+
+    if (ch === "/" && next === "/") {
+      inLineComment = true;
+      result += "  ";
+      i++;
+      continue;
+    }
+    if (ch === "/" && next === "*") {
+      inBlockComment = true;
+      result += "  ";
+      i++;
+      continue;
+    }
+    if (ch === "'" || ch === '"' || ch === "`") {
+      quote = ch;
+      result += ch;
+      continue;
+    }
+    result += ch;
+  }
+
+  return result;
 }
