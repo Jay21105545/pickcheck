@@ -60,6 +60,12 @@ this proves noisy in practice, the fix is an `astgrep`-tier v1.1 (matching
 `import_statement`/`call_expression` nodes structurally, the same
 upgrade path `disc/no-console-log` already took) — not a regex patch.
 
+**TODO (phase-1.1):** this has stopped being hypothetical — comment-blind
+extraction has now caused two false positives in pickcheck's own repo.
+The real fix is stripping comments before specifier extraction (the
+`astgrep`-tier rewrite above), not rewording the prose that happens to
+trip the regex.
+
 ## Fix prompt
 > The import at {{file}}:{{line}} references a package that isn't in this
 > project's package.json. Verify whether the package actually exists on
