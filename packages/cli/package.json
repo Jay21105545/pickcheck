@@ -1,6 +1,6 @@
 {
   "name": "pickcheck",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Lighthouse for AI-built apps — a zero-config CLI that audits security, docs, discipline, UI/UX, and AI-context-token hygiene, and hands back ready-to-paste fix prompts. No LLM calls, no network, no config required.",
   "keywords": [
     "cli",
@@ -37,7 +37,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && node scripts/copy-runtime-assets.mjs",
     "dev": "tsx src/index.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "prepack": "node scripts/prepack.mjs"
@@ -45,8 +45,6 @@
   "dependencies": {
     "@ast-grep/napi": "^0.45.3",
     "@clack/prompts": "^1.7.0",
-    "@pickcheck/report": "workspace:^",
-    "@pickcheck/rules": "workspace:^",
     "commander": "^15.0.0",
     "fast-glob": "^3.3.3",
     "gpt-tokenizer": "^4.0.0",
@@ -56,6 +54,8 @@
     "yaml": "^2.9.0"
   },
   "devDependencies": {
+    "@pickcheck/report": "workspace:^",
+    "@pickcheck/rules": "workspace:^",
     "@types/micromatch": "^4.0.10",
     "@types/node": "^26.4.1"
   }

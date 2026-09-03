@@ -1,6 +1,8 @@
+import { existsSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { basename, dirname, isAbsolute, join, relative } from "node:path";
+import { fileURLToPath } from "node:url";
 import type { Command } from "commander";
 import { runAudit } from "../engine/audit.js";
 import { DEFAULT_MIN_SCORE, getExitCode } from "../engine/exit-code.js";
@@ -16,12 +18,25 @@ import { renderQuietSummary, renderTerminal } from "../render/terminal.js";
 const DEFAULT_REPORT_PATH = ".pickcheck/report.html";
 
 /**
- * Where rule.yaml files ship: resolved via @pickcheck/rules' own
- * package.json rather than a relative path from this file, so it keeps
- * working regardless of how deeply tsup nests the built dist/ output —
- * see DECISIONS/0005.
+ * Where rule.yaml files live, checked in two runtime contexts in order:
+ *
+ * 1. **Installed from npm** — `dist/rules/`, populated by
+ *    `scripts/copy-rules.mjs` at build time. Rules are *data* (loadRules()
+ *    globs them off disk), so unlike @pickcheck/rules' schema module they
+ *    can't be inlined into the bundle; they have to ship as real files.
+ *    This is the only path a real consumer has: @pickcheck/rules is a
+ *    private, never-published devDependency, so `require.resolve`-ing it
+ *    from an installed package throws. That's how 0.1.0 shipped with zero
+ *    usable rules — see DECISIONS/0021.
+ * 2. **Running from source in this monorepo** (tsx, vitest, `pnpm dev`) —
+ *    dist/ may not exist or may be stale, so fall back to resolving the
+ *    workspace package directly (DECISIONS/0005's original approach).
  */
 function defaultRulesDir(): string {
+  const bundledRules = join(dirname(fileURLToPath(import.meta.url)), "rules");
+  if (existsSync(bundledRules)) {
+    return bundledRules;
+  }
   const require = createRequire(import.meta.url);
   return dirname(require.resolve("@pickcheck/rules/package.json"));
 }

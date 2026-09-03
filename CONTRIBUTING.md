@@ -255,12 +255,50 @@ repo has never actually published:
 pnpm install --frozen-lockfile
 pnpm typecheck && pnpm test && pnpm check && pnpm self-audit
 pnpm changeset                        # describe the release (interactive)
-pnpm version                          # applies the bump + CHANGELOG.md from it
+pnpm run version                      # applies the bump + CHANGELOG.md from it
 git add -A && git commit -m "chore: version packages"
-cd packages/cli && npm pack --dry-run && cd ../..   # verify exactly what would ship
+pnpm --filter pickcheck run build     # then run the clean-install gate below
 pnpm release                          # pnpm build && changeset publish
 git push --follow-tags
 ```
+
+Note `pnpm run version`, not `pnpm version` — the latter hits pnpm's own
+built-in `version` command instead of the `"version"` script and silently
+does nothing.
+
+### Required before any publish: the clean-install gate
+
+`npm pack --dry-run` lists what's *in* the tarball; it cannot tell you
+whether that's *enough*. `pickcheck@0.1.0` passed it and was still
+completely uninstallable (DECISIONS/0021). Every runtime path resolves
+fine inside this pnpm workspace and can still be missing from a real
+install, so the only trustworthy check is installing the tarball
+somewhere the workspace can't rescue it:
+
+```sh
+pnpm --filter pickcheck run build
+cd packages/cli && npm pack && cd ../..
+
+# a temp dir OUTSIDE this repo — inside it, Node would resolve up into
+# the monorepo's node_modules and hide exactly the bugs you're hunting
+rm -rf /tmp/pickcheck-verify && mkdir -p /tmp/pickcheck-verify
+cd /tmp/pickcheck-verify && npm init -y
+npm install /path/to/pickcheck/packages/cli/pickcheck-<version>.tgz
+
+printf 'node_modules/\n' > .gitignore
+mkdir -p src && printf 'export function f(){try{g()}catch(e){}\nconsole.log(1)}\n' > src/app.ts
+./node_modules/.bin/pickcheck audit --min 0     # must load all rules and report findings
+./node_modules/.bin/pickcheck audit --min 0 --report
+./node_modules/.bin/pickcheck init --yes        # must scaffold, not ENOENT
+mkdir -p app/api/x && echo 'export async function GET(){return Response.json([])}' > app/api/x/route.ts
+./node_modules/.bin/pickcheck gen api           # must find its shipped template
+```
+
+All four must succeed, and `audit` must report a non-zero rule count —
+"0 rules" means the rule.yaml data didn't ship.
+`packages/cli/test/publishable-package.test.ts` guards the static half of
+this (no `workspace:` protocols, no unbundled `@pickcheck/*` imports,
+data assets present in `dist/`) on every CI run.
 
 That last `pnpm release`, run locally, publishes **without** provenance
 (no `--provenance` flag reaches it outside CI's OIDC context) — acceptable
