@@ -122,22 +122,48 @@ const tokensRuleSchema = baseRuleSchema.extend({
   pattern: z.discriminatedUnion("check", [tokensBudgetPattern, tokensDuplicatePattern]),
 });
 
+// The manifest tier covers two distinct checks under one tier, same
+// "discriminate the pattern payload, not the tier" move DECISIONS/0012
+// established for the tokens tier — both need the identical ancestor-union
+// dependency resolution (declaredDependenciesForFile in manifest.ts), just
+// applied to a different question. See DECISIONS/0018.
+const manifestHallucinatedImportPattern = z.object({
+  mode: z.literal("hallucinated-import"),
+  // Extracts an import/require specifier per line; must have exactly one
+  // capture group (the specifier string). What counts as "an import" is
+  // rule data, same as the regex tier — the engine only adds the
+  // manifest cross-reference and the built-in module exemptions below.
+  regex: z.string().min(1),
+  flags: z.string().optional(),
+  // Manifest file (relative to the scanned repo root) whose dependency
+  // fields list "installed" package names.
+  manifestFile: z.string().min(1).default("package.json"),
+  // Keys within the manifest JSON to union together as declared
+  // packages, e.g. ["dependencies", "devDependencies"].
+  dependencyFields: z.array(z.string().min(1)).min(1),
+});
+
+const manifestRequiresDependencyPattern = z.object({
+  mode: z.literal("requires-dependency"),
+  // Checked against each matched file's whole raw content (not extracted
+  // per-line like hallucinated-import) — every match is a candidate.
+  regex: z.string().min(1),
+  flags: z.string().optional(),
+  manifestFile: z.string().min(1).default("package.json"),
+  dependencyFields: z.array(z.string().min(1)).min(1),
+  // A content match only becomes a finding if the ancestor-union'd
+  // declared dependencies contain NONE of these. An entry ending in "/*"
+  // matches any package under that npm scope (e.g. "@stripe/*" matches
+  // "@stripe/react-stripe-js"); every other entry must match exactly.
+  requiresAnyOf: z.array(z.string().min(1)).min(1),
+});
+
 const manifestRuleSchema = baseRuleSchema.extend({
   tier: z.literal("manifest"),
-  pattern: z.object({
-    // Extracts an import/require specifier per line; must have exactly one
-    // capture group (the specifier string). What counts as "an import" is
-    // rule data, same as the regex tier — the engine only adds the
-    // manifest cross-reference and the built-in module exemptions below.
-    regex: z.string().min(1),
-    flags: z.string().optional(),
-    // Manifest file (relative to the scanned repo root) whose dependency
-    // fields list "installed" package names.
-    manifestFile: z.string().min(1).default("package.json"),
-    // Keys within the manifest JSON to union together as declared
-    // packages, e.g. ["dependencies", "devDependencies"].
-    dependencyFields: z.array(z.string().min(1)).min(1),
-  }),
+  pattern: z.discriminatedUnion("mode", [
+    manifestHallucinatedImportPattern,
+    manifestRequiresDependencyPattern,
+  ]),
 });
 
 export const ruleSchema = z.discriminatedUnion("tier", [

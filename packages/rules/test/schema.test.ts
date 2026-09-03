@@ -86,7 +86,36 @@ describe("ruleSchema", () => {
     expect(result.success).toBe(false);
   });
 
-  it("accepts a valid manifest rule and defaults manifestFile to package.json", () => {
+  it("accepts a valid manifest rule (hallucinated-import mode) and defaults manifestFile to package.json", () => {
+    const result = ruleSchema.safeParse({
+      ...base,
+      tier: "manifest",
+      pattern: {
+        mode: "hallucinated-import",
+        regex: "from\\s+['\"]([^'\"]+)['\"]",
+        dependencyFields: ["dependencies", "devDependencies"],
+      },
+    });
+    expect(result.success).toBe(true);
+    if (
+      result.success &&
+      result.data.tier === "manifest" &&
+      result.data.pattern.mode === "hallucinated-import"
+    ) {
+      expect(result.data.pattern.manifestFile).toBe("package.json");
+    }
+  });
+
+  it("rejects a hallucinated-import manifest rule missing dependencyFields", () => {
+    const result = ruleSchema.safeParse({
+      ...base,
+      tier: "manifest",
+      pattern: { mode: "hallucinated-import", regex: "from\\s+['\"]([^'\"]+)['\"]" },
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects a manifest rule with no mode discriminant (DECISIONS/0018 made mode required)", () => {
     const result = ruleSchema.safeParse({
       ...base,
       tier: "manifest",
@@ -95,17 +124,32 @@ describe("ruleSchema", () => {
         dependencyFields: ["dependencies", "devDependencies"],
       },
     });
-    expect(result.success).toBe(true);
-    if (result.success && result.data.tier === "manifest") {
-      expect(result.data.pattern.manifestFile).toBe("package.json");
-    }
+    expect(result.success).toBe(false);
   });
 
-  it("rejects a manifest rule missing dependencyFields", () => {
+  it("accepts a valid manifest rule (requires-dependency mode)", () => {
     const result = ruleSchema.safeParse({
       ...base,
       tier: "manifest",
-      pattern: { regex: "from\\s+['\"]([^'\"]+)['\"]" },
+      pattern: {
+        mode: "requires-dependency",
+        regex: "(?:name|id)\\s*=\\s*[\"']cardNumber[\"']",
+        dependencyFields: ["dependencies", "devDependencies"],
+        requiresAnyOf: ["stripe", "@stripe/*"],
+      },
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects a requires-dependency manifest rule missing requiresAnyOf", () => {
+    const result = ruleSchema.safeParse({
+      ...base,
+      tier: "manifest",
+      pattern: {
+        mode: "requires-dependency",
+        regex: "(?:name|id)\\s*=\\s*[\"']cardNumber[\"']",
+        dependencyFields: ["dependencies"],
+      },
     });
     expect(result.success).toBe(false);
   });

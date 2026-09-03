@@ -16,8 +16,13 @@ hallucinate gets installed the moment a human (or an agent with install
 permissions) tries to "fix" the missing dependency by running `npm
 install <the hallucinated name>`.
 
-**Detection:** `manifest` tier (see [ADR 0007](../../../../DECISIONS/0007-manifest-tier.md),
-recalibrated in [ADR 0015](../../../../DECISIONS/0015-manifest-tier-false-positive-fixes.md)).
+**Detection:** `manifest` tier, `pattern.mode: hallucinated-import` (see
+[ADR 0007](../../../../DECISIONS/0007-manifest-tier.md), recalibrated in
+[ADR 0015](../../../../DECISIONS/0015-manifest-tier-false-positive-fixes.md);
+the tier gained a second mode, `requires-dependency`, in
+[ADR 0018](../../../../DECISIONS/0018-raw-card-input-no-payment-sdk.md) —
+both modes share the same ancestor-union dependency resolution described
+below, just to answer a different question).
 `pattern.regex` extracts the quoted specifier from `import ... from '...'`
 (including `import type`), bare `import '...'`, `require('...')`, and
 dynamic `import('...')` — one line at a time, same mechanics as the regex

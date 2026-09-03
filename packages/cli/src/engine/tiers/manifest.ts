@@ -11,6 +11,24 @@ import type { TierContext, TierResult } from "./types.js";
 const BUILTIN_MODULES = new Set(builtinModules);
 
 /**
+ * Dispatches on `pattern.mode` (DECISIONS/0018) — one tier, two checks that
+ * both need the identical ancestor-union dependency resolution below, just
+ * applied to a different question: "is this specifier declared" vs. "is
+ * ANY of these known packages declared at all."
+ */
+export async function runManifestTier(
+  rule: ManifestRule,
+  ctx: TierContext,
+): Promise<TierResult> {
+  switch (rule.pattern.mode) {
+    case "hallucinated-import":
+      return runHallucinatedImportCheck(rule, ctx);
+    case "requires-dependency":
+      return runRequiresDependencyCheck(rule, ctx);
+  }
+}
+
+/**
  * Cross-references import/require specifiers (extracted by `pattern.regex`,
  * same as the regex tier) against every ancestor manifest's declared
  * dependency names, unioned from the importing file's directory up to the
@@ -28,16 +46,18 @@ const BUILTIN_MODULES = new Set(builtinModules);
  * subpaths, scoped packages, URL/scheme imports, and baseUrl-resolved
  * local modules — DECISIONS/0015) are generic engine capability.
  */
-export async function runManifestTier(
+async function runHallucinatedImportCheck(
   rule: ManifestRule,
   ctx: TierContext,
 ): Promise<TierResult> {
+  if (rule.pattern.mode !== "hallucinated-import") {
+    return { findings: [], warnings: [] };
+  }
+  const pattern = rule.pattern;
   const matches = micromatch(ctx.scannedFiles, rule.files, { dot: true });
   const regex = new RegExp(
-    rule.pattern.regex,
-    rule.pattern.flags?.includes("g")
-      ? rule.pattern.flags
-      : `${rule.pattern.flags ?? ""}g`,
+    pattern.regex,
+    pattern.flags?.includes("g") ? pattern.flags : `${pattern.flags ?? ""}g`,
   );
   const findings: Finding[] = [];
   const warnings: string[] = [];
@@ -95,6 +115,91 @@ export async function runManifestTier(
   }
 
   return { findings, warnings };
+}
+
+/**
+ * Flags a content pattern (e.g. a raw card-number input field) that only
+ * matters in the *absence* of a known dependency (e.g. a payment SDK) —
+ * DECISIONS/0018. Unlike hallucinated-import, this doesn't extract or
+ * validate a specifier per line; a match anywhere in the file is the
+ * candidate, and the ancestor-union'd declared dependencies (same
+ * resolution as hallucinated-import, just checked for presence of any of
+ * `requiresAnyOf` rather than absence of one extracted name) decide
+ * whether it's a finding. Deliberately does *not* skip files with zero
+ * declared dependencies anywhere up the chain — for this check, "no
+ * manifest found at all" is itself evidence the required dependency is
+ * absent, not a reason to stay silent.
+ */
+async function runRequiresDependencyCheck(
+  rule: ManifestRule,
+  ctx: TierContext,
+): Promise<TierResult> {
+  if (rule.pattern.mode !== "requires-dependency") {
+    return { findings: [], warnings: [] };
+  }
+  const pattern = rule.pattern;
+  const matches = micromatch(ctx.scannedFiles, rule.files, { dot: true });
+  const regex = new RegExp(
+    pattern.regex,
+    pattern.flags?.includes("g") ? pattern.flags : `${pattern.flags ?? ""}g`,
+  );
+  const findings: Finding[] = [];
+  const warnings: string[] = [];
+  const manifestCache = new Map<string, Set<string>>();
+
+  for (const file of matches) {
+    const declared = await declaredDependenciesForFile(
+      ctx.cwd,
+      posixDirname(file),
+      rule,
+      manifestCache,
+    );
+    if (matchesAnyRequiredDependency(declared, pattern.requiresAnyOf)) {
+      continue;
+    }
+
+    let content: string;
+    try {
+      content = await readFile(join(ctx.cwd, file), "utf-8");
+    } catch (error) {
+      warnings.push(
+        `${rule.id}: could not read ${file} (${error instanceof Error ? error.message : String(error)})`,
+      );
+      continue;
+    }
+
+    const lines = content.split("\n");
+    for (const [index, line] of lines.entries()) {
+      regex.lastIndex = 0;
+      for (const _match of line.matchAll(regex)) {
+        const lineNumber = index + 1;
+        findings.push({
+          ruleId: rule.id,
+          file,
+          line: lineNumber,
+          severity: rule.severity,
+          message: rule.message,
+          fixPrompt: buildFixPrompt(rule, file, lineNumber),
+        });
+      }
+    }
+  }
+
+  return { findings, warnings };
+}
+
+/** Whether `declared` contains any of `requiresAnyOf` — an entry ending in "/*" matches any package under that npm scope. */
+function matchesAnyRequiredDependency(
+  declared: Set<string>,
+  requiresAnyOf: string[],
+): boolean {
+  return requiresAnyOf.some((entry) => {
+    if (entry.endsWith("/*")) {
+      const scope = `${entry.slice(0, -1)}`; // "@stripe/*" -> "@stripe/"
+      return [...declared].some((name) => name.startsWith(scope));
+    }
+    return declared.has(entry);
+  });
 }
 
 /**

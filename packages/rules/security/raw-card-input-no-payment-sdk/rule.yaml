@@ -1,0 +1,33 @@
+id: sec/raw-card-input-no-payment-sdk
+category: security
+severity: error
+title: Raw card input field with no payment SDK
+files:
+  - "**/*.{ts,tsx,js,jsx}"
+  - "!**/*.test.*"
+  - "!**/*.spec.*"
+  - "!**/__tests__/**"
+  - "!**/test/**"
+  - "!**/tests/**"
+  - "!**/fixtures/**"
+message: "A form field is named/labeled like a raw card number, CVV/CVC, or expiry date, and no payment SDK (Stripe, Braintree, Square, PayPal, Adyen, Razorpay) is declared in this project — collecting raw card data yourself is a PCI-DSS violation. Use a hosted, tokenized checkout instead (Stripe Checkout, the Payment Element, or your provider's equivalent embedded field) rather than validating or storing the raw input."
+weight: 4
+tier: manifest
+pattern:
+  mode: requires-dependency
+  regex: '(?:name|id|htmlFor)\s*=\s*["''](?:cardNumber|card_number|card-number|cvv|cvc|expiry|expiration)["'']'
+  flags: i
+  manifestFile: package.json
+  dependencyFields:
+    - dependencies
+    - devDependencies
+    - peerDependencies
+    - optionalDependencies
+  requiresAnyOf:
+    - stripe
+    - "@stripe/*"
+    - braintree
+    - square
+    - "@paypal/*"
+    - adyen
+    - razorpay

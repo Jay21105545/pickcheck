@@ -14,6 +14,7 @@ function rule(overrides: Partial<ManifestRule> = {}): ManifestRule {
     weight: 4,
     tier: "manifest",
     pattern: {
+      mode: "hallucinated-import",
       regex:
         "(?:\\bfrom\\s+|\\brequire\\(\\s*|\\bimport\\(\\s*|\\bimport\\s+)['\"]([^'\"]+)['\"]",
       manifestFile: "package.json",
@@ -471,5 +472,205 @@ describe("stripComments", () => {
     const input = '// switching away from "Other"\nconst x = 1;';
     const result = stripComments(input);
     expect(result.split("\n")[1]).toBe("const x = 1;");
+  });
+});
+
+function cardInputRule(overrides: Partial<ManifestRule> = {}): ManifestRule {
+  return {
+    id: "sec/raw-card-input-no-payment-sdk",
+    category: "security",
+    severity: "error",
+    title: "Raw card input field with no payment SDK",
+    files: ["**/*.tsx"],
+    message: "Raw card field with no payment SDK declared.",
+    weight: 4,
+    tier: "manifest",
+    pattern: {
+      mode: "requires-dependency",
+      regex:
+        "(?:name|id|htmlFor)\\s*=\\s*[\"'](?:cardNumber|card_number|cvv|cvc|expiry|expiration)[\"']",
+      flags: "i",
+      manifestFile: "package.json",
+      dependencyFields: ["dependencies", "devDependencies"],
+      requiresAnyOf: [
+        "stripe",
+        "@stripe/*",
+        "braintree",
+        "square",
+        "@paypal/*",
+        "adyen",
+        "razorpay",
+      ],
+    },
+    ...overrides,
+  };
+}
+
+describe("runManifestTier — requires-dependency mode (DECISIONS/0018)", () => {
+  it("flags a raw card field when no payment SDK is declared", async () => {
+    const dir = await createTempDir("manifest-card-bad");
+    try {
+      await dir.write(
+        "package.json",
+        JSON.stringify({ dependencies: { react: "^18.0.0" } }),
+      );
+      await dir.write(
+        "src/Checkout.tsx",
+        '<Input id="cardNumber" name="cardNumber" />\n',
+      );
+
+      const result = await runManifestTier(cardInputRule(), {
+        cwd: dir.path,
+        scannedFiles: ["package.json", "src/Checkout.tsx"],
+      });
+
+      expect(result.findings).toHaveLength(2); // id= and name= both match
+      expect(result.findings[0]).toMatchObject({ file: "src/Checkout.tsx", line: 1 });
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("does not flag a raw card field when the exact payment SDK is declared", async () => {
+    const dir = await createTempDir("manifest-card-exact-sdk");
+    try {
+      await dir.write(
+        "package.json",
+        JSON.stringify({ dependencies: { stripe: "^18.0.0" } }),
+      );
+      await dir.write("src/Checkout.tsx", '<Input id="cardNumber" />\n');
+
+      const result = await runManifestTier(cardInputRule(), {
+        cwd: dir.path,
+        scannedFiles: ["package.json", "src/Checkout.tsx"],
+      });
+
+      expect(result.findings).toEqual([]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("resolves a scope wildcard — @stripe/* matches @stripe/react-stripe-js", async () => {
+    const dir = await createTempDir("manifest-card-scope-sdk");
+    try {
+      await dir.write(
+        "package.json",
+        JSON.stringify({ dependencies: { "@stripe/react-stripe-js": "^2.0.0" } }),
+      );
+      await dir.write("src/Checkout.tsx", '<Label htmlFor="cardNumber">Card</Label>\n');
+
+      const result = await runManifestTier(cardInputRule(), {
+        cwd: dir.path,
+        scannedFiles: ["package.json", "src/Checkout.tsx"],
+      });
+
+      expect(result.findings).toEqual([]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("does not match a scope wildcard against an unrelated package under a similarly-prefixed name", async () => {
+    const dir = await createTempDir("manifest-card-scope-miss");
+    try {
+      // "@stripeadjacent/tools" must not satisfy "@stripe/*" — the scope
+      // check requires the declared name to start with "@stripe/", not
+      // merely with the substring "@stripe".
+      await dir.write(
+        "package.json",
+        JSON.stringify({ dependencies: { "@stripeadjacent/tools": "^1.0.0" } }),
+      );
+      await dir.write("src/Checkout.tsx", '<Input name="cvc" />\n');
+
+      const result = await runManifestTier(cardInputRule(), {
+        cwd: dir.path,
+        scannedFiles: ["package.json", "src/Checkout.tsx"],
+      });
+
+      expect(result.findings).toHaveLength(1);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("does not flag an unrelated field name", async () => {
+    const dir = await createTempDir("manifest-card-unrelated");
+    try {
+      await dir.write("package.json", JSON.stringify({ dependencies: {} }));
+      await dir.write("src/Checkout.tsx", '<Input id="email" name="email" />\n');
+
+      const result = await runManifestTier(cardInputRule(), {
+        cwd: dir.path,
+        scannedFiles: ["package.json", "src/Checkout.tsx"],
+      });
+
+      expect(result.findings).toEqual([]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("does not flag a field name that merely contains a card token as a substring", async () => {
+    const dir = await createTempDir("manifest-card-substring");
+    try {
+      await dir.write("package.json", JSON.stringify({ dependencies: {} }));
+      await dir.write("src/Checkout.tsx", '<Input id="cardNumberDisplay" />\n');
+
+      const result = await runManifestTier(cardInputRule(), {
+        cwd: dir.path,
+        scannedFiles: ["package.json", "src/Checkout.tsx"],
+      });
+
+      expect(result.findings).toEqual([]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("still flags a raw card field when there is no package.json at all — absence of a manifest is itself evidence", async () => {
+    const dir = await createTempDir("manifest-card-no-manifest");
+    try {
+      await dir.write("src/Checkout.tsx", '<Input id="cvv" />\n');
+
+      const result = await runManifestTier(cardInputRule(), {
+        cwd: dir.path,
+        scannedFiles: ["src/Checkout.tsx"],
+      });
+
+      expect(result.findings).toHaveLength(1);
+      expect(result.warnings).toEqual([]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("resolves declared dependencies via the same ancestor-union walk as hallucinated-import", async () => {
+    const dir = await createTempDir("manifest-card-monorepo");
+    try {
+      // Stripe declared only at the workspace root — must still be found.
+      await dir.write(
+        "package.json",
+        JSON.stringify({ dependencies: { stripe: "^18.0.0" } }),
+      );
+      await dir.write(
+        "packages/web/package.json",
+        JSON.stringify({ dependencies: {} }),
+      );
+      await dir.write("packages/web/src/Checkout.tsx", '<Input id="cardNumber" />\n');
+
+      const result = await runManifestTier(cardInputRule(), {
+        cwd: dir.path,
+        scannedFiles: [
+          "package.json",
+          "packages/web/package.json",
+          "packages/web/src/Checkout.tsx",
+        ],
+      });
+
+      expect(result.findings).toEqual([]);
+    } finally {
+      await dir.cleanup();
+    }
   });
 });

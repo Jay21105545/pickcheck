@@ -1,0 +1,8 @@
+{
+  "name": "good-raw-card-input-no-payment-sdk",
+  "private": true,
+  "dependencies": {
+    "@stripe/react-stripe-js": "^2.7.0",
+    "@stripe/stripe-js": "^4.0.0"
+  }
+}
