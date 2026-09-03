@@ -21,6 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   regardless of value — no more red/yellow/green semaphore grading,
   matching DESIGN.md's "one sharp accent" direction. `NO_COLOR` and
   `TERM=dumb` degradation (verified by existing tests) is unchanged.
+- `audit --quiet`: a single CI-friendly line — composite score plus the
+  same rule/file/finding counts the summary card shows, nothing else.
+  `--json` output is unaffected either way (it never touched the
+  terminal renderer to begin with).
 - The `astgrep` tier is implemented for real, replacing the stub:
   `@ast-grep/napi` is lazy-loaded (dynamic `import()` inside
   `runAstgrepTier()`, never at module scope) only once an astgrep-tier
