@@ -83,6 +83,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Category scoring now uses diminishing returns, not a hard floor**
+  ([ADR 0009](DECISIONS/0009-scoring-diminishing-returns.md), supersedes
+  ADR 0006's category-aggregation step only — per-rule penalties, the
+  per-rule cap, composite renormalization, category weights, and gating
+  all carry forward unchanged): `categoryScore = 100 × CATEGORY_SCORE_K /
+  (CATEGORY_SCORE_K + categoryPenalty)` replaces `clamp(100 -
+  categoryPenalty, 0, 100)`. `CATEGORY_SCORE_K = 50` (equal to
+  `PER_RULE_PENALTY_CAP` by design) preserves the exact same
+  single-finding anchor (one capped rule still scores exactly 50), but a
+  category no longer floors at exactly 0 the instant two capped rules
+  co-occur — it keeps discriminating "bad" from "catastrophic"
+  arbitrarily far past that point instead of going flat. Caught by
+  running the ruleset against `examples/broken-app`: four new findings
+  (6 → 10) barely moved the composite (32.5 → 31.88) because `security`
+  had already floored at 0 from just two of the six original findings,
+  and stayed there. `SCORING_GATES`' gate is reaffirmed as a **ceiling**
+  (`min(composite, compositeCap)`, never raises a composite that's
+  already below the cap) — this was already how `applyGates()` worked
+  under ADR 0006, just previously worded ambiguously; no functional
+  change there. `examples/broken-app` (now ten rules, ten findings) scores
+  **43.09/100** (security 22.73, no longer an indistinguishable 0) and
+  still exits 1.
 - **Scoring recalibrated** ([ADR 0006](DECISIONS/0006-scoring-recalibration.md),
   supersedes ADR 0004's formula; category weights unchanged): additive,
   uncapped-by-division per-finding penalties (`SEVERITY_POINTS` ×
