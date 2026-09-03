@@ -25,6 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   same rule/file/finding counts the summary card shows, nothing else.
   `--json` output is unaffected either way (it never touched the
   terminal renderer to begin with).
+- `pnpm self-audit`: builds `@pickcheck/cli` and runs it against this
+  repo with `--min 90`, wired into CI as a required step alongside
+  `typecheck`/`test`/`check`. Currently scores **100/100** (10 rules, 154
+  files, 0 findings).
 - The `astgrep` tier is implemented for real, replacing the stub:
   `@ast-grep/napi` is lazy-loaded (dynamic `import()` inside
   `runAstgrepTier()`, never at module scope) only once an astgrep-tier

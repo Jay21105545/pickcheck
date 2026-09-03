@@ -11,7 +11,8 @@
     "build": "pnpm -r --if-present run build",
     "typecheck": "pnpm -r --if-present run typecheck",
     "test": "vitest run",
-    "check": "biome check ."
+    "check": "biome check .",
+    "self-audit": "pnpm --filter @pickcheck/cli run build && node packages/cli/dist/index.js audit --min 90"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.11",
