@@ -64,14 +64,15 @@ describe("runAudit", () => {
       );
       expect(result.findings).toHaveLength(2);
 
-      // discipline: 1 warn finding, weight 2 -> 10*2=20 penalty -> 80
-      // docs: 1 warn finding, weight 2 -> 10*2=20 penalty -> 80
+      // discipline: 1 warn finding, weight 2 -> 20 penalty -> curve(20) = 71.43
+      // docs: 1 warn finding, weight 2 -> 20 penalty -> curve(20) = 71.43
+      // (DECISIONS/0009 category-score curve — see scorer.ts)
       const discipline = result.score.categories.find(
         (c) => c.category === "discipline",
       );
       const docs = result.score.categories.find((c) => c.category === "docs");
-      expect(discipline?.score).toBe(80);
-      expect(docs?.score).toBe(80);
+      expect(discipline?.score).toBe(71.43);
+      expect(docs?.score).toBe(71.43);
     } finally {
       await repo.cleanup();
       await rulesDir.cleanup();
