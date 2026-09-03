@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { renderQuietSummary, renderTerminal } from "../../src/render/terminal.js";
-import { emptyResult, sampleResult } from "./fixtures.js";
+import { emptyResult, resultWithIgnoreCoverage, sampleResult } from "./fixtures.js";
 
 /** Temporarily overrides process.env for `fn`, restoring the prior values after. */
 function withEnv<T>(overrides: Record<string, string | undefined>, fn: () => T): T {
@@ -83,6 +83,15 @@ describe("renderTerminal", () => {
       expect(forced).not.toEqual(plain);
       expect(forced).toContain(ESC);
     });
+  });
+
+  it("renders an unscored AI-ignore coverage line for an uncovered artifact (DECISIONS/0016)", () => {
+    const output = renderTerminal(resultWithIgnoreCoverage, { color: false });
+    expect(output).toContain("AI-ignore coverage: 1 artifact(s)");
+    expect(output).toContain("no AI-ignore file found");
+    expect(output).toContain("pnpm-lock.yaml — not covered");
+    // No context files in this fixture, so the token-count line is absent.
+    expect(output).not.toContain("AI context surface:");
   });
 
   it("degrades to ASCII and disables color on TERM=dumb, per DESIGN.md", () => {

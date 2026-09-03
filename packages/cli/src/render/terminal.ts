@@ -167,24 +167,53 @@ export function renderQuietSummary(
   return `${scoreText}${glyphs.separator}${result.rules.length} rules${glyphs.separator}${result.fileCount} files${glyphs.separator}${result.findings.length} findings\n`;
 }
 
-/** Unscored AI-context-surface stat (DECISIONS/0013) — omitted entirely when there's nothing to report. */
+/**
+ * Unscored AI-context-surface stat (DECISIONS/0013) — omitted entirely when
+ * there's nothing to report. Also renders AI-ignore coverage (DECISIONS/0016
+ * — moved here from a scored `tok/*` rule) when at least one covered-or-not
+ * artifact is present, independent of whether any context file exists.
+ */
 function renderTokenSurface(result: AuditResult, styles: Styles): string[] {
   const surface = result.tokenSurface;
   if (surface === undefined) {
     return [];
   }
 
-  const fileCount = surface.files.length;
-  const fileWord = fileCount === 1 ? "file" : "files";
-  const lines = [
-    styles.dim(
-      `AI context surface: ${surface.totalTokens} tokens across ${fileCount} ${fileWord} · est. ${surface.estimatedWastePercent}% waste`,
-    ),
-  ];
-  for (const file of surface.files) {
-    lines.push(styles.dim(`  ${file.file} — ${file.tokens} tokens`));
+  const lines: string[] = [];
+
+  if (surface.files.length > 0) {
+    const fileCount = surface.files.length;
+    const fileWord = fileCount === 1 ? "file" : "files";
+    lines.push(
+      styles.dim(
+        `AI context surface: ${surface.totalTokens} tokens across ${fileCount} ${fileWord} · est. ${surface.estimatedWastePercent}% waste`,
+      ),
+    );
+    for (const file of surface.files) {
+      lines.push(styles.dim(`  ${file.file} — ${file.tokens} tokens`));
+    }
   }
-  lines.push("");
+
+  const coverage = surface.ignoreCoverage;
+  if (coverage !== undefined) {
+    const uncovered = coverage.artifacts.filter((artifact) => !artifact.covered);
+    if (uncovered.length > 0) {
+      const label =
+        coverage.ignoreFilesFound.length > 0
+          ? `not covered by ${coverage.ignoreFilesFound.join(", ")}`
+          : "no AI-ignore file found (.cursorignore/.claudeignore/etc.)";
+      lines.push(
+        styles.dim(`AI-ignore coverage: ${uncovered.length} artifact(s) ${label}`),
+      );
+      for (const artifact of uncovered) {
+        lines.push(styles.dim(`  ${artifact.target} — not covered`));
+      }
+    }
+  }
+
+  if (lines.length > 0) {
+    lines.push("");
+  }
   return lines;
 }
 

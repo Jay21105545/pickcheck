@@ -70,6 +70,21 @@ export const sampleResult: AuditResult = {
     ],
     totalTokens: 1092,
     estimatedWastePercent: 5.5,
+    ignoreCoverage: undefined,
+  },
+};
+
+/** sampleResult, but with an uncovered AI-ignore artifact — DECISIONS/0016's render path. */
+export const resultWithIgnoreCoverage: AuditResult = {
+  ...sampleResult,
+  tokenSurface: {
+    files: [],
+    totalTokens: 0,
+    estimatedWastePercent: 0,
+    ignoreCoverage: {
+      ignoreFilesFound: [],
+      artifacts: [{ target: "pnpm-lock.yaml", covered: false }],
+    },
   },
 };
 

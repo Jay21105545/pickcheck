@@ -3,7 +3,7 @@ import { computeTokenSurface } from "../../src/engine/token-surface.js";
 import { createTempDir } from "../helpers/temp-dir.js";
 
 describe("computeTokenSurface", () => {
-  it("reports undefined with no warnings when no context files are present", async () => {
+  it("reports undefined with no warnings when there are no context files and nothing to check ignore coverage on", async () => {
     const result = await computeTokenSurface("/does/not/exist", ["src/a.ts"]);
     expect(result).toEqual({ report: undefined, warnings: [] });
   });
@@ -65,6 +65,64 @@ describe("computeTokenSurface", () => {
       ]);
 
       expect(report?.estimatedWastePercent).toBeGreaterThan(0);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("reports ignoreCoverage even when no context files exist, as long as a covered artifact is present (DECISIONS/0016)", async () => {
+    const dir = await createTempDir("token-surface-ignore-no-context");
+    try {
+      await dir.write("pnpm-lock.yaml", "lockfile: true\n");
+
+      const { report, warnings } = await computeTokenSurface(dir.path, [
+        "pnpm-lock.yaml",
+      ]);
+
+      expect(warnings).toEqual([]);
+      expect(report).toBeDefined();
+      expect(report?.files).toEqual([]);
+      expect(report?.ignoreCoverage).toEqual({
+        ignoreFilesFound: [],
+        artifacts: [{ target: "pnpm-lock.yaml", covered: false }],
+      });
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("marks an artifact covered once a matching AI-ignore file exists", async () => {
+    const dir = await createTempDir("token-surface-ignore-covered");
+    try {
+      await dir.write("pnpm-lock.yaml", "lockfile: true\n");
+      await dir.write("node_modules/some-pkg/index.js", "module.exports = {};\n");
+      await dir.write(".cursorignore", "node_modules\n");
+
+      const { report } = await computeTokenSurface(dir.path, [
+        "pnpm-lock.yaml",
+        ".cursorignore",
+      ]);
+
+      expect(report?.ignoreCoverage?.ignoreFilesFound).toEqual([".cursorignore"]);
+      expect(report?.ignoreCoverage?.artifacts).toEqual(
+        expect.arrayContaining([
+          { target: "node_modules", covered: true },
+          { target: "pnpm-lock.yaml", covered: false },
+        ]),
+      );
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("omits ignoreCoverage when none of the target artifacts is present on disk", async () => {
+    const dir = await createTempDir("token-surface-ignore-absent");
+    try {
+      await dir.write("CLAUDE.md", "Some project instructions here.");
+
+      const { report } = await computeTokenSurface(dir.path, ["CLAUDE.md"]);
+
+      expect(report?.ignoreCoverage).toBeUndefined();
     } finally {
       await dir.cleanup();
     }

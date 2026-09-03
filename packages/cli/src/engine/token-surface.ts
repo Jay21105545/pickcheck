@@ -1,5 +1,6 @@
-import { readFile } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import { join } from "node:path";
+import ignore from "ignore";
 import micromatch from "micromatch";
 import { findDuplicateParagraphs } from "./text-duplication.js";
 
@@ -25,9 +26,59 @@ export const CONTEXT_FILE_GLOBS = [
 /** Paragraphs shared across two files are only "waste" once, not twice. */
 const DUPLICATE_MIN_CHARS = 200;
 
+/**
+ * AI-ignore-file candidates read directly off disk, and the heavy/generated
+ * artifacts checked against them — moved here from the former
+ * `tok/ai-ignore-coverage` scored rule by DECISIONS/0016. Corpus review
+ * found this check fires on effectively every real-world repo (8/8 sampled,
+ * controls and AI-generated alike — none maintained one of these ignore
+ * files at all), which is zero discriminative signal for a *scored*
+ * finding: the same "always-on, can never let a clean repo reach 100"
+ * failure DECISIONS/0013 already rejected for this same report. The
+ * underlying fact (is this artifact covered) is still worth surfacing —
+ * just as an unscored stat, not a category penalty. Kept as constants here
+ * rather than derived from the old rule's data for the same reason
+ * `CONTEXT_FILE_GLOBS` is: this is a report, not a detection rule.
+ */
+const IGNORE_FILE_CANDIDATES = [
+  ".cursorignore",
+  ".claudeignore",
+  ".aiderignore",
+  ".codeiumignore",
+  ".windsurfignore",
+  ".rooignore",
+];
+
+const IGNORE_COVERAGE_TARGETS = [
+  "package-lock.json",
+  "pnpm-lock.yaml",
+  "yarn.lock",
+  "bun.lockb",
+  "node_modules",
+  "dist",
+  "build",
+  ".next",
+  ".turbo",
+  "coverage",
+];
+
 export interface TokenSurfaceFile {
   file: string;
   tokens: number;
+}
+
+export interface IgnoreCoverageArtifact {
+  /** Repo-root-relative artifact path (e.g. "node_modules", "pnpm-lock.yaml"). */
+  target: string;
+  /** Whether some found AI-ignore file already covers this artifact. */
+  covered: boolean;
+}
+
+export interface IgnoreCoverageReport {
+  /** Which of IGNORE_FILE_CANDIDATES actually exist in this repo (may be empty). */
+  ignoreFilesFound: string[];
+  /** Only artifacts from IGNORE_COVERAGE_TARGETS that are actually present on disk. */
+  artifacts: IgnoreCoverageArtifact[];
 }
 
 export interface TokenSurfaceReport {
@@ -35,6 +86,8 @@ export interface TokenSurfaceReport {
   totalTokens: number;
   /** Estimated % of totalTokens spent on content duplicated across files. */
   estimatedWastePercent: number;
+  /** `undefined` if none of IGNORE_COVERAGE_TARGETS is present on disk at all. */
+  ignoreCoverage: IgnoreCoverageReport | undefined;
 }
 
 export interface TokenSurfaceResult {
@@ -54,8 +107,16 @@ export async function computeTokenSurface(
   scannedFiles: string[],
 ): Promise<TokenSurfaceResult> {
   const matches = micromatch(scannedFiles, CONTEXT_FILE_GLOBS, { dot: true });
+  const ignoreCoverage = await computeIgnoreCoverage(cwd);
+
   if (matches.length === 0) {
-    return { report: undefined, warnings: [] };
+    if (ignoreCoverage === undefined) {
+      return { report: undefined, warnings: [] };
+    }
+    return {
+      report: { files: [], totalTokens: 0, estimatedWastePercent: 0, ignoreCoverage },
+      warnings: [],
+    };
   }
 
   let countTokens: (text: string) => number;
@@ -96,7 +157,59 @@ export async function computeTokenSurface(
   const estimatedWastePercent =
     totalTokens === 0 ? 0 : round((duplicatedTokens / totalTokens) * 100);
 
-  return { report: { files, totalTokens, estimatedWastePercent }, warnings };
+  return {
+    report: { files, totalTokens, estimatedWastePercent, ignoreCoverage },
+    warnings,
+  };
+}
+
+/**
+ * Checks IGNORE_COVERAGE_TARGETS against the combined filter built from
+ * whichever IGNORE_FILE_CANDIDATES exist — same logic the former
+ * `tok/ai-ignore-coverage` rule ran, moved here as an unscored check
+ * (DECISIONS/0016). Returns `undefined` when none of the target artifacts
+ * is present at all, so an audit of, say, a Python repo with no lockfile
+ * in this list doesn't render an empty/irrelevant section.
+ */
+async function computeIgnoreCoverage(
+  cwd: string,
+): Promise<IgnoreCoverageReport | undefined> {
+  const filter = ignore();
+  const ignoreFilesFound: string[] = [];
+  for (const name of IGNORE_FILE_CANDIDATES) {
+    const content = await tryReadFile(join(cwd, name));
+    if (content !== undefined) {
+      filter.add(content);
+      ignoreFilesFound.push(name);
+    }
+  }
+
+  const artifacts: IgnoreCoverageArtifact[] = [];
+  for (const target of IGNORE_COVERAGE_TARGETS) {
+    if (!(await pathExists(join(cwd, target)))) {
+      continue;
+    }
+    artifacts.push({ target, covered: filter.ignores(target) });
+  }
+
+  return artifacts.length === 0 ? undefined : { ignoreFilesFound, artifacts };
+}
+
+async function tryReadFile(path: string): Promise<string | undefined> {
+  try {
+    return await readFile(path, "utf-8");
+  } catch {
+    return undefined;
+  }
+}
+
+async function pathExists(path: string): Promise<boolean> {
+  try {
+    await stat(path);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function describeError(error: unknown): string {

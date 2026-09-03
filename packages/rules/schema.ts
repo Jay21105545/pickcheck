@@ -82,12 +82,15 @@ const astgrepRuleSchema = baseRuleSchema.extend({
   pattern: z.record(z.string(), z.unknown()),
 });
 
-// The tokens tier covers three distinct checks under one tier (all about
+// The tokens tier covers two distinct checks under one tier (all about
 // AI-context-surface hygiene, per IDEA.md's "Tokens" category) rather than
-// three tiers, since the only real difference between them is the shape of
+// two tiers, since the only real difference between them is the shape of
 // `pattern` — same "discriminate the pattern payload, not the tier" move
 // the exists tier's `mode` and the regex tier's `unless`/`minCount` already
-// make. See DECISIONS/0012.
+// make. See DECISIONS/0012. A third check, `ignore-coverage`, lived here
+// until DECISIONS/0016 moved it to the unscored token-surface report — it
+// fired on every real-world repo sampled regardless of quality, which is
+// zero discriminative signal for a scored rule.
 const tokensBudgetPattern = z.object({
   check: z.literal("budget"),
   // Token budget per matched file (gpt-tokenizer, lazy-loaded — see
@@ -107,26 +110,9 @@ const tokensDuplicatePattern = z.object({
   minChars: z.number().int().positive().default(200),
 });
 
-const tokensIgnoreCoveragePattern = z.object({
-  check: z.literal("ignore-coverage"),
-  // Candidate AI-ignore file names read directly off disk (independent
-  // of `files`, which instead gates this rule's applicability — see the
-  // rule's own README for why) and combined (union) into one `ignore()`
-  // filter.
-  ignoreFiles: z.array(z.string().min(1)).min(1),
-  // Repo-root-relative artifact paths (literal names, not globs — see
-  // README) that, if present on disk, must be covered by the combined
-  // ignoreFiles filter above.
-  requiredPatterns: z.array(z.string().min(1)).min(1),
-});
-
 const tokensRuleSchema = baseRuleSchema.extend({
   tier: z.literal("tokens"),
-  pattern: z.discriminatedUnion("check", [
-    tokensBudgetPattern,
-    tokensDuplicatePattern,
-    tokensIgnoreCoveragePattern,
-  ]),
+  pattern: z.discriminatedUnion("check", [tokensBudgetPattern, tokensDuplicatePattern]),
 });
 
 const manifestRuleSchema = baseRuleSchema.extend({

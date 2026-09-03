@@ -64,7 +64,7 @@ describe("ruleSchema", () => {
     }
   });
 
-  it("accepts a valid tokens rule (ignore-coverage check)", () => {
+  it("rejects the retired ignore-coverage check — moved to the unscored token-surface report by DECISIONS/0016", () => {
     const result = ruleSchema.safeParse({
       ...base,
       tier: "tokens",
@@ -74,7 +74,7 @@ describe("ruleSchema", () => {
         requiredPatterns: ["node_modules"],
       },
     });
-    expect(result.success).toBe(true);
+    expect(result.success).toBe(false);
   });
 
   it("rejects a tokens rule with an unknown check discriminant", () => {
