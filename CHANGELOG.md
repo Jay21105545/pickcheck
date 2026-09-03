@@ -9,6 +9,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- The `astgrep` tier is implemented for real, replacing the stub:
+  `@ast-grep/napi` is lazy-loaded (dynamic `import()` inside
+  `runAstgrepTier()`, never at module scope) only once an astgrep-tier
+  rule is actually dispatched, so the CLI's cold-start path pays nothing
+  for it when no astgrep rule is loaded. `rule.pattern` passes straight
+  through to `findAll()`; a malformed pattern (bad kind name, unknown
+  field, …) throws synchronously and is caught, warned, and skipped like
+  any other invalid rule — never crashes the audit.
+- A new `manifest` tier and `sec/no-hallucinated-imports` (error): flags
+  bare import/require specifiers absent from the *nearest* ancestor
+  `package.json`'s dependency fields, unioned up to the scanned root —
+  the same resolution order Node's own module system uses, so a
+  workspace's per-package dependencies and its root-level tooling
+  devDependencies are both recognized correctly. Respects `node:`
+  builtins, relative imports, `@/`-style path aliases, and scoped/unscoped
+  subpath imports. See [ADR 0007](DECISIONS/0007-manifest-tier.md).
+- `qual/no-empty-catch` (error, astgrep): a `catch` block that's empty or
+  contains only comments — structural, so formatting (minified, a call
+  split across lines) doesn't affect detection and commented-out code
+  doesn't false-positive.
+- `qual/fetch-has-error-handling` (warn, astgrep): a `fetch()` call with
+  no enclosing `try`/`catch`, `.ok` check, or `.catch` anywhere in the
+  enclosing function — the v1 heuristic RULESET.md specs, with its
+  binding-imprecision tradeoff stated in the rule's README.
+- `sec/post-has-validation` (warn, regex + a new `pattern.unless`
+  whole-file suppression on the regex tier — see
+  [ADR 0008](DECISIONS/0008-regex-unless-precondition.md)): a
+  `req.body`/`request.json()` read in a detected API-surface file with no
+  `zod`/`yup`/`joi`/`valibot`/`class-validator` reference anywhere in that
+  file. Ships as the heuristic it is — README states the same-file-only
+  and proximity-not-binding limits honestly rather than papering over
+  them.
+- `disc/no-console-log` upgraded from `regex` to the `astgrep` tier RULESET.md
+  always specified, now that the tier exists: catches a call split across
+  lines and formatting-independent (minified) code, correctly ignores a
+  commented-out call — the wins the regex-tier version's README already
+  flagged as future work.
+- Adversarial fixtures across the ruleset proving (or, where a tier
+  provably can't win, honestly documenting the limit in the rule's README
+  instead of faking a pass): a secret pasted whole into a template
+  literal, an empty catch containing only a comment, commented-out
+  offending code not false-positiving on the astgrep-tier rules, and a
+  minified/single-line file still matching structurally.
+- `examples/broken-app/` extended (`lib/api-client.ts`,
+  `lib/analytics.ts`) to also trigger the four new rules — ten findings
+  total, composite 31.88/100 (was 32.5/100, six findings).
 - Phase 0 bootstrap: pnpm workspace (`packages/cli`, `packages/rules`,
   `packages/report`, `apps/docs` placeholder), tsdown/tsx/biome/vitest
   tooling, strict TypeScript config, GitHub Actions CI, and `DECISIONS/`.
@@ -49,6 +95,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   shipped default caps at 59 on any error-severity security finding, one
   point under the CLI's default `--min 60`. `examples/broken-app` now
   scores 32.5/100 and exits 1 (was 96.85/100, exit 0).
+- `biome.json` excludes `packages/rules/**/fixtures/**` from lint and
+  format entirely — the same treatment `.pickcheckignore` already gives
+  `examples/broken-app` and every rule's own `files` glob already gives
+  every `fixtures/` dir for pickcheck's own self-audit. Fixture content is
+  deliberately not idiomatic (an empty-catch fixture needs an unused
+  binding, a rethrow fixture needs a catch biome calls "useless" by
+  design, minified/multiline adversarial fixtures need to keep their
+  exact unusual formatting), so it was never something to lint or
+  format-enforce in the first place.
 
 ### Fixed
 
