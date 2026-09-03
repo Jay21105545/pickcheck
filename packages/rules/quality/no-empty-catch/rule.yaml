@@ -1,0 +1,19 @@
+id: qual/no-empty-catch
+category: quality
+severity: error
+tier: astgrep
+title: Empty catch block
+files:
+  - "**/*.{ts,tsx,js,jsx}"
+  - "!**/fixtures/**"
+message: "Errors are being silently swallowed — the catch block is empty or contains only a comment."
+weight: 3
+pattern:
+  rule:
+    kind: catch_clause
+    has:
+      kind: statement_block
+      # Matches a block containing nothing but `{`/`}` and, optionally, any
+      # number of line or block comments — "empty" and "only a comment" are
+      # the same finding per RULESET.md.
+      regex: '^\{\s*(?:(?://[^\n]*|/\*[\s\S]*?\*/)\s*)*\}$'

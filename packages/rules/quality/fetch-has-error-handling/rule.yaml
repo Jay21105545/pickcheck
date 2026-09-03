@@ -1,0 +1,38 @@
+id: qual/fetch-has-error-handling
+category: quality
+severity: warn
+tier: astgrep
+title: fetch() call with no error handling
+files:
+  - "**/*.{ts,tsx,js,jsx}"
+  - "!**/*.test.*"
+  - "!**/*.spec.*"
+  - "!**/__tests__/**"
+  - "!**/test/**"
+  - "!**/tests/**"
+  - "!**/fixtures/**"
+message: "This fetch() call isn't wrapped in try/catch, doesn't check response.ok, and has no .catch — a failed or non-2xx request will fail silently."
+weight: 2
+pattern:
+  rule:
+    pattern: fetch($$$ARGS)
+    not:
+      any:
+        # Wrapped in a try/catch anywhere up the tree.
+        - inside: { kind: try_statement, stopBy: end }
+        # v1 heuristic (RULESET.md): the enclosing function contains a
+        # `.ok` check or a `.catch(` call *anywhere* in its body — this
+        # doesn't verify the check is applied to *this* fetch's response,
+        # just that the function isn't bare. See README for the tradeoff.
+        - inside:
+            stopBy: end
+            any:
+              - kind: function_declaration
+              - kind: function_expression
+              - kind: arrow_function
+              - kind: method_definition
+            has:
+              stopBy: end
+              any:
+                - regex: '\.ok\b'
+                - regex: '\.catch\('
