@@ -12,6 +12,16 @@ files:
   - "!**/tests/**"
   - "!**/fixtures/**"
   - "!**/api/**"
+  # Next.js's special convention files (metadata/OG-image routes) aren't
+  # UI components — they render a static-ish asset (an image, an icon)
+  # server-side, with no "user watching a loading state" concept, and a
+  # failed fetch inside one fails the whole route rather than degrading
+  # silently. Found firing on app/opengraph-image.tsx during calibration
+  # — see DECISIONS/0014.
+  - "!**/opengraph-image.{ts,tsx}"
+  - "!**/twitter-image.{ts,tsx}"
+  - "!**/icon.{ts,tsx}"
+  - "!**/apple-icon.{ts,tsx}"
 message: "This component fetches data but nothing in the file suggests it renders a loading, error, or empty state — only the success path appears to be handled."
 weight: 2
 pattern:

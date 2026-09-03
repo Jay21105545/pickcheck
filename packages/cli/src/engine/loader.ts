@@ -14,9 +14,20 @@ export interface LoadRulesResult {
  * ruleSchema. An invalid or unparsable rule.yaml is never fatal — per
  * CLAUDE.md's error philosophy, it's logged as a warning and skipped so one
  * bad rule can't crash the audit.
+ *
+ * `_incubating/` is excluded: a parked rule whose current implementation is
+ * known to be too imprecise to ship (DECISIONS/0014 is the first case —
+ * `ux/hardcoded-px-width`'s regex tier). It keeps its rule.yaml, README,
+ * and fixtures — the fixture test harness still validates it, since a
+ * parked rule with broken fixtures would be useless to whoever resumes it
+ * — it's just never loaded into a live audit.
  */
 export async function loadRules(rulesDir: string): Promise<LoadRulesResult> {
-  const files = await fg("**/rule.yaml", { cwd: rulesDir, absolute: true });
+  const files = await fg("**/rule.yaml", {
+    cwd: rulesDir,
+    absolute: true,
+    ignore: ["**/_incubating/**"],
+  });
   const rules: Rule[] = [];
   const warnings: string[] = [];
 

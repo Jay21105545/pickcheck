@@ -44,3 +44,12 @@ pattern:
               has:
                 kind: identifier
                 regex: "^label$"
+        # A reusable primitive spreading caller-supplied props
+        # (`<input {...props} />`) may well receive `id`/`aria-label` from
+        # its caller — invisible to structural matching, so skip rather
+        # than false-positive on every such primitive. Same exemption
+        # ux/img-missing-alt already applies.
+        - has:
+            kind: jsx_expression
+            has:
+              kind: spread_element

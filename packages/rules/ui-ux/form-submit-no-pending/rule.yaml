@@ -21,8 +21,23 @@ pattern:
           kind: jsx_attribute
           regex: '^type\s*=\s*"submit"$'
       - not:
-          has:
-            kind: jsx_attribute
-            has:
-              kind: property_identifier
-              regex: "^disabled$"
+          any:
+            - has:
+                kind: jsx_attribute
+                has:
+                  kind: property_identifier
+                  regex: "^disabled$"
+            # A sign-out/log-out action has no real double-submission
+            # consequence — found flagged as a false positive during
+            # calibration (DECISIONS/0014). Checks the button's own
+            # aria-label, and its rendered text anywhere in its subtree
+            # (covers icon+label patterns like
+            # <LogOut /><span>Sign out</span>).
+            - has:
+                kind: jsx_attribute
+                regex: '(?i)aria-label\s*=\s*"[^"]*(sign\s*out|log\s*out|logout)'
+            - inside:
+                kind: jsx_element
+                has:
+                  stopBy: end
+                  regex: '(?i)sign\s*out|log\s*out|logout'

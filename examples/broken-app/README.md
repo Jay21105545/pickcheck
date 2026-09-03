@@ -28,7 +28,12 @@ A small, deliberately bad Next.js-shaped repo. It exists to give
 - `components/DeleteUserButton.tsx` calls a DELETE endpoint with no
   confirmation step
 - `styles/theme.css` has more than the inline-hex-color threshold
-- `components/Modal.tsx` has a hardcoded large pixel `width`
+
+`components/Modal.tsx` still has a hardcoded large pixel width, but
+`ux/hardcoded-px-width` is currently parked (see
+`packages/rules/_incubating/hardcoded-px-width/README.md`) after a
+real-world calibration run found it too imprecise to ship — so this one
+is no longer an active finding.
 
 **Tokens:**
 

@@ -108,6 +108,21 @@ pattern:
     }
   });
 
+  it("excludes rule.yaml files under _incubating/ — parked, not loaded (DECISIONS/0014)", async () => {
+    const dir = await createTempDir("loader-incubating");
+    try {
+      await dir.write("docs/changelog-exists/rule.yaml", validExistsRule);
+      await dir.write("_incubating/parked-rule/rule.yaml", validRegexRule);
+
+      const result = await loadRules(dir.path);
+
+      expect(result.rules.map((rule) => rule.id)).toEqual(["docs/changelog-exists"]);
+      expect(result.warnings).toEqual([]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
   it("returns no rules and no warnings for an empty rules dir", async () => {
     const dir = await createTempDir("loader-empty");
     try {

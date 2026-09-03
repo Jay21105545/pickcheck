@@ -69,3 +69,12 @@ detected", README explains limits.
 security .30 · quality .20 · docs .15 · discipline .15 · ui-ux .10 · tokens .10
 (ui-ux and tokens rules land in Phase 3; weights present from day one so
 scores are comparable across versions.)
+
+## Parked rules
+
+`ux/hardcoded-px-width` (Phase 3) is parked in `packages/rules/_incubating/`
+— excluded from loading, not part of the shipped ruleset. A 4-repo
+real-world calibration run (DECISIONS/0014) measured its regex tier at
+18% precision, with three identifiable, compounding root causes. Its
+README documents the findings and the recommended astgrep-tier rewrite;
+resume it there rather than starting over.

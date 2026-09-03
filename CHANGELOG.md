@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **First real-world ruleset calibration** (DECISIONS/0014): ran the
+  Phase-3 `ux/*`/`tok/*` rules against 4 real repos with actual data
+  fetching, forms, and destructive actions (`shadcn-ui/taxonomy`,
+  `nextjs/saas-starter`, `vercel/commerce`, `steven-tey/precedent`) and
+  hand-classified all 37 findings — aggregate precision was 36%. Fixed
+  every identified false-positive pattern and re-ran the same sample:
+  precision rose to 90% across 11 remaining findings, with every prior
+  true positive still caught and every prior false positive gone.
+  - `ux/input-missing-label` now exempts spread-prop elements
+    (`<input {...props} />`), matching `ux/img-missing-alt`'s existing
+    clause — both real-world false positives were the same shadcn/ui
+    `<Input>` primitive.
+  - `ux/fetch-missing-states` and `ux/inline-hex-threshold` now exclude
+    Next.js's special convention files (`opengraph-image`,
+    `twitter-image`, `icon`, `apple-icon`); the hex rule additionally
+    excludes `**/icons/**`, `**/logos/**`, `**/brand/**` (real brand-icon
+    SVGs use externally-mandated colors, not drifting design tokens).
+  - `ux/form-submit-no-pending` now exempts sign-out/log-out buttons (no
+    real double-submission consequence), checking both `aria-label` and
+    rendered text anywhere in the button's subtree.
+  - Every fixed pattern got a `fixtures/good/` sample built from the real
+    shape that triggered it, so the regression can't silently return.
+- **`ux/hardcoded-px-width` pulled from the shipped ruleset** — measured
+  at 18% precision (three compounding regex bugs: no word boundary
+  before `width` matching inside `min-width`/`max-width`, and Tailwind
+  breakpoint-variant prefixes not recognized). Moved to
+  `packages/rules/_incubating/`, which `loadRules()` now excludes from
+  loading; its README documents the specific bugs and recommends an
+  `astgrep`-tier rewrite. Not deleted — resumable.
+
 ### Added
 
 - **UI/UX rules (Phase 3)**: `ux/fetch-missing-states` (a component

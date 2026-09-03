@@ -9,6 +9,21 @@ files:
   - "!**/*.spec.*"
   - "!**/*.config.*"
   - "!**/fixtures/**"
+  # Brand/logo icon SVGs legitimately carry many literal hex values —
+  # they're externally-mandated brand colors, not this app's own design
+  # tokens drifting. Found firing on real third-party brand icon
+  # components during calibration — see DECISIONS/0014.
+  - "!**/icons/**"
+  - "!**/logos/**"
+  - "!**/brand/**"
+  # Same Next.js special convention files excluded by
+  # ux/fetch-missing-states — these render via the edge runtime's Satori
+  # layout engine, which has limited CSS custom-property support, so
+  # literal color values are often unavoidable rather than drift.
+  - "!**/opengraph-image.{ts,tsx}"
+  - "!**/twitter-image.{ts,tsx}"
+  - "!**/icon.{ts,tsx}"
+  - "!**/apple-icon.{ts,tsx}"
 message: "This file has several one-off inline hex colors instead of a shared design-token/theme reference — a sign colors have drifted out of any central palette."
 weight: 1
 pattern:

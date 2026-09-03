@@ -14,6 +14,9 @@ pickcheck/
 │   │       └── util/
 │   ├── rules/        # THE content. No engine code here.
 │   │   ├── security/…  docs/…  discipline/…  ui-ux/…  tokens/…
+│   │   ├── _incubating/  # parked rules — loadRules() excludes this dir
+│   │   │                 # (DECISIONS/0014); kept with fixtures so the
+│   │   │                 # fixture harness still validates them
 │   │   └── schema.ts   # zod schema for rule.yaml (single source of truth)
 │   └── report/       # HTML report template (vanilla JS, self-contained)
 ├── playbook/         # 01-branching.md … numbered chapters
