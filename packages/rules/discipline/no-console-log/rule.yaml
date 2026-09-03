@@ -16,6 +16,7 @@ files:
   - "!**/fixtures/**"
 message: "console.log left in source — remove it or replace it with a real logger."
 weight: 1
+excludePackageScriptTargets: true
 pattern:
   rule:
     pattern: console.log($$$ARGS)

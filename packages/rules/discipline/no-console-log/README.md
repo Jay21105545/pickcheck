@@ -14,7 +14,19 @@ out the log lines that actually matter during an incident.
 **Detection:** `astgrep` tier, matching `console.log($$$ARGS)` structurally
 — exactly as RULESET.md specs it. Excludes tests, `scripts/`, and
 `*.config.*` files, where a stray print statement is expected and
-harmless. This rule shipped as a `regex` tier in an earlier phase (see
+harmless, plus (via `excludePackageScriptTargets` — DECISIONS/0017) any
+file that's the direct execution target of a `package.json` `scripts`
+entry (`"db:setup": "npx tsx lib/db/setup.ts"` exempts `lib/db/setup.ts`),
+regardless of which directory it lives in. That third exclusion exists
+because `!**/scripts/**` only catches a script by *directory* convention;
+real-world review of nextjs/saas-starter found the equally common Drizzle/
+Prisma-ecosystem convention of a `db:setup`/`db:seed` script living under
+`lib/db/` or `db/` instead — a one-off interactive CLI script (`readline`
+prompts, a self-invoking `seed().catch().finally()` at module scope) whose
+entire purpose is printing progress to a developer's terminal, not
+"debug output left in production code." 31 of saas-starter's 36
+`disc/no-console-log` findings were this exact shape. This rule shipped
+as a `regex` tier in an earlier phase (see
 [ADR 0005](../../../../DECISIONS/0005-conditional-exists-precondition.md),
 written back when `tiers/astgrep.ts` was still a stub) matching the
 literal text `console.log(` per line; now that the astgrep tier is

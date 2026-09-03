@@ -1,0 +1,8 @@
+{
+  "name": "bad-no-console-log",
+  "private": true,
+  "scripts": {
+    "build": "tsc -p .",
+    "lint": "eslint . --ext .ts,.tsx"
+  }
+}

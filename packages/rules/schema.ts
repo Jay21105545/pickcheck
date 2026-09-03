@@ -25,6 +25,13 @@ const baseRuleSchema = z.object({
   files: z.array(z.string().min(1)).min(1),
   message: z.string().min(1),
   weight: z.number().positive(),
+  // Optional, tier-agnostic precondition: exclude files that are the direct
+  // execution target of some package.json `scripts` entry (e.g. "npx tsx
+  // lib/db/setup.ts") — a one-off developer CLI script, not application
+  // runtime code, regardless of which directory it happens to live in. See
+  // DECISIONS/0017. Unset (the default) applies to every rule written
+  // before this field existed, matching their current behavior exactly.
+  excludePackageScriptTargets: z.boolean().optional(),
 });
 
 const existsRuleSchema = baseRuleSchema.extend({

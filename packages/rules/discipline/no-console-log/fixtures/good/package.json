@@ -1,0 +1,8 @@
+{
+  "name": "good-no-console-log",
+  "private": true,
+  "scripts": {
+    "db:setup": "npx tsx lib/db/setup.ts",
+    "db:seed": "npx tsx lib/db/seed.ts"
+  }
+}
