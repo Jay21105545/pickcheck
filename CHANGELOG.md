@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Terminal renderer rebuilt to DESIGN.md's spec**: the summary card now
+  draws a mini-bar per category (security/quality/docs/discipline/ui-ux/
+  tokens) beneath the composite score bar, findings show a severity glyph
+  (`✖ ▲ ●`, `x ! o` in ASCII) instead of an `ERROR`/`WARN `/`INFO ` text
+  label, `file:line` is dimmed against the plain-text message, and every
+  finding gets an `↳ fix:` hint line (dimmed, truncated to stay inside
+  the ~100-col budget) carrying its `fixPrompt`. Score numbers and bars
+  are the single accent color throughout (picocolors' nearest ANSI-16
+  match to DESIGN.md's electric lime, since picocolors has no truecolor)
+  regardless of value — no more red/yellow/green semaphore grading,
+  matching DESIGN.md's "one sharp accent" direction. `NO_COLOR` and
+  `TERM=dumb` degradation (verified by existing tests) is unchanged.
 - The `astgrep` tier is implemented for real, replacing the stub:
   `@ast-grep/napi` is lazy-loaded (dynamic `import()` inside
   `runAstgrepTier()`, never at module scope) only once an astgrep-tier

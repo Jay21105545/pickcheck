@@ -2,7 +2,13 @@
 
 exports[`renderTerminal > matches the snapshot for a clean result (no color) 1`] = `
 "┌─ pickcheck audit
-│ Score  [####################] 100/100
+│ Score       [████████████████████] 100/100
+│ security    [██████████████] 100
+│ quality     [██████████████] 100
+│ docs        [██████████████] 100
+│ discipline  [██████████████] 100
+│ ui-ux       [██████████████] 100
+│ tokens      [██████████████] 100
 │ 0 rules · 10 files · 0 findings
 └─
 
@@ -12,15 +18,23 @@ No findings.
 
 exports[`renderTerminal > matches the snapshot for a dumb terminal (ascii glyphs, no color) 1`] = `
 "+- pickcheck audit
-| Score  [###################-] 97.45/100
+| Score       [###################-] 97.45/100
+| security    [#############-] 92
+| quality     [##############] 100
+| docs        [##############] 100
+| discipline  [##############] 99
+| ui-ux       [##############] 100
+| tokens      [##############] 100
 | 2 rules * 42 files * 2 findings
 +-
 
 security (92)
-  ERROR src/config.ts - A secret looks hardcoded.
+  x src/config.ts - A secret looks hardcoded.
+    -> fix: Fix "Hardcoded secret" (sec/no-secrets-in-code) at src/config.ts: A secret looks ...
 
 discipline (99)
-  WARN  src/index.ts:12 - console.log left in source.
+  ! src/index.ts:12 - console.log left in source.
+    -> fix: Fix "console.log left in" (disc/no-console-log) at src/index.ts:12: console.log l...
 
 Warnings:
   - qual/no-empty-catch: astgrep tier not implemented yet (TODO phase-1.1) — skipped
@@ -29,15 +43,23 @@ Warnings:
 
 exports[`renderTerminal > matches the snapshot for a result with findings and warnings (no color) 1`] = `
 "┌─ pickcheck audit
-│ Score  [###################-] 97.45/100
+│ Score       [███████████████████░] 97.45/100
+│ security    [█████████████░] 92
+│ quality     [██████████████] 100
+│ docs        [██████████████] 100
+│ discipline  [██████████████] 99
+│ ui-ux       [██████████████] 100
+│ tokens      [██████████████] 100
 │ 2 rules · 42 files · 2 findings
 └─
 
 security (92)
-  ERROR src/config.ts — A secret looks hardcoded.
+  ✖ src/config.ts — A secret looks hardcoded.
+    ↳ fix: Fix "Hardcoded secret" (sec/no-secrets-in-code) at src/config.ts: A secret looks har…
 
 discipline (99)
-  WARN  src/index.ts:12 — console.log left in source.
+  ▲ src/index.ts:12 — console.log left in source.
+    ↳ fix: Fix "console.log left in" (disc/no-console-log) at src/index.ts:12: console.log left…
 
 Warnings:
   - qual/no-empty-catch: astgrep tier not implemented yet (TODO phase-1.1) — skipped

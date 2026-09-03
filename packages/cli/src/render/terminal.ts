@@ -15,17 +15,20 @@ type Styler = (input: string) => string;
 interface Styles {
   bold: Styler;
   dim: Styler;
-  green: Styler;
-  yellow: Styler;
-  red: Styler;
+  /** DESIGN.md's single accent (electric lime) — the score, and only the score. */
+  accent: Styler;
+  error: Styler;
+  warn: Styler;
+  info: Styler;
 }
 
 const IDENTITY_STYLES: Styles = {
   bold: (s) => s,
   dim: (s) => s,
-  green: (s) => s,
-  yellow: (s) => s,
-  red: (s) => s,
+  accent: (s) => s,
+  error: (s) => s,
+  warn: (s) => s,
+  info: (s) => s,
 };
 
 // picocolors' default export auto-detects TTY/CI/NO_COLOR/TERM and no-ops
@@ -37,9 +40,13 @@ const forcedColors = createColors(true);
 const COLOR_STYLES: Styles = {
   bold: forcedColors.bold,
   dim: forcedColors.dim,
-  green: forcedColors.green,
-  yellow: forcedColors.yellow,
-  red: forcedColors.red,
+  // picocolors only reaches ANSI's 16-color set (no truecolor), so
+  // DESIGN.md's electric lime `#C6F432` maps to its nearest ANSI
+  // neighbor, bright green, rather than the literal hex.
+  accent: forcedColors.greenBright,
+  error: forcedColors.red,
+  warn: forcedColors.yellow,
+  info: forcedColors.blue,
 };
 
 interface Glyphs {
@@ -48,6 +55,9 @@ interface Glyphs {
   side: string;
   separator: string;
   dash: string;
+  fixArrow: string;
+  ellipsis: string;
+  severity: Record<Severity, string>;
 }
 
 const UNICODE_GLYPHS: Glyphs = {
@@ -56,6 +66,9 @@ const UNICODE_GLYPHS: Glyphs = {
   side: "│ ",
   separator: " · ",
   dash: " — ",
+  fixArrow: "↳",
+  ellipsis: "…",
+  severity: { error: "✖", warn: "▲", info: "●" },
 };
 
 const ASCII_GLYPHS: Glyphs = {
@@ -64,19 +77,20 @@ const ASCII_GLYPHS: Glyphs = {
   side: "| ",
   separator: " * ",
   dash: " - ",
+  fixArrow: "->",
+  ellipsis: "...",
+  severity: { error: "x", warn: "!", info: "o" },
 };
 
 const CATEGORY_ORDER = Object.keys(CATEGORY_WEIGHTS) as Category[];
 const SEVERITY_ORDER: Severity[] = ["error", "warn", "info"];
-const SEVERITY_LABEL: Record<Severity, string> = {
-  error: "ERROR",
-  warn: "WARN ",
-  info: "INFO ",
-};
 
-const BAR_WIDTH = 20;
-const GOOD_THRESHOLD = 80;
-const OK_THRESHOLD = 60; // matches the audit's default --min
+const SCORE_BAR_WIDTH = 20;
+const MINI_BAR_WIDTH = 14;
+/** Longest row label ("discipline") — every summary-card row aligns to it. */
+const LABEL_WIDTH = Math.max("Score".length, ...CATEGORY_ORDER.map((c) => c.length));
+/** Keeps every renderer-composed line comfortably inside ARCHITECTURE.md's ~100-col budget. */
+const MAX_LINE_WIDTH = 96;
 
 /** Terminal report: box-drawn summary card, then findings grouped by category -> severity. */
 export function renderTerminal(
@@ -104,11 +118,7 @@ export function renderTerminal(
       const categoryScore =
         result.score.categories.find((entry) => entry.category === category)?.score ??
         100;
-      lines.push(
-        styles.bold(
-          `${category} (${scoreStyle(categoryScore, styles)(String(categoryScore))})`,
-        ),
-      );
+      lines.push(`${styles.bold(category)} (${styles.accent(String(categoryScore))})`);
 
       for (const severity of SEVERITY_ORDER) {
         for (const finding of categoryFindings.filter((f) => f.severity === severity)) {
@@ -116,8 +126,12 @@ export function renderTerminal(
             finding.line === undefined
               ? finding.file
               : `${finding.file}:${finding.line}`;
+          const glyph = severityGlyph(severity, styles, glyphs);
           lines.push(
-            `  ${severityBadge(severity, styles)} ${location}${glyphs.dash}${finding.message}`,
+            `  ${glyph} ${styles.dim(location)}${glyphs.dash}${finding.message}`,
+          );
+          lines.push(
+            `    ${styles.dim(`${glyphs.fixArrow} fix: ${truncate(finding.fixPrompt, glyphs)}`)}`,
           );
         }
       }
@@ -126,7 +140,7 @@ export function renderTerminal(
   }
 
   if (result.warnings.length > 0) {
-    lines.push(styles.yellow("Warnings:"));
+    lines.push(styles.warn("Warnings:"));
     for (const warning of result.warnings) {
       lines.push(`  ${styles.dim("-")} ${warning}`);
     }
@@ -136,37 +150,77 @@ export function renderTerminal(
   return `${lines.join("\n").trimEnd()}\n`;
 }
 
+/** `--quiet`: a single CI-friendly line — composite score and the same counts, nothing else. */
+export function renderQuietSummary(
+  result: AuditResult,
+  options: TerminalRenderOptions = {},
+): string {
+  const detected = resolveTerminalMode(process.env);
+  const styles = (options.color ?? detected.color) ? COLOR_STYLES : IDENTITY_STYLES;
+  const glyphs = (options.ascii ?? detected.ascii) ? ASCII_GLYPHS : UNICODE_GLYPHS;
+  const composite = result.score.composite;
+  const scoreText = styles.bold(styles.accent(`${composite}/100`));
+  return `${scoreText}${glyphs.separator}${result.rules.length} rules${glyphs.separator}${result.fileCount} files${glyphs.separator}${result.findings.length} findings\n`;
+}
+
 function renderSummaryCard(
   result: AuditResult,
   styles: Styles,
   glyphs: Glyphs,
 ): string[] {
   const composite = result.score.composite;
-  const scoreText = scoreStyle(composite, styles)(`${composite}/100`);
+  const rows = [
+    scoreRow("Score", composite, SCORE_BAR_WIDTH, `${composite}/100`, styles, glyphs),
+    ...CATEGORY_ORDER.map((category) => {
+      const score =
+        result.score.categories.find((entry) => entry.category === category)?.score ??
+        100;
+      return scoreRow(category, score, MINI_BAR_WIDTH, String(score), styles, glyphs);
+    }),
+  ];
+
   return [
     `${glyphs.topLeft}${styles.bold("pickcheck audit")}`,
-    `${glyphs.side}Score  ${scoreBar(composite)} ${scoreText}`,
+    ...rows.map((row) => `${glyphs.side}${row}`),
     `${glyphs.side}${result.rules.length} rules${glyphs.separator}${result.fileCount} files${glyphs.separator}${result.findings.length} findings`,
     glyphs.bottomLeft,
   ];
 }
 
-function scoreBar(score: number): string {
-  const filled = Math.round((clamp(score, 0, 100) / 100) * BAR_WIDTH);
-  return `[${"#".repeat(filled)}${"-".repeat(BAR_WIDTH - filled)}]`;
+function scoreRow(
+  label: string,
+  score: number,
+  width: number,
+  scoreText: string,
+  styles: Styles,
+  glyphs: Glyphs,
+): string {
+  return `${label.padEnd(LABEL_WIDTH)}  ${scoreBar(score, width, glyphs)} ${styles.accent(scoreText)}`;
 }
 
-function scoreStyle(score: number, styles: Styles): Styler {
-  if (score >= GOOD_THRESHOLD) return styles.green;
-  if (score >= OK_THRESHOLD) return styles.yellow;
-  return styles.red;
+function scoreBar(score: number, width: number, glyphs: Glyphs): string {
+  const fillChar = glyphs === ASCII_GLYPHS ? "#" : "█";
+  const emptyChar = glyphs === ASCII_GLYPHS ? "-" : "░";
+  const filled = Math.round((clamp(score, 0, 100) / 100) * width);
+  return `[${fillChar.repeat(filled)}${emptyChar.repeat(width - filled)}]`;
 }
 
-function severityBadge(severity: Severity, styles: Styles): string {
-  const label = SEVERITY_LABEL[severity];
-  if (severity === "error") return styles.red(label);
-  if (severity === "warn") return styles.yellow(label);
-  return styles.dim(label);
+function severityGlyph(severity: Severity, styles: Styles, glyphs: Glyphs): string {
+  const glyph = glyphs.severity[severity];
+  if (severity === "error") return styles.error(glyph);
+  if (severity === "warn") return styles.warn(glyph);
+  return styles.info(glyph);
+}
+
+/** Keeps a fix hint's line inside MAX_LINE_WIDTH regardless of how long a rule's fixPrompt is. */
+function truncate(text: string, glyphs: Glyphs): string {
+  // "    ↳ fix: " (or ASCII equivalent) prefix already spent before this text.
+  const prefixWidth = 4 + glyphs.fixArrow.length + " fix: ".length;
+  const budget = MAX_LINE_WIDTH - prefixWidth;
+  if (text.length <= budget) {
+    return text;
+  }
+  return `${text.slice(0, budget - glyphs.ellipsis.length)}${glyphs.ellipsis}`;
 }
 
 function clamp(value: number, min: number, max: number): number {

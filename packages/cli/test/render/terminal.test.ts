@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { renderTerminal } from "../../src/render/terminal.js";
+import { renderQuietSummary, renderTerminal } from "../../src/render/terminal.js";
 import { emptyResult, sampleResult } from "./fixtures.js";
 
 /** Temporarily overrides process.env for `fn`, restoring the prior values after. */
@@ -89,23 +89,53 @@ describe("renderTerminal", () => {
     withEnv({ TERM: "dumb", NO_COLOR: undefined }, () => {
       const output = renderTerminal(sampleResult);
       const lines = output.split("\n");
+      // Box top, one row per (Score + 6 categories), the counts row, box bottom.
+      const cardLines = lines.slice(0, 9);
 
       expect(output).not.toContain(ESC);
-      // The renderer's own decorative glyphs (box, separators, the
-      // location/message dash) degrade to ASCII. Message/warning text is
-      // rule-authored content the renderer doesn't own or scrub — the
-      // sample fixture's warning legitimately contains an em dash, so
-      // these checks target only the lines the renderer itself composes.
+      // The renderer's own decorative glyphs (box, bars, separators, the
+      // location/message dash, the fix-hint arrow) degrade to ASCII.
+      // Message/warning text is rule-authored content the renderer doesn't
+      // own or scrub — the sample fixture's warning legitimately contains
+      // an em dash, so these checks target only the lines the renderer
+      // itself composes.
       expect(lines[0]).toBe("+- pickcheck audit");
-      expect(lines[2]).toContain(" * ");
-      expect(lines[3]).toBe("+-");
+      expect(lines[8]).toContain(" * ");
+      expect(lines[9]).toBe("+-");
       expect(output).toContain("src/config.ts - A secret looks hardcoded.");
+      expect(output).toContain("-> fix:");
       for (const glyph of NON_ASCII_GLYPHS) {
-        expect(lines[0]).not.toContain(glyph);
-        expect(lines[1]).not.toContain(glyph);
-        expect(lines[2]).not.toContain(glyph);
-        expect(lines[3]).not.toContain(glyph);
+        for (const line of cardLines) {
+          expect(line).not.toContain(glyph);
+        }
       }
     });
+  });
+});
+
+describe("renderQuietSummary", () => {
+  it("is a single line carrying the composite score and the same counts", () => {
+    const output = renderQuietSummary(sampleResult, { color: false });
+    expect(output.trimEnd().split("\n")).toHaveLength(1);
+    expect(output).toContain("97.45/100");
+    expect(output).toContain("2 rules");
+    expect(output).toContain("42 files");
+    expect(output).toContain("2 findings");
+    // No findings, no fix hints, no warnings — CI wants score + counts only.
+    expect(output).not.toContain("fix:");
+    expect(output).not.toContain("src/config.ts");
+  });
+
+  it("degrades to ASCII on TERM=dumb", () => {
+    withEnv({ TERM: "dumb", NO_COLOR: undefined }, () => {
+      const output = renderQuietSummary(sampleResult);
+      expect(output).not.toContain(ESC);
+      expect(output).toContain(" * ");
+    });
+  });
+
+  it("honors an explicit color option", () => {
+    const colored = renderQuietSummary(sampleResult, { color: true });
+    expect(colored).toContain(ESC);
   });
 });
