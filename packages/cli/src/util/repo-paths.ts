@@ -10,7 +10,7 @@ import { dirname, join } from "node:path";
  */
 function cliPackageDir(): string {
   const require = createRequire(import.meta.url);
-  return dirname(require.resolve("@pickcheck/cli/package.json"));
+  return dirname(require.resolve("pickcheck/package.json"));
 }
 
 /**

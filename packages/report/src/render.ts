@@ -1,12 +1,34 @@
 import { DARK_ROOT_TOKENS, LIGHT_ROOT_TOKEN_OVERRIDES } from "./palette.js";
 import { computeTreemap } from "./treemap.js";
 import type {
+  Category,
   ReportCategoryScore,
   ReportData,
   ReportFinding,
   ReportHistoryPoint,
   ReportTokenSurface,
 } from "./types.js";
+
+/**
+ * Display names for each category slug. Needed because CSS
+ * `text-transform: capitalize` treats a hyphen as a word boundary in most
+ * browsers — `ui-ux` renders as "Ui-Ux", not "UI/UX" — and no CSS
+ * transform can turn a hyphen into a slash regardless. Every place a
+ * category renders as user-facing text goes through `categoryLabel()`
+ * instead of the raw slug.
+ */
+const CATEGORY_LABELS: Record<Category, string> = {
+  security: "Security",
+  quality: "Quality",
+  docs: "Docs",
+  discipline: "Discipline",
+  "ui-ux": "UI/UX",
+  tokens: "Tokens",
+};
+
+function categoryLabel(category: string): string {
+  return CATEGORY_LABELS[category as Category] ?? category;
+}
 
 /**
  * The whole HTML report: DESIGN.md's "screenshot artifact" surface.
@@ -165,7 +187,7 @@ function buildRadarSection(categories: ReportCategoryScore[]): string {
 
 function buildCategoryLegendRow(entry: ReportCategoryScore): string {
   return `<li>
-    <span class="category-legend-label">${escapeHtml(entry.category)}</span>
+    <span class="category-legend-label">${escapeHtml(categoryLabel(entry.category))}</span>
     <span class="category-legend-bar"><span style="width: ${clamp(entry.score, 0, 100)}%"></span></span>
     <span class="category-legend-score">${roundLabel(entry.score)}</span>
   </li>`;
@@ -224,13 +246,13 @@ function buildRadarChart(categories: ReportCategoryScore[]): string {
     .map((entry, index) => {
       const [x, y] = pointOnCircle(center, center, labelRadius, angleFor(index));
       const anchor = anchorFor(x, center);
-      return `<text class="radar-label" x="${round(x)}" y="${round(y)}" text-anchor="${anchor}">${escapeHtml(entry.category)}</text>`;
+      return `<text class="radar-label" x="${round(x)}" y="${round(y)}" text-anchor="${anchor}">${escapeHtml(categoryLabel(entry.category))}</text>`;
     })
     .join("\n");
 
   return `<svg class="radar-chart" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"
        role="img" aria-label="Radar chart of category scores: ${categories
-         .map((c) => `${c.category} ${roundLabel(c.score)}`)
+         .map((c) => `${categoryLabel(c.category)} ${roundLabel(c.score)}`)
          .join(", ")}">
   ${grid}
   ${spokes}
@@ -400,7 +422,7 @@ function buildFindingsSection(orderedFindings: ReportFinding[]): string {
       index++;
     }
     groups.push(`<div class="finding-group">
-      <h3>${escapeHtml(String(category))} <span class="finding-count">${cards.length}</span></h3>
+      <h3>${escapeHtml(categoryLabel(String(category)))} <span class="finding-count">${cards.length}</span></h3>
       <div class="finding-cards">${cards.join("\n")}</div>
     </div>`);
   }
@@ -470,6 +492,13 @@ function buildWarningsSection(warnings: string[]): string {
 
 function css(): string {
   return `
+/*
+ * Dark-first per DESIGN.md: bare :root (no [data-theme] attribute, no
+ * prefers-color-scheme query) IS the dark palette — the report looks the
+ * same regardless of the viewer's OS setting until they explicitly click
+ * the toggle. Light is reached only via :root[data-theme="light"], set by
+ * clientScript() below (defaulting to dark, restored from localStorage).
+ */
 :root {
   color-scheme: dark;
 ${DARK_ROOT_TOKENS}  --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, "Liberation Mono", monospace;
@@ -478,7 +507,18 @@ ${DARK_ROOT_TOKENS}  --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Rob
 
 :root[data-theme="light"] {
   color-scheme: light;
-${LIGHT_ROOT_TOKEN_OVERRIDES}}
+${LIGHT_ROOT_TOKEN_OVERRIDES}  /*
+   * The raw accent lime blended toward --panel (the treemap's fill
+   * formula) reads as a solid, over-saturated block on a white --panel —
+   * a look dark mode's near-black --panel doesn't have, since the same
+   * blend reads as "the one sharp accent" against near-black rather than
+   * "a bright yellow-green rectangle." Scaling the blend ratio down
+   * (not the accent color itself — DESIGN.md's single-accent rule is
+   * unchanged) keeps the same relative size-to-intensity mapping between
+   * cells while landing much closer to --panel overall.
+   */
+  --treemap-mix-scale: 0.45;
+}
 
 * { box-sizing: border-box; }
 
@@ -536,7 +576,7 @@ button:focus-visible, summary:focus-visible, a:focus-visible {
 }
 #theme-toggle:hover { border-color: var(--accent); }
 
-main { max-width: 960px; margin: 0 auto; padding: 0 2rem; }
+main { max-width: 1240px; margin: 0 auto; padding: 0 2rem; }
 
 h1, h2, h3 { font-family: var(--font-mono); letter-spacing: -0.01em; margin: 0 0 0.5rem; }
 h1 { font-size: 1.5rem; }
@@ -601,7 +641,7 @@ h3 { font-size: 0.95rem; color: var(--text-2); text-transform: uppercase; letter
   font-family: var(--font-mono);
   font-size: 0.85rem;
 }
-.category-legend-label { text-transform: capitalize; color: var(--text-2); }
+.category-legend-label { color: var(--text-2); }
 .category-legend-bar { background: var(--border); border-radius: 3px; height: 6px; overflow: hidden; }
 .category-legend-bar span { display: block; height: 100%; background: var(--accent-ink); }
 .category-legend-score { text-align: right; }
@@ -609,7 +649,19 @@ h3 { font-size: 0.95rem; color: var(--text-2); text-transform: uppercase; letter
 .tokens-summary { color: var(--text-2); font-family: var(--font-mono); font-size: 0.85rem; }
 .treemap { display: block; margin-top: 1rem; border-radius: 6px; overflow: hidden; }
 .treemap-cell {
-  fill: color-mix(in srgb, var(--accent) var(--mix), var(--panel));
+  /*
+   * --mix (set per-cell in the inline style attribute) is the raw
+   * proportional blend computed at render time and is theme-agnostic —
+   * the same markup is reused across both themes by the CSS toggle, so
+   * it can't itself carry a "lighter in light mode" adjustment. --treemap-
+   * mix-scale is that per-theme adjustment: 1 (full strength) in dark,
+   * dialed back in light — see the light :root block for why.
+   */
+  fill: color-mix(
+    in srgb,
+    var(--accent) calc(var(--mix) * var(--treemap-mix-scale, 1)),
+    var(--panel)
+  );
   stroke: var(--bg);
   stroke-width: 2;
 }
@@ -628,7 +680,22 @@ h3 { font-size: 0.95rem; color: var(--text-2); text-transform: uppercase; letter
   font-size: 0.75rem;
   color: var(--text-2);
 }
-.finding-cards { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.75rem; }
+/*
+ * A single flex column of cards spanning the full (now 1240px) main width
+ * left a lot of dead space on the right of most cards' short messages at
+ * 1440px+ — a 2-up grid fills that width with content instead of margin.
+ * minmax(min(420px, 100%), 1fr) is the overflow-safe idiom: the 420px
+ * floor never exceeds the container on a narrow viewport, so this needs
+ * no separate mobile media query — it already reduces to one column
+ * whenever two 420px+ tracks wouldn't fit.
+ */
+.finding-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(420px, 100%), 1fr));
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  align-items: start;
+}
 .finding-card {
   background: var(--panel);
   border: 1px solid var(--border);
@@ -687,7 +754,7 @@ h3 { font-size: 0.95rem; color: var(--text-2); text-transform: uppercase; letter
 .warnings-section ul { color: var(--text-2); font-size: 0.85rem; }
 
 .report-footer {
-  max-width: 960px;
+  max-width: 1240px;
   margin: 3rem auto 0;
   padding: 1.5rem 2rem 0;
   border-top: 1px solid var(--border);

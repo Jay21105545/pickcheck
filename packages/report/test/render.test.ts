@@ -178,6 +178,26 @@ describe("renderReportHtml", () => {
     expect(html).toContain("No findings. Every checked rule passed.");
   });
 
+  it("renders each category's display label, not its raw slug or CSS-capitalized slug", () => {
+    // "ui-ux" is the regression case: CSS text-transform:capitalize treats
+    // "-" as a word boundary in most browsers, producing "Ui-Ux" — only a
+    // real display-name mapping renders "UI/UX" correctly. Checked in the
+    // legend, the radar chart's own axis labels, and the findings-section
+    // group heading — all three used to render the raw slug or rely on
+    // the same (wrong) CSS transform.
+    const html = renderReportHtml(
+      baseData({ findings: [finding({ category: "ui-ux", severity: "warn" })] }),
+    );
+
+    expect(html).toContain("UI/UX");
+    expect(html).not.toContain("Ui-Ux");
+    expect(html).not.toContain(">ui-ux<");
+
+    for (const label of ["Security", "Quality", "Docs", "Discipline", "Tokens"]) {
+      expect(html).toContain(label);
+    }
+  });
+
   it("renders warnings when present and omits the section when empty", () => {
     const withWarnings = renderReportHtml(
       baseData({ warnings: ["astgrep tier not implemented"] }),

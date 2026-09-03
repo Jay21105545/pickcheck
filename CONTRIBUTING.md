@@ -32,12 +32,122 @@ diff in your PR description.
   (see `DECISIONS/0001-record-architecture-decisions.md`).
 - Biome for lint/format (`pnpm check`) — never hand-format against it.
 
-## Adding or changing a rule
+## Write a rule in 10 minutes
 
-See CLAUDE.md's "When Adding a Rule" section for the folder shape
-(`rule.yaml` + `README.md` with a fix prompt + `fixtures/bad` +
-`fixtures/good`) and `pnpm test`'s fixture gate — no rule merges without
-both fixture directions passing.
+A rule is one folder, four pieces. No engine code, no PR review of
+detection internals — just data and fixtures. Here's the whole loop,
+worked through a real example: a rule that flags a stray `alert(...)`
+call left in application code (`disc/no-alert`).
+
+### 1. Folder anatomy (2 min)
+
+```
+packages/rules/discipline/no-alert/
+├── rule.yaml
+├── README.md
+└── fixtures/
+    ├── bad/
+    │   └── src/example.ts     # MUST trigger the rule
+    └── good/
+        └── src/example.ts     # MUST NOT trigger the rule
+```
+
+The category directory (`discipline/`) is one of the six scored
+categories (`security`, `quality`, `docs`, `discipline`, `ui-ux`,
+`tokens`); the rule directory name (`no-alert/`) becomes the back half of
+the rule's `id` — the front half is a short category prefix, matching
+every existing rule's convention: `sec/`, `qual/`, `docs/`, `disc/`,
+`ux/`, `tok/`.
+
+### 2. `rule.yaml` (3 min)
+
+```yaml
+id: disc/no-alert
+category: discipline
+severity: warn
+tier: regex
+title: alert() left in source
+files:
+  - "**/*.{ts,tsx,js,jsx}"
+  - "!**/*.test.*"
+  - "!**/*.spec.*"
+  - "!**/fixtures/**"
+message: "alert() left in source — remove it or replace it with real UI feedback."
+weight: 1
+pattern:
+  regex: "\\balert\\("
+```
+
+`tier` picks the detection engine: `exists` (a file present/absent),
+`regex` (line-level pattern, used here), `astgrep` (structural — for
+anything a regex would false-positive on: comments, strings,
+formatting), `tokens` (budget/duplication via `gpt-tokenizer`), or
+`manifest` (cross-referencing `package.json`). `weight` scales this
+rule's contribution to its category's penalty relative to other rules in
+the same category — read [ARCHITECTURE.md's Scoring
+section](instruction/ARCHITECTURE.md) before picking anything other than
+`1`. `severity` is `info`/`warn`/`error` — `error` in `security` is the
+only one wired to a hard composite-score gate today.
+
+### 3. `README.md` (3 min)
+
+Every rule's README has the same three parts — see any existing rule
+(e.g. [`packages/rules/quality/no-empty-catch/README.md`](packages/rules/quality/no-empty-catch/README.md))
+for the shape: **why AI produces this mistake** (one paragraph — this is
+what makes a rule worth writing, not just "this is bad practice"),
+**what breaks in production**, and a **fix prompt** — the exact text a
+user pastes into their own assistant. `rule.yaml`'s `message` is the
+*live* fix-prompt text end users actually see (`findings.ts`'s
+`buildFixPrompt()` builds it from `message`, not from the README) — the
+README's fix-prompt section is where you draft and justify that wording,
+not a separate document nobody reads.
+
+### 4. Fixtures, both directions (2 min)
+
+`fixtures/bad/` — minimal samples that **must** trigger:
+
+```ts
+// fixtures/bad/src/example.ts
+function warnUser() {
+  alert("Something went wrong");
+}
+```
+
+`fixtures/good/` — near-miss samples that **must not** trigger. This
+direction is mandatory, not optional polish — it's the false-positive
+suite, and it's what stops a rule from being reverted three weeks after
+merge:
+
+```ts
+// fixtures/good/src/example.ts
+function alertUser(message: string) {
+  console.warn(message);
+}
+```
+
+Pick the near-miss deliberately: a `regex`-tier rule matches raw line
+text, so it can't tell a real call from the same text inside a comment —
+`// alert("...")` would still trigger `\balert\(` and make a bad "good"
+fixture (that's exactly the kind of gap `astgrep` tier exists for — see
+step 2). `alertUser(...)` is a genuine near-miss here because the pattern's
+`\b` word boundary requires `alert` immediately followed by `(`, which
+`alertUser(` never is.
+
+### 5. Run it
+
+```sh
+pnpm test
+```
+
+The fixture harness (`packages/cli/test/rules/fixtures.test.ts`)
+auto-discovers every rule folder under `packages/rules/` — no test file
+to register, no import to add. It asserts `fixtures/bad` produces at
+least one finding and `fixtures/good` produces zero, specifically for
+your new rule.
+
+That's the whole loop for an `exists`/`tokens`-tier rule. For `regex` or
+`astgrep` (this example, and most real-world rules), there's one more
+required step before it can merge — see below.
 
 Fixtures prove a rule behaves as *designed* against synthetic samples.
 They do not prove the design is *precise* against real code — a rule can
@@ -110,3 +220,50 @@ branch — reproducibility requires an exact commit), `category`
 repos actually produced by an AI tool, not merely AI-tool-friendly
 boilerplate), and a one-line `note` on why it's there. Run `pnpm corpus
 -- --update` to seed its baseline snapshot.
+
+## Releasing (maintainers)
+
+Only `pickcheck` (`packages/cli`) is versioned and published — see
+`.changeset/config.json`'s `ignore` list and
+[`.changeset/README.md`](.changeset/README.md).
+
+**Normal flow, via CI:** after a user-facing change, run `pnpm changeset`
+and commit the file it writes alongside your PR. `.github/workflows/
+release.yml` runs on every push to `main`: with pending changesets, it
+opens/updates a "Version Packages" PR; merging that PR bumps
+`packages/cli/package.json` and `CHANGELOG.md`, which is itself a push to
+`main` — the workflow runs again, finds no pending changesets but a
+version ahead of what's on npm, and publishes with npm provenance
+(`--provenance`, via `permissions: id-token: write` + `NPM_CONFIG_PROVENANCE`
+in the workflow — GitHub Actions' OIDC token is what makes the attestation
+possible; a workflow trigger from a fork's PR doesn't get one).
+
+**Provenance only works from that CI context — never from a local
+machine** (there's no OIDC token to mint it from outside GitHub Actions).
+The exact command sequence for the very first publish, if you're doing it
+by hand rather than merging a Version Packages PR and letting CI publish:
+
+```sh
+npm whoami                            # confirm you're authenticated (npm login if not)
+```
+
+Then, one-time only, remove (or set to `false`) `"private": true` in
+`packages/cli/package.json` — it's a deliberate safety gate while this
+repo has never actually published:
+
+```sh
+pnpm install --frozen-lockfile
+pnpm typecheck && pnpm test && pnpm check && pnpm self-audit
+pnpm changeset                        # describe the release (interactive)
+pnpm version                          # applies the bump + CHANGELOG.md from it
+git add -A && git commit -m "chore: version packages"
+cd packages/cli && npm pack --dry-run && cd ../..   # verify exactly what would ship
+pnpm release                          # pnpm build && changeset publish
+git push --follow-tags
+```
+
+That last `pnpm release`, run locally, publishes **without** provenance
+(no `--provenance` flag reaches it outside CI's OIDC context) — acceptable
+for a one-off manual bootstrap, but the intended path for every release
+after the first is: `pnpm changeset` → commit → push → merge the Version
+Packages PR CI opens → CI publishes with provenance automatically.

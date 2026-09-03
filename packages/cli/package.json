@@ -1,8 +1,33 @@
 {
-  "name": "@pickcheck/cli",
+  "name": "pickcheck",
   "version": "0.0.1",
   "private": true,
+  "description": "Lighthouse for AI-built apps — a zero-config CLI that audits security, docs, discipline, UI/UX, and AI-context-token hygiene, and hands back ready-to-paste fix prompts. No LLM calls, no network, no config required.",
+  "keywords": [
+    "cli",
+    "audit",
+    "code-quality",
+    "linter",
+    "static-analysis",
+    "ai",
+    "code-review",
+    "security",
+    "accessibility",
+    "developer-tools"
+  ],
+  "homepage": "https://github.com/Jay21105545/pickcheck#readme",
+  "bugs": "https://github.com/Jay21105545/pickcheck/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jay21105545/pickcheck.git",
+    "directory": "packages/cli"
+  },
+  "license": "MIT",
+  "author": "Jay21105545",
   "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
   "bin": {
     "pickcheck": "./dist/index.js"
   },
@@ -15,7 +40,8 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsx src/index.ts",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "prepack": "node scripts/prepack.mjs"
   },
   "dependencies": {
     "@ast-grep/napi": "^0.45.3",

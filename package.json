@@ -1,5 +1,5 @@
 {
-  "name": "pickcheck",
+  "name": "pickcheck-monorepo",
   "private": true,
   "version": "0.0.1",
   "type": "module",
@@ -12,11 +12,15 @@
     "typecheck": "pnpm -r --if-present run typecheck",
     "test": "vitest run",
     "check": "biome check .",
-    "self-audit": "pnpm --filter @pickcheck/cli run build && node packages/cli/dist/index.js audit --min 90",
-    "corpus": "pnpm --filter @pickcheck/cli run build && tsx corpus/run.ts"
+    "self-audit": "pnpm --filter pickcheck run build && node packages/cli/dist/index.js audit --min 90",
+    "corpus": "pnpm --filter pickcheck run build && tsx corpus/run.ts",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "pnpm build && changeset publish"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.11",
+    "@changesets/cli": "^3.0.1",
     "tsup": "^8.5.1",
     "tsx": "^4.23.13",
     "typescript": "^7.0.2",

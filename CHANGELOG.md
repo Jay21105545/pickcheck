@@ -9,6 +9,98 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Launch prep**: `README.md` (quickstart, the six scored categories, the
+  corpus separation table as centerpiece evidence, a dogfooding note),
+  `LICENSE` (MIT), and a real "write a rule in 10 minutes" walkthrough in
+  `CONTRIBUTING.md` (folder anatomy, a worked `disc/no-alert` example
+  through `rule.yaml`/README/fixtures, why a `regex`-tier good-fixture
+  near-miss has to avoid a commented-out match). Changesets configured
+  (`.changeset/config.json` — only `pickcheck` itself is versioned; the
+  internal `@pickcheck/rules`/`@pickcheck/report`/`@pickcheck/corpus`
+  packages are `ignore`d) with a `.github/workflows/release.yml` that
+  opens/updates a Version Packages PR and publishes with npm provenance
+  (`id-token: write` + `NPM_CONFIG_PROVENANCE`) once one merges — not run
+  yet; see `CONTRIBUTING.md`'s new "Releasing" section for the exact
+  manual command sequence for a first, non-CI publish (provenance only
+  works from GitHub Actions' OIDC context, never locally).
+- `packages/cli` gains a `prepack` script (`scripts/prepack.mjs`) that
+  copies the root `README.md`/`LICENSE` into place before `npm pack`/
+  `npm publish` — without it, the published tarball had neither (they live
+  at the monorepo root, not inside the package that ships), which
+  `npm pack --dry-run` caught.
+
+### Changed
+
+- **Renamed the CLI's own package from `@pickcheck/cli` to `pickcheck`**
+  (root workspace package renamed `pickcheck-monorepo` to free up the
+  name) — IDEA.md's stated intent all along ("npm package `pickcheck`",
+  matching the README's `npx pickcheck audit` quickstart), just never
+  actually done. Every `--filter @pickcheck/cli` reference (root
+  `package.json`, `corpus/run.ts`'s error message) and the CLI's own
+  `require.resolve("@pickcheck/cli/package.json")` self-reference
+  (`repo-paths.ts`) updated to match; verified end-to-end with a real
+  `pickcheck init` run against a scratch repo, not just a passing
+  typecheck.
+- **HTML report polish**, all found by rendering real reports and
+  reviewing them rather than just reading the code:
+  - Category display names (`categoryLabel()` in `packages/report/src/
+    render.ts`) replace every raw category-slug rendering — CSS
+    `text-transform: capitalize` treats `-` as a word boundary in most
+    browsers, so `ui-ux` rendered as "Ui-Ux" in the legend, and the radar
+    chart's own axis labels weren't transformed at all (raw lowercase
+    slugs). Both now render "UI/UX" (and "Security"/"Quality"/etc.)
+    consistently everywhere a category appears as text.
+  - Light theme's treemap no longer reads as an over-saturated solid-lime
+    block on white: a new `--treemap-mix-scale` token (1 in dark, 0.45 in
+    light) scales the accent/panel blend ratio per theme — DESIGN.md's
+    single-accent rule is unchanged, only the blend *strength* differs.
+  - `main`'s max-width widened 960px → 1240px, and `.finding-cards`
+    switched from a single flex column to a `grid-template-columns:
+    repeat(auto-fill, minmax(min(420px, 100%), 1fr))` layout — at
+    1440px/1920px, a single 960px-wide column of short-message cards read
+    sparse; a 2-up grid fills the width with content instead of margin,
+    and the `min(420px, 100%)` idiom keeps it overflow-safe on narrow
+    viewports without a separate mobile media query.
+  - Dark-first defaulting and localStorage persistence (`applyTheme`,
+    `THEME_KEY`) were already correct — verified with a real headless
+    browser (a fresh load with no stored preference renders dark; toggling
+    to light and reloading the same file persists it) — and documented
+    with an explicit code comment for why there's no `prefers-color-scheme`
+    query (the report looks the same regardless of OS setting until the
+    viewer clicks the toggle, by design).
+- **`ux/inline-hex-threshold`'s regex fix from DECISIONS/0019, corrected
+  once more**: the `packages/report/src/palette.ts` design-token module
+  the fix was built around now exists in its final form (real CSS
+  custom-property text, `DARK_ROOT_TOKENS`/`LIGHT_ROOT_TOKEN_OVERRIDES`) —
+  no further rule change needed here this round, `pnpm corpus` still shows
+  no diff.
+
+### Fixed
+
+Both caught by rendering real reports and a real build, then reviewing the
+result — neither was caught by a unit test or typecheck.
+
+- Radar chart labels for "Quality"/"Docs" (the axes nearest ±30° with
+  `text-anchor: start`/`end`) overflowed a too-tight SVG canvas and
+  visually overlapped the category legend next to it. `buildRadarChart()`
+  documents why: a root `<svg>` doesn't clip to its viewBox by default, so
+  the canvas needs margin for the label's *rendered width* past its anchor
+  point, not just room for the anchor point itself.
+- `--report`'s dynamic `import("../render/html.js")` threw
+  `ERR_MODULE_NOT_FOUND` from the *built* CLI (worked fine under `tsx`/
+  vitest) — `@pickcheck/report`'s internal relative imports (`render.ts`'s
+  `from "./palette.js"`, a `.ts` file with the NodeNext-required `.js`
+  specifier) were left external by tsup's default bundling and resolved,
+  at runtime, straight to the raw `.ts` source via the workspace symlink;
+  Node 22's native TypeScript execution loads a bare `.ts` file but does
+  not remap that specifier back to its sibling `.ts` file the way `tsc`/
+  `tsx` do. Fixed via `noExternal: ["@pickcheck/report"]` in `packages/
+  cli/tsup.config.ts` — esbuild's bundler does understand the convention,
+  so the built CLI now never touches `@pickcheck/report`'s raw `.ts` files
+  at runtime.
+
+### Added
+
 - **`pickcheck audit --report [path]`** (Phase 4, DECISIONS/0019): writes a
   single self-contained HTML report (default `.pickcheck/report.html`,
   path overridable) — animated radial composite score with a trend delta

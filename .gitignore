@@ -5,3 +5,10 @@ coverage/
 *.log
 .DS_Store
 corpus/.cache/
+*.tgz
+
+# Copied into place by packages/cli's "prepack" script right before
+# `npm pack`/`npm publish` — the root README.md and LICENSE are the one
+# source of truth, not these.
+packages/cli/README.md
+packages/cli/LICENSE

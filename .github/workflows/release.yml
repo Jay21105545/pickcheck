@@ -1,0 +1,68 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      # Required for `npm publish --provenance` (OIDC token minting) —
+      # see the "release" script's NPM_CONFIG_PROVENANCE env var below.
+      id-token: write
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: pnpm
+          registry-url: "https://registry.npmjs.org"
+
+      - run: pnpm install --frozen-lockfile
+
+      # Same gate CONTRIBUTING.md asks of every PR — a release workflow
+      # publishing without it would be a weaker guarantee than a human PR.
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm check
+      - run: pnpm self-audit
+
+      # Either opens/updates a "Version Packages" PR (when there are
+      # pending changesets not yet merged) or, when package.json versions
+      # are already bumped past what's on npm (i.e. that PR was just
+      # merged), runs the "publish" command below. See CONTRIBUTING.md
+      # and .changeset/README.md for the authoring side of this flow.
+      - name: Create Release Pull Request or Publish
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          publish: pnpm release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # actions/setup-node's registry-url above writes an .npmrc that
+          # reads the auth token from NODE_AUTH_TOKEN — this is what
+          # `changeset publish`'s underlying `npm publish` calls actually
+          # authenticate with. NPM_TOKEN is set alongside it defensively
+          # (some tooling in this chain reads that name instead).
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # npm's env-var config convention (NPM_CONFIG_<KEY> -> config
+          # key <key>) — `changeset publish` shells out to real `npm
+          # publish` per package regardless of this being a pnpm
+          # workspace, so this reaches it the same way `npm publish
+          # --provenance` would on the command line.
+          NPM_CONFIG_PROVENANCE: true

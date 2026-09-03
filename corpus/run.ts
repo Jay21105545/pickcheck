@@ -62,7 +62,7 @@ const UPDATE = process.argv.includes("--update");
 async function main(): Promise<void> {
   if (!existsSync(CLI_ENTRY)) {
     console.error(
-      `${CLI_ENTRY} doesn't exist — run "pnpm --filter @pickcheck/cli run build" first (the root "corpus" script already does this).`,
+      `${CLI_ENTRY} doesn't exist — run "pnpm --filter pickcheck run build" first (the root "corpus" script already does this).`,
     );
     process.exitCode = 1;
     return;
