@@ -9,6 +9,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`pickcheck init`**: an interactive (`@clack/prompts`, see
+  [ADR 0010](DECISIONS/0010-clack-prompts-for-init.md)) scaffolder that
+  detects the target repo's stack (`package.json` or `requirements.txt` —
+  package manager, framework, install/test/lint commands) and writes a
+  docs-kit — `CHANGELOG.md`, `API.md`, `ARCHITECTURE.md`,
+  `DECISIONS/0001-record-architecture-decisions.md`, `CONTRIBUTING.md`,
+  `.github/PULL_REQUEST_TEMPLATE.md`, a stack-aware `CLAUDE.md`/`AGENTS.md`,
+  a `.github/workflows/pickcheck.yml` CI gate, and a `.env.example` seeded
+  with keys found in any existing `.env` (values stripped) — into it.
+  Never overwrites a file that already exists; skips it with a notice
+  instead. Non-interactive via `--yes` or a non-TTY stdin (so it's
+  scriptable in CI and in this project's own tests), with `--min` and
+  `--assistants` to set the CI gate's threshold and which conventions
+  file(s) to write without answering prompts.
+- **`pickcheck gen api`**: detects the target repo's API surface
+  (`app/api/**`, `pages/api/**`, `routes/**`, `src/routes/**`, `api/**`,
+  falling back to a marker scan — `express()`, `Fastify(`, `FastAPI(`,
+  `Flask(__name__` — in common entry files when no routes directory
+  exists), embeds every matched route's real source into
+  `generators/api.md`'s prompt template, and writes the result to
+  `pickcheck-prompt.md`. No LLM calls — the user pastes the prompt into
+  their own assistant, per ADR 0002.
+- **`pickcheck gen changelog`**: groups `git log` (since the last tag, or
+  the most recent 200 commits if there's no tag yet) by conventional
+  commit type and embeds the grouping into `generators/changelog.md`'s
+  prompt template, writing `pickcheck-prompt.md` — same no-LLM-calls
+  contract as `gen api`.
 - **Terminal renderer rebuilt to DESIGN.md's spec**: the summary card now
   draws a mini-bar per category (security/quality/docs/discipline/ui-ux/
   tokens) beneath the composite score bar, findings show a severity glyph

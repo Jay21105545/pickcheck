@@ -6,6 +6,9 @@
   "bin": {
     "pickcheck": "./dist/index.js"
   },
+  "exports": {
+    "./package.json": "./package.json"
+  },
   "files": [
     "dist"
   ],
@@ -16,6 +19,7 @@
   },
   "dependencies": {
     "@ast-grep/napi": "^0.45.3",
+    "@clack/prompts": "^1.7.0",
     "@pickcheck/rules": "workspace:^",
     "commander": "^15.0.0",
     "fast-glob": "^3.3.3",

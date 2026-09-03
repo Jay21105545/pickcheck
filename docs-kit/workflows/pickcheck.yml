@@ -1,0 +1,13 @@
+name: pickcheck
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npx --yes pickcheck@latest audit --min {{MIN_SCORE}}
