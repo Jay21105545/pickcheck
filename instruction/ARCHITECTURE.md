@@ -64,9 +64,12 @@ weight: 3                  # relative weight inside its category
 
 ## Scoring
 
-See [ADR 0006](../DECISIONS/0006-scoring-recalibration.md) (supersedes
-[ADR 0004](../DECISIONS/0004-scoring-normalization.md)'s formula; category
-weights are unchanged).
+See [ADR 0009](../DECISIONS/0009-scoring-diminishing-returns.md)
+(supersedes [ADR 0006](../DECISIONS/0006-scoring-recalibration.md)'s
+category-aggregation step only — additive per-rule penalties, the
+per-rule cap, composite renormalization, `CATEGORY_WEIGHTS`, and gating
+all carry forward unchanged; ADR 0006 itself supersedes
+[ADR 0004](../DECISIONS/0004-scoring-normalization.md)'s formula).
 
 - A rule is **applicable** to a category if it was actually checked
   against this repo: an unconditional `exists`-tier rule is always
@@ -74,10 +77,11 @@ weights are unchanged).
   gated on a match existing); a *conditional* `exists`-tier rule
   (`pattern.when` set — [ADR 0005](../DECISIONS/0005-conditional-exists-precondition.md))
   is applicable only if `when.files` matched at least one scanned file; a
-  `regex`/`astgrep`/`tokens`-tier rule is applicable only if its `files`
-  glob matched at least one scanned file.
-- Category penalty is **additive, not normalized** — no division by
-  applicable-rule count:
+  `regex`/`astgrep`/`tokens`/`manifest`-tier rule is applicable only if
+  its `files` glob matched at least one scanned file.
+- Category penalty accumulation is **additive, not normalized** — no
+  division by applicable-rule count — and per-rule contributions are
+  capped, both unchanged from ADR 0006:
   ```
   SEVERITY_POINTS = { info: 4, warn: 10, error: 25 }
   PER_RULE_PENALTY_CAP = 50
@@ -85,14 +89,32 @@ weights are unchanged).
   categoryPenalty(category) = Σ over rules r with ≥1 finding in category of
     min(PER_RULE_PENALTY_CAP, Σ over r's findings f of
         SEVERITY_POINTS[f.severity] × r.weight)
-
-  categoryScore(category) = clamp(100 − categoryPenalty(category), 0, 100)
   ```
-  `PER_RULE_PENALTY_CAP` bounds any single rule's contribution regardless
-  of how many times it fires (one rule can't zero a category alone; two
-  different rules still can). A category with zero findings — whether it
-  has zero applicable rules or applicable rules that just didn't fire —
-  still *reports* 100.
+  `PER_RULE_PENALTY_CAP` bounds any single rule's contribution to
+  `categoryPenalty` regardless of how many times it fires — 200
+  `console.log` findings from one rule cost the same capped 50 as one.
+- **Category score is a diminishing-returns curve over that penalty, not
+  linear subtraction** (ADR 0009 — this is the part that changed):
+  ```
+  CATEGORY_SCORE_K = 50
+
+  categoryScore(category) = 100 × CATEGORY_SCORE_K /
+    (CATEGORY_SCORE_K + categoryPenalty(category))
+  ```
+  `CATEGORY_SCORE_K` is deliberately equal to `PER_RULE_PENALTY_CAP`
+  today (a distinct, independently-tunable constant that happens to
+  share a value) — a single rule capped at its maximum lands the
+  category at exactly half (`100 × K/(K+K) = 50`), the same anchor value
+  ADR 0006's old `clamp(100 − categoryPenalty, 0, 100)` produced for that
+  case. What's different is everything past it: the old formula hit
+  exactly 0 the instant two capped rules' penalties (`2 × 50 = 100`) met
+  the category's fixed 100-point budget, after which further findings in
+  that category were invisible — a repo with two real security problems
+  and a repo with ten scored identically. A hyperbola never reaches 0 for
+  finite input, so a category keeps discriminating "bad" from
+  "catastrophic" arbitrarily far past that point. A category with zero
+  findings — whether it has zero applicable rules or applicable rules
+  that just didn't fire — still *reports* 100.
 - Composite is a weighted mean, but **renormalized over only the
   categories with ≥1 applicable rule** for this scan (weights unchanged
   from ADR 0004: security .30, quality .20, docs .15, discipline .15,
@@ -106,14 +128,19 @@ weights are unchanged).
   nominal weight — see ADR 0006 for why that matters as the ruleset
   grows.
 - **Gating severity**: after the weighted composite, each entry in
-  `SCORING_GATES` (`packages/cli/src/engine/scorer.ts`) can force the
+  `SCORING_GATES` (`packages/cli/src/engine/scorer.ts`) can pull the
   composite down further — `{ category, minSeverity, compositeCap }` —
   if any finding in `category` is at `minSeverity` or worse, `composite =
-  min(composite, compositeCap)`. General config-driven mechanism, not
-  category-specific engine code; the shipped default is
+  min(composite, compositeCap)`. This is a **ceiling, not a fixed
+  value**: it only ever lowers a composite that would otherwise exceed
+  `compositeCap`, never raises one that's already below it (ADR 0009
+  reaffirms this explicitly — it was already `Math.min` under ADR 0006,
+  just previously worded ambiguously). General config-driven mechanism,
+  not category-specific engine code; the shipped default is
   `{ category: "security", minSeverity: "error", compositeCap: 59 }`, one
   point under the CLI's default `--min 60` so an error-severity security
-  finding always fails the default gate.
+  finding always fails the default gate, regardless of how the rest of
+  the repo scores.
 
 ## Renderer Principles
 
