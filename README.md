@@ -5,6 +5,8 @@ coding assistants skip — security, code quality, docs, discipline, UI/UX, and
 AI-context-token hygiene — and hands back ready-to-paste fix prompts. No LLM
 calls, no network, no config file, no signup.
 
+![pickcheck audit report](docs/report.png)
+
 [![CI](https://github.com/Jay21105545/pickcheck/actions/workflows/ci.yml/badge.svg)](https://github.com/Jay21105545/pickcheck/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/pickcheck.svg)](https://www.npmjs.com/package/pickcheck)
 [![self-audit](https://img.shields.io/badge/self--audit-100%2F100-C6F432)](#dogfooding)
