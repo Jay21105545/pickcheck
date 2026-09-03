@@ -7,5 +7,9 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@pickcheck/rules", "@pickcheck/report", "@pickcheck/corpus"]
+  "ignore": ["@pickcheck/corpus"],
+  "privatePackages": {
+    "version": true,
+    "tag": false
+  }
 }
