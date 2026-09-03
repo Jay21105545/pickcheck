@@ -9,6 +9,8 @@ export interface TerminalRenderOptions {
   color?: boolean;
   /** Explicit override. Defaults to auto-detecting TERM=dumb from the environment. */
   ascii?: boolean;
+  /** Repo-root-relative path the HTML report was written to — appended as a note when `--report` was passed. */
+  reportPath?: string;
 }
 
 type Styler = (input: string) => string;
@@ -151,6 +153,10 @@ export function renderTerminal(
     lines.push("");
   }
 
+  if (options.reportPath !== undefined) {
+    lines.push(styles.dim(`Report written to ${options.reportPath}`));
+  }
+
   return `${lines.join("\n").trimEnd()}\n`;
 }
 
@@ -164,7 +170,11 @@ export function renderQuietSummary(
   const glyphs = (options.ascii ?? detected.ascii) ? ASCII_GLYPHS : UNICODE_GLYPHS;
   const composite = result.score.composite;
   const scoreText = styles.bold(styles.accent(`${composite}/100`));
-  return `${scoreText}${glyphs.separator}${result.rules.length} rules${glyphs.separator}${result.fileCount} files${glyphs.separator}${result.findings.length} findings\n`;
+  const reportSuffix =
+    options.reportPath === undefined
+      ? ""
+      : `${glyphs.separator}report: ${options.reportPath}`;
+  return `${scoreText}${glyphs.separator}${result.rules.length} rules${glyphs.separator}${result.fileCount} files${glyphs.separator}${result.findings.length} findings${reportSuffix}\n`;
 }
 
 /**

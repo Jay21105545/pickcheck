@@ -3,5 +3,14 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
-  "description": "Self-contained HTML report template (vanilla JS, no CDN/network). Populated starting Phase 4."
+  "description": "Self-contained HTML report template (vanilla JS, no CDN/network).",
+  "exports": {
+    "./render": "./src/render.ts",
+    "./types": "./src/types.ts",
+    "./treemap": "./src/treemap.ts",
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@pickcheck/rules": "workspace:^"
+  }
 }

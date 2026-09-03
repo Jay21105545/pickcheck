@@ -27,5 +27,17 @@ files:
 message: "This file has several one-off inline hex colors instead of a shared design-token/theme reference — a sign colors have drifted out of any central palette."
 weight: 1
 pattern:
-  regex: '#[0-9a-fA-F]{3,8}\b'
+  # Negative lookbehind excludes a hex literal that IS the value of a CSS
+  # custom-property declaration (`--token-name: #hex;`) — the token
+  # *definition* site, not scattered *usage*. A real design-token/theme
+  # module (DECISIONS/0019) legitimately defines many colors this way in
+  # one place, which is exactly the "shared reference" this rule's message
+  # asks drifted files to adopt — it shouldn't itself count as the drift.
+  # `color: #hex`, `background: #hex`, inline `style={{ color: "#hex" }}`,
+  # etc. are all still counted normally: only the `--name: #hex` shape is
+  # exempt. See fixtures/good/src/design-tokens.css (a real palette file,
+  # must NOT trigger) vs. fixtures/bad/src/Palette.tsx (many-hex file
+  # named "Palette", but hex used as scattered inline styles — must still
+  # trigger; naming alone was never the signal).
+  regex: '(?<!--[\w-]+:\s*)#[0-9a-fA-F]{3,8}\b'
   minCount: 5

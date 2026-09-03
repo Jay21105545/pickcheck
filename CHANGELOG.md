@@ -9,6 +9,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`pickcheck audit --report [path]`** (Phase 4, DECISIONS/0019): writes a
+  single self-contained HTML report (default `.pickcheck/report.html`,
+  path overridable) — animated radial composite score with a trend delta
+  against the previous run, a hand-rolled SVG radar chart of the category
+  axes, finding cards grouped by category with a severity-coded left
+  border, an expandable code snippet (offending line highlighted), and a
+  "Copy fix prompt" button, plus the unscored AI-context-surface report
+  as a token treemap. Zero network: CSS/JS/data all inline, no CDN, no
+  external fonts — opens from `file://` forever. Dark-first per
+  DESIGN.md's palette with a manual light toggle; keyboard-navigable
+  (native `<details>`/`<button>`), real contrast, no color-only meaning.
+  `--report` is additive to `--json`/`--quiet`/the terminal renderer, not
+  a replacement mode.
+- **`.pickcheck/history.json`**: every `audit` run (not just `--report`
+  ones) appends `{ timestamp, composite, categories, findingCount,
+  rulesetVersion }`, capped at the 200 most recent runs.
+  `rulesetVersion` is a content fingerprint of the loaded rules (sha256
+  of each rule's `id@severity@weight@tier`, sorted), not a hand-bumped
+  package version, so it changes automatically whenever the ruleset
+  actually does — the report flags a trend delta as "not a pure
+  comparison" when it doesn't match the previous run's.
 - **`pnpm corpus`**: promotes EXECUTION.md's Stress-Test & Backtest
   Protocol from a one-off manual run (DECISIONS/0014) into permanent
   infrastructure. Clones/updates a pinned-by-commit-SHA set of real repos
@@ -37,6 +58,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **`ux/inline-hex-threshold` now distinguishes a hex literal's role, not
+  just its presence** (DECISIONS/0019): a negative lookbehind excludes a
+  hex value only when it's the value of a CSS custom-property
+  *declaration* (`--token-name: #hex;`) — the token *definition* site —
+  while still counting the identical literal anywhere else (`color:
+  #hex`, inline `style={{ color: "#hex" }}`, etc.). Surfaced by
+  `packages/report/src/palette.ts` (a genuine, single-source-of-truth
+  design-token file) false-positiving; fixed as a detection-precision
+  improvement rather than a path exclusion, since `fixtures/bad/src/
+  Palette.tsx` already exists specifically to prove naming a file
+  "Palette" doesn't exempt scattered inline-style hex. `pnpm corpus`
+  against all 8 corpus repos: no diff.
 - **First real-world ruleset calibration** (DECISIONS/0014): ran the
   Phase-3 `ux/*`/`tok/*` rules against 4 real repos with actual data
   fetching, forms, and destructive actions (`shadcn-ui/taxonomy`,
