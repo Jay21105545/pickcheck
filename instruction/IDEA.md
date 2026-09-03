@@ -1,6 +1,6 @@
 # pickcheck — IDEA
 
-> **One line:** Lighthouse for AI-built apps. A zero-config CLI that audits everything AI builders skip — security, docs, discipline, UI/UX, and token efficiency — and hands back ready-to-paste fix prompts.
+> **One line:** Lighthouse for AI-built apps. A zero-config CLI that audits everything AI builders skip — security, code quality, docs, discipline, UI/UX, and token efficiency — and hands back ready-to-paste fix prompts.
 
 ## The Gap
 
@@ -32,20 +32,24 @@ A TypeScript CLI (`npx pickcheck`) with three commands:
 | `init`  | Scaffolds enterprise discipline into a new/existing repo: docs-kit templates, context files, CI workflow. Stack-aware. |
 | `gen <type>` | Generates docs *from the actual code* by producing a precision prompt the user pastes into their own Claude/Cursor. Types: `api`, `changelog`, `architecture`, `adr`, `ux-review`, `context-optimize`. No API keys — ever. |
 
-## The Five Categories (score axes)
+## The Six Categories (score axes)
 
 1. **Security** — exposed keys, .env in git, unauthenticated endpoints,
    unvalidated input, hallucinated imports (slopsquatting risk).
-2. **Docs** — missing API.md / CHANGELOG / ARCHITECTURE / ADRs / .env.example.
-3. **Discipline** — commit hygiene, branch protection signals, versioning,
+2. **Quality** — empty catch blocks (errors silently swallowed), `fetch()`
+   calls with no error handling at all. Split out from Discipline early
+   (RULESET.md's original ten rules already used a distinct `qual/`
+   prefix) — see [DECISIONS/0020](../DECISIONS/0020-quality-category-split.md).
+3. **Docs** — missing API.md / CHANGELOG / ARCHITECTURE / ADRs / .env.example.
+4. **Discipline** — commit hygiene, branch protection signals, versioning,
    dead code, console.log in prod paths.
-4. **UI/UX** — missing loading/empty/error states, a11y basics (alt, labels,
+5. **UI/UX** — missing loading/empty/error states, a11y basics (alt, labels,
    focus), responsive smells, inline hex chaos, forms without pending states.
-5. **Tokens** — AI context surface measured locally (gpt-tokenizer): bloated
+6. **Tokens** — AI context surface measured locally (gpt-tokenizer): bloated
    CLAUDE.md/.cursorrules, duplicated context, lockfiles not AI-ignored,
    estimated waste %.
 
-Final output: five axis scores + one composite → README badge + radar chart
+Final output: six axis scores + one composite → README badge + radar chart
 in the HTML report + trend history in `.pickcheck/history.json`.
 
 ## Why It Wins as Open Source

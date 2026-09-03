@@ -13,7 +13,7 @@ pickcheck/
 │   │       ├── render/             # terminal.ts, json.ts, html.ts
 │   │       └── util/
 │   ├── rules/        # THE content. No engine code here.
-│   │   ├── security/…  docs/…  discipline/…  ui-ux/…  tokens/…
+│   │   ├── security/…  quality/…  docs/…  discipline/…  ui-ux/…  tokens/…
 │   │   ├── _incubating/  # parked rules — loadRules() excludes this dir
 │   │   │                 # (DECISIONS/0014); kept with fixtures so the
 │   │   │                 # fixture harness still validates them
@@ -52,7 +52,7 @@ scan (fast-glob, .gitignore- and .pickcheckignore-aware)
 
 ```yaml
 id: qual/no-empty-catch
-category: quality          # security|docs|discipline|ui-ux|tokens|quality
+category: quality          # security|quality|docs|discipline|ui-ux|tokens
 severity: error            # info|warn|error
 tier: astgrep
 title: Empty catch block
@@ -125,7 +125,9 @@ all carry forward unchanged; ADR 0006 itself supersedes
 - Composite is a weighted mean, but **renormalized over only the
   categories with ≥1 applicable rule** for this scan (weights unchanged
   from ADR 0004: security .30, quality .20, docs .15, discipline .15,
-  ui-ux .10, tokens .10):
+  ui-ux .10, tokens .10 — six categories; `quality` split from
+  `discipline` before ADR 0004 landed, see
+  [ADR 0020](../DECISIONS/0020-quality-category-split.md) for why):
   ```
   composite = Σ(categoryScore × weight) / Σ(weight)   over applicable categories
   composite = 100                                     if no category is applicable

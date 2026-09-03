@@ -21,7 +21,7 @@ polished itself.
 ## Terminal
 
 - Summary card: box-drawn, composite score as a filled bar with the accent,
-  five category mini-bars beneath
+  six category mini-bars beneath
 - Findings grouped by category, severity glyphs (`✖ ▲ ●`), file:line dimmed,
   one-line message, `↳ fix:` hint pointing to the prompt/generator
 - Breathing room: blank line between groups; never wall-of-text
@@ -31,7 +31,7 @@ polished itself.
 
 - Hero: animated radial composite score (the Lighthouse move), repo name,
   timestamp, trend delta vs last run
-- Radar chart of the five axes
+- Radar chart of the six axes
 - Finding cards: severity-coded left border, expandable code snippet,
   **Copy fix prompt** button (primary interaction)
 - Token treemap: which files eat the AI context window

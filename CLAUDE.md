@@ -1,8 +1,8 @@
 # CLAUDE.md — pickcheck
 
 You are working on **pickcheck**: a zero-config TypeScript CLI that audits
-AI-built apps across five categories (security, docs, discipline, ui-ux,
-tokens) and emits fix prompts. Read instruction/IDEA.md for vision,
+AI-built apps across six categories (security, quality, docs, discipline,
+ui-ux, tokens) and emits fix prompts. Read instruction/IDEA.md for vision,
 instruction/EXECUTION.md for the current phase, instruction/ARCHITECTURE.md
 before touching the engine.
 

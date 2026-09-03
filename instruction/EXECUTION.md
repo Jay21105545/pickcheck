@@ -75,7 +75,7 @@ score ≥ +25 points without touching app code.
 - `gen ux-review`, `gen context-optimize`.
 - `.pickcheck/history.json` trend tracking.
 
-**Accept:** five-axis score renders; token report matches manual tiktoken
+**Accept:** six-axis score renders; token report matches manual tiktoken
 count within 2%.
 
 ## Phase 4 — HTML report + playbook → v0.4 (week 4)

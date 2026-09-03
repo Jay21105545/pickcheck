@@ -44,4 +44,8 @@ is no longer an active finding.
 
 Run `pickcheck audit` from this directory (or point `--rules-dir` at the
 monorepo's `packages/rules` if running the CLI from source) to see every
-finding, across all five categories.
+finding, across all six categories — the flat list above spans Security
+(hardcoded secret, tracked `.env`, hallucinated import, unvalidated
+request body), Quality (the empty catch, the bare `fetch()`), and
+Discipline (the `console.log`) together; UI/UX and Tokens get their own
+sections below since each has enough findings to warrant one.
