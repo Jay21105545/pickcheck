@@ -7,7 +7,12 @@ pickcheck/
 ├── packages/
 │   ├── cli/          # commander entry, commands, renderers, engine
 │   │   └── src/
-│   │       ├── index.ts            # bin entry (keep tiny — lazy imports)
+│   │       ├── index.ts            # bin entry: Node-version gate, then
+│   │       │                       #   `await import("./cli.js")` — nothing
+│   │       │                       #   static may load ahead of the gate
+│   │       │                       #   (DECISIONS/0025)
+│   │       ├── preflight.ts        # the gate itself (node: builtins only)
+│   │       ├── cli.ts              # commander program (keep tiny — lazy imports)
 │   │       ├── commands/           # audit.ts, init.ts, gen.ts
 │   │       ├── engine/             # scan.ts, loader.ts, tiers/, scorer.ts
 │   │       ├── render/             # terminal.ts, json.ts, html.ts

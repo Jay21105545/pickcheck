@@ -1,6 +1,6 @@
 import { readFile, stat } from "node:fs/promises";
 import { builtinModules } from "node:module";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { dirname as posixDirname } from "node:path/posix";
 import type { ManifestRule } from "@pickcheck/rules/schema";
 import micromatch from "micromatch";
@@ -31,17 +31,22 @@ export async function runManifestTier(
 /**
  * Cross-references import/require specifiers (extracted by `pattern.regex`,
  * same as the regex tier) against every ancestor manifest's declared
- * dependency names, unioned from the importing file's directory up to the
- * scanned root — the same "walk every ancestor node_modules" resolution
- * Node's own module system uses, not a single fixed manifest at the
- * scanned root. In a pnpm/npm/yarn workspace (like pickcheck's own repo —
- * `packages/cli`, `packages/rules`, …) each package's own dependencies
- * live in *its own* package.json, and its tooling config commonly relies
- * on a devDependency declared at the *workspace root* instead (e.g.
+ * dependency names, unioned from the importing file's directory upwards —
+ * the same "walk every ancestor node_modules" resolution Node's own
+ * module system uses, not a single fixed manifest at the scanned root. In
+ * a pnpm/npm/yarn workspace (like pickcheck's own repo — `packages/cli`,
+ * `packages/rules`, …) each package's own dependencies live in *its own*
+ * package.json, and its tooling config commonly relies on a devDependency
+ * declared at the *workspace root* instead (e.g.
  * `packages/cli/tsup.config.ts` importing `tsup`, a root devDependency);
  * reading only one fixed manifest — root-only, or nearest-only — floods
  * false positives on real dependencies declared at the other level. See
- * DECISIONS/0007. The extraction pattern is rule data; only the manifest
+ * DECISIONS/0007. The walk continues a bounded distance *above* the
+ * scanned root as well, so that same tooling config resolves when the
+ * audit is run from inside `packages/cli` rather than the repo root — see
+ * `collectAboveScanRoot()` and DECISIONS/0026.
+ *
+ * The extraction pattern is rule data; only the manifest
  * lookup and the specifier-shape rules below (built-ins, relative paths,
  * subpaths, scoped packages, URL/scheme imports, and baseUrl-resolved
  * local modules — DECISIONS/0015) are generic engine capability.
@@ -61,7 +66,7 @@ async function runHallucinatedImportCheck(
   );
   const findings: Finding[] = [];
   const warnings: string[] = [];
-  const manifestCache = new Map<string, Set<string>>();
+  const manifestCache = createManifestCache();
   const baseDirCache = new Map<string, string>();
 
   for (const file of matches) {
@@ -73,9 +78,9 @@ async function runHallucinatedImportCheck(
       manifestCache,
     );
     if (declared.size === 0) {
-      // No ancestor manifest (up to the scanned root) declared anything
-      // for this file at all — nothing to cross-reference it against, so
-      // it's silently out of scope rather than a warning per file.
+      // No manifest anywhere the walk reaches declared anything for this
+      // file at all — nothing to cross-reference it against, so it's
+      // silently out of scope rather than a warning per file.
       continue;
     }
 
@@ -128,7 +133,10 @@ async function runHallucinatedImportCheck(
  * whether it's a finding. Deliberately does *not* skip files with zero
  * declared dependencies anywhere up the chain — for this check, "no
  * manifest found at all" is itself evidence the required dependency is
- * absent, not a reason to stay silent.
+ * absent, not a reason to stay silent. It inherits the above-scanned-root
+ * half of that walk too (DECISIONS/0026): a payment SDK declared at a
+ * workspace root is just as installed as one declared next door, so
+ * auditing a single package must not resurrect the finding.
  */
 async function runRequiresDependencyCheck(
   rule: ManifestRule,
@@ -145,7 +153,7 @@ async function runRequiresDependencyCheck(
   );
   const findings: Finding[] = [];
   const warnings: string[] = [];
-  const manifestCache = new Map<string, Set<string>>();
+  const manifestCache = createManifestCache();
 
   for (const file of matches) {
     const declared = await declaredDependenciesForFile(
@@ -203,28 +211,49 @@ function matchesAnyRequiredDependency(
 }
 
 /**
+ * Per-run memoisation for the ancestor walk. Two caches, because the walk
+ * has two halves with different keys: `perDir` is keyed by a
+ * scanned-root-relative directory, while everything above the scanned
+ * root is one absolute-path walk whose result is identical for every file
+ * in the run.
+ */
+interface ManifestCache {
+  /** Cumulative declared dependencies per scanned-root-relative directory. */
+  perDir: Map<string, Set<string>>;
+  /** Memoised `dependenciesAboveScanRoot()`; `undefined` until first computed. */
+  aboveScanRoot: Set<string> | undefined;
+}
+
+function createManifestCache(): ManifestCache {
+  return { perDir: new Map(), aboveScanRoot: undefined };
+}
+
+/**
  * Unions the declared-dependency sets of every manifest found from `dir`
- * up to (and including) the scanned root — not just the nearest one.
- * This mirrors Node's own bare-specifier resolution, which walks every
- * ancestor `node_modules` up to the filesystem root, not only the closest
- * one: a package's tooling config (e.g. `tsup.config.ts`) commonly imports
- * a devDependency declared at the *workspace root* rather than repeated
- * in every package, and that's a real, resolvable import, not a
- * hallucinated one. An empty result means either no manifest existed
- * anywhere in the chain, or every manifest that did exist declared
- * nothing — the two aren't distinguished, and the caller treats both the
- * same way (nothing to check this file's imports against, so it's
- * silently skipped rather than flagging every bare specifier). Each
- * directory's cumulative result is cached, so a package with hundreds of
- * files only ever reads and parses each ancestor manifest once.
+ * up to (and including) the scanned root, then — via
+ * `dependenciesAboveScanRoot()` — of the bounded run of manifests above
+ * it. Not just the nearest one: this mirrors Node's own bare-specifier
+ * resolution, which walks every ancestor `node_modules` up to the
+ * filesystem root, not only the closest. A package's tooling config (e.g.
+ * `tsup.config.ts`) commonly imports a devDependency declared at the
+ * *workspace root* rather than repeated in every package, and that's a
+ * real, resolvable import, not a hallucinated one.
+ *
+ * An empty result means either no manifest existed anywhere in the chain,
+ * or every manifest that did exist declared nothing — the two aren't
+ * distinguished, and the caller treats both the same way (nothing to
+ * check this file's imports against, so it's silently skipped rather than
+ * flagging every bare specifier). Each directory's cumulative result is
+ * cached, so a package with hundreds of files only ever reads and parses
+ * each ancestor manifest once.
  */
 async function declaredDependenciesForFile(
   cwd: string,
   dir: string,
   rule: ManifestRule,
-  cache: Map<string, Set<string>>,
+  cache: ManifestCache,
 ): Promise<Set<string>> {
-  const cached = cache.get(dir);
+  const cached = cache.perDir.get(dir);
   if (cached !== undefined) {
     return cached;
   }
@@ -237,14 +266,130 @@ async function declaredDependenciesForFile(
 
   const result =
     dir === "."
-      ? own
+      ? union(own, await dependenciesAboveScanRoot(cwd, rule, cache))
       : union(
           own,
           await declaredDependenciesForFile(cwd, posixDirname(dir), rule, cache),
         );
 
-  cache.set(dir, result);
+  cache.perDir.set(dir, result);
   return result;
+}
+
+/** Memoised `collectAboveScanRoot()` — one walk per run, not one per file. */
+async function dependenciesAboveScanRoot(
+  cwd: string,
+  rule: ManifestRule,
+  cache: ManifestCache,
+): Promise<Set<string>> {
+  if (cache.aboveScanRoot === undefined) {
+    cache.aboveScanRoot = await collectAboveScanRoot(cwd, rule);
+  }
+  return cache.aboveScanRoot;
+}
+
+/**
+ * The declared dependencies of the manifests *above* the scanned root —
+ * the fix for `cd packages/cli && pickcheck audit` flagging
+ * `tsup.config.ts`'s `import { defineConfig } from "tsup"`, where `tsup`
+ * is a devDependency of the monorepo ROOT and the walk above used to
+ * bottom out at the scanned root and give up (DECISIONS/0026).
+ *
+ * Bounded at both ends, because a walk that leaves the audited tree has
+ * to be able to say where it stops:
+ *
+ * - **It doesn't start** if the scanned root is itself a project root.
+ *   Auditing a whole repo already sees every manifest that governs it;
+ *   climbing further would read whatever unrelated directories happen to
+ *   sit above the checkout (`~/package.json`, `/srv/package.json`) and
+ *   let them silently vouch for imports.
+ * - **It stops, inclusively, at the first project root above.** That
+ *   root's manifest is exactly the workspace-root package.json this
+ *   exists to find, so it's read before stopping.
+ * - **It contributes nothing if no project root is found.** Reaching the
+ *   filesystem root without one means the scanned directory isn't
+ *   enclosed by any project we can identify, so there is no principled
+ *   boundary — and an unbounded union of every ancestor manifest would
+ *   turn "declared somewhere on this machine" into "not hallucinated".
+ *   Discarding what was collected is the conservative read: at worst the
+ *   tier behaves exactly as it did before this walk existed.
+ *
+ * Only manifests are ever read up here. No file above the scanned root is
+ * scanned, and no finding can be reported against one.
+ */
+async function collectAboveScanRoot(
+  cwd: string,
+  rule: ManifestRule,
+): Promise<Set<string>> {
+  if (await isProjectRoot(cwd)) {
+    return new Set<string>();
+  }
+
+  const collected = new Set<string>();
+  let dir = dirname(cwd);
+  let previous = cwd;
+  // `dirname()` is a fixed point at the filesystem root ("/" on POSIX,
+  // `C:\` on Windows), which is what ends the walk when no project root
+  // is ever found.
+  while (dir !== previous) {
+    const own = await tryReadManifest(
+      join(dir, rule.pattern.manifestFile),
+      rule.pattern.dependencyFields,
+    );
+    if (own !== undefined) {
+      for (const name of own) {
+        collected.add(name);
+      }
+    }
+    if (await isProjectRoot(dir)) {
+      return collected;
+    }
+    previous = dir;
+    dir = dirname(dir);
+  }
+
+  return new Set<string>();
+}
+
+/**
+ * Whether `dir` is the root of a project or workspace — the boundary
+ * `collectAboveScanRoot()` refuses to cross. Three markers, covering the
+ * ways the ecosystem actually declares one:
+ *
+ * - `.git` — a repository root. Matched as a path, not a directory:
+ *   worktrees and submodules make it a *file* containing a gitdir
+ *   pointer.
+ * - `pnpm-workspace.yaml` — pnpm's workspace declaration, which lives
+ *   nowhere but a workspace root.
+ * - `package.json` with a `workspaces` field — npm's and yarn's
+ *   equivalent (an array, or an object with a `packages` key).
+ */
+async function isProjectRoot(dir: string): Promise<boolean> {
+  if (await pathExists(join(dir, ".git"))) {
+    return true;
+  }
+  if (await pathExists(join(dir, "pnpm-workspace.yaml"))) {
+    return true;
+  }
+  return declaresWorkspaces(join(dir, "package.json"));
+}
+
+/** Whether the manifest at `path` has a `workspaces` field — missing, unreadable and unparsable manifests all read as "no", same silent-skip philosophy as `tryReadManifest`. */
+async function declaresWorkspaces(path: string): Promise<boolean> {
+  const raw = await tryReadFile(path);
+  if (raw === undefined) {
+    return false;
+  }
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (typeof parsed !== "object" || parsed === null) {
+      return false;
+    }
+    const workspaces = (parsed as Record<string, unknown>).workspaces;
+    return workspaces !== undefined && workspaces !== null;
+  } catch {
+    return false;
+  }
 }
 
 function union(a: Set<string>, b: Set<string>): Set<string> {
@@ -454,6 +599,16 @@ async function tryReadFile(path: string): Promise<string | undefined> {
     return await readFile(path, "utf-8");
   } catch {
     return undefined;
+  }
+}
+
+/** Whether anything exists at `path` — file or directory alike. */
+async function pathExists(path: string): Promise<boolean> {
+  try {
+    await stat(path);
+    return true;
+  } catch {
+    return false;
   }
 }
 

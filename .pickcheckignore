@@ -4,3 +4,12 @@
 # examples/broken-app is deliberately, permanently bad: it exists to prove
 # the rules and scorer work, not as real repo content to be judged by.
 examples/
+
+# packages/cli/test/fixtures/ is audit *input*, not repo content: repos
+# shaped like someone else's project, several of them deliberately
+# containing the exact mistakes the ruleset exists to catch (a
+# hallucinated import in workspace-package/, a malformed package.json in
+# engines/). Scoring pickcheck on them is the same category error as
+# scoring it on examples/broken-app. Each fixture is still audited by its
+# own test, with its own cwd — this only removes them from *our* score.
+packages/cli/test/fixtures/

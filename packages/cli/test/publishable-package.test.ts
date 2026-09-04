@@ -185,39 +185,80 @@ describe("bin entry startup budget", () => {
    */
   const EAGER_GRAPH_BUDGET_KB = 150;
 
+  const STATIC_IMPORT = /from\s*"\.\/([^"]+\.js)"/g;
+  // esbuild emits its shared helpers as a bare side-effect import.
+  const BARE_STATIC_IMPORT = /^import\s*"\.\/([^"]+\.js)"/gm;
+  const DYNAMIC_IMPORT = /import\(\s*"\.\/([^"]+\.js)"\s*\)/g;
+
+  /**
+   * Every chunk loaded before the CLI can dispatch a command.
+   *
+   * Only STATIC imports load at startup — a dynamic `import()` (how
+   * ruleSchema/zod, @ast-grep/napi, gpt-tokenizer and the HTML report are
+   * all loaded) costs nothing until the command that needs it runs. The
+   * one exception is the entry's own bootstrap `import("./cli-*.js")`,
+   * which is dynamic only so the Node-version gate in index.ts can run
+   * ahead of commander (DECISIONS/0025). That chunk loads on every
+   * invocation, so the walk follows it as if it were static — otherwise
+   * moving the CLI behind that import would have silently emptied this
+   * budget rather than kept it honest.
+   */
+  function eagerChunks(): Set<string> {
+    const visited = new Set<string>();
+    const pending = ["index.js"];
+
+    while (pending.length > 0) {
+      const chunk = pending.pop() as string;
+      if (visited.has(chunk)) {
+        continue;
+      }
+      visited.add(chunk);
+
+      const source = readFileSync(join(distDir, chunk), "utf-8");
+      for (const match of source.matchAll(STATIC_IMPORT)) {
+        pending.push(match[1] as string);
+      }
+      for (const match of source.matchAll(BARE_STATIC_IMPORT)) {
+        pending.push(match[1] as string);
+      }
+      if (chunk === "index.js") {
+        for (const match of source.matchAll(DYNAMIC_IMPORT)) {
+          pending.push(match[1] as string);
+        }
+      }
+    }
+
+    return visited;
+  }
+
+  it("still loads the CLI on every invocation, so the walk below isn't measuring an empty entry", () => {
+    const chunks = eagerChunks();
+
+    // If the bootstrap import ever stops being followed (renamed, or
+    // inlined back into index.js), this drops to 1-2 chunks and the byte
+    // budget becomes meaningless.
+    expect(chunks.size).toBeGreaterThan(2);
+  });
+
   it("keeps the eagerly-imported graph small enough to hit the startup budget", () => {
-    const entrySource = readFileSync(join(distDir, "index.js"), "utf-8");
+    const chunks = eagerChunks();
 
-    // Only STATIC imports load at startup. A dynamic `import()` — how
-    // ruleSchema/zod, @ast-grep/napi, gpt-tokenizer and the HTML report
-    // are all loaded — costs nothing until the command that needs it runs.
-    const staticChunks = new Set(
-      [...entrySource.matchAll(/from\s*"\.\/([^"]+\.js)"/g)].map((m) => m[1] as string),
-    );
-
-    let totalBytes = statSync(join(distDir, "index.js")).size;
-    for (const chunk of staticChunks) {
+    let totalBytes = 0;
+    for (const chunk of chunks) {
       totalBytes += statSync(join(distDir, chunk)).size;
     }
     const totalKb = totalBytes / 1024;
 
     expect(
       totalKb,
-      `The bin entry eagerly loads ${totalKb.toFixed(1)}KB across index.js + ${staticChunks.size} chunk(s), over the ${EAGER_GRAPH_BUDGET_KB}KB tripwire. Something heavy moved onto the startup path — check for a new top-level import that should be a dynamic import() instead (see loader.ts's ruleSchema for the pattern).`,
+      `The bin entry eagerly loads ${totalKb.toFixed(1)}KB across ${chunks.size} chunk(s), over the ${EAGER_GRAPH_BUDGET_KB}KB tripwire. Something heavy moved onto the startup path — check for a new top-level import that should be a dynamic import() instead (see loader.ts's ruleSchema for the pattern).`,
     ).toBeLessThan(EAGER_GRAPH_BUDGET_KB);
   });
 
   it("keeps zod off the startup path specifically", () => {
-    const entrySource = readFileSync(join(distDir, "index.js"), "utf-8");
-    const staticChunks = [...entrySource.matchAll(/from\s*"\.\/([^"]+\.js)"/g)].map(
-      (m) => m[1] as string,
-    );
-
-    const eagerSource =
-      entrySource +
-      staticChunks
-        .map((chunk) => readFileSync(join(distDir, chunk), "utf-8"))
-        .join("\n");
+    const eagerSource = [...eagerChunks()]
+      .map((chunk) => readFileSync(join(distDir, chunk), "utf-8"))
+      .join("\n");
 
     // zod's runtime is unmistakable in a bundle; if these appear in the
     // eager graph, the rule schema is being imported at module scope again.

@@ -43,7 +43,9 @@ npx pickcheck init                  # scaffold a docs-kit + CI audit gate into a
 npx pickcheck gen api               # generate an API.md prompt from your real routes
 ```
 
-Requires Node 22.12+. Run `npx pickcheck audit --help` for every flag.
+Requires Node 22.12+ — on anything older pickcheck exits 1 and tells you
+which version it needs and which one you're on. Run
+`npx pickcheck audit --help` for every flag.
 
 ## What it checks
 

@@ -1,6 +1,8 @@
+import { join } from "node:path";
 import type { ManifestRule } from "@pickcheck/rules/schema";
 import { describe, expect, it } from "vitest";
 import { runManifestTier, stripComments } from "../../../src/engine/tiers/manifest.js";
+import type { TempDir } from "../../helpers/temp-dir.js";
 import { createTempDir } from "../../helpers/temp-dir.js";
 
 function rule(overrides: Partial<ManifestRule> = {}): ManifestRule {
@@ -666,6 +668,264 @@ describe("runManifestTier — requires-dependency mode (DECISIONS/0018)", () => 
           "packages/web/package.json",
           "packages/web/src/Checkout.tsx",
         ],
+      });
+
+      expect(result.findings).toEqual([]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+});
+
+/**
+ * DECISIONS/0026. Every case here scans a *subdirectory* of the tree it
+ * builds, which is the situation the old walk got wrong: it bottomed out
+ * at the scan root, so a dependency declared at the workspace root above
+ * it read as hallucinated.
+ *
+ * `createTempDir()` roots these under `os.tmpdir()`, and the "no project
+ * root above" case below asserts that the walk finds none — which assumes
+ * nothing above the temp directory carries `.git`, `pnpm-workspace.yaml`,
+ * or a `package.json` with `workspaces`. That holds on CI images and on a
+ * normal developer machine; if it ever stops holding, that test fails
+ * loudly rather than passing for the wrong reason.
+ */
+describe("runManifestTier — resolution above the scanned root (DECISIONS/0026)", () => {
+  /** A scan root at `pkg/` inside `parent/`, importing `tsup` from a config file. */
+  async function widgetIn(prefix: string): Promise<TempDir> {
+    const dir = await createTempDir(prefix);
+    await dir.write(
+      "parent/pkg/package.json",
+      JSON.stringify({ dependencies: { lodash: "^4.0.0" } }),
+    );
+    await dir.write(
+      "parent/pkg/tsup.config.ts",
+      "import { defineConfig } from 'tsup';\n",
+    );
+    return dir;
+  }
+
+  const scannedFiles = ["package.json", "tsup.config.ts"];
+
+  it("resolves a dependency declared above the scanned root, stopping at a .git repo root", async () => {
+    const dir = await widgetIn("manifest-above-git");
+    try {
+      await dir.write(
+        "parent/package.json",
+        JSON.stringify({ devDependencies: { tsup: "^8.5.1" } }),
+      );
+      await dir.write("parent/.git/HEAD", "ref: refs/heads/main\n");
+
+      const result = await runManifestTier(rule(), {
+        cwd: join(dir.path, "parent/pkg"),
+        scannedFiles,
+      });
+
+      expect(result.findings).toEqual([]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("treats a .git *file* as a repo root too, the way worktrees and submodules write it", async () => {
+    const dir = await widgetIn("manifest-above-gitfile");
+    try {
+      await dir.write(
+        "parent/package.json",
+        JSON.stringify({ devDependencies: { tsup: "^8.5.1" } }),
+      );
+      await dir.write("parent/.git", "gitdir: /elsewhere/.git/worktrees/pkg\n");
+
+      const result = await runManifestTier(rule(), {
+        cwd: join(dir.path, "parent/pkg"),
+        scannedFiles,
+      });
+
+      expect(result.findings).toEqual([]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("stops at a pnpm-workspace.yaml root", async () => {
+    const dir = await widgetIn("manifest-above-pnpm");
+    try {
+      await dir.write(
+        "parent/package.json",
+        JSON.stringify({ devDependencies: { tsup: "^8.5.1" } }),
+      );
+      await dir.write("parent/pnpm-workspace.yaml", 'packages:\n  - "pkg"\n');
+
+      const result = await runManifestTier(rule(), {
+        cwd: join(dir.path, "parent/pkg"),
+        scannedFiles,
+      });
+
+      expect(result.findings).toEqual([]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("stops at a package.json declaring npm/yarn workspaces", async () => {
+    const dir = await widgetIn("manifest-above-workspaces");
+    try {
+      await dir.write(
+        "parent/package.json",
+        JSON.stringify({
+          workspaces: ["pkg"],
+          devDependencies: { tsup: "^8.5.1" },
+        }),
+      );
+
+      const result = await runManifestTier(rule(), {
+        cwd: join(dir.path, "parent/pkg"),
+        scannedFiles,
+      });
+
+      expect(result.findings).toEqual([]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("never starts the walk when the scanned root is itself a project root", async () => {
+    const dir = await widgetIn("manifest-above-scanroot-is-root");
+    try {
+      // The dependency is right there one level up, at a legitimate
+      // workspace root — and must still be invisible, because auditing a
+      // whole repo already sees every manifest that governs it. Climbing
+      // out of it would let arbitrary directories above a checkout vouch
+      // for its imports.
+      await dir.write(
+        "parent/package.json",
+        JSON.stringify({
+          workspaces: ["pkg"],
+          devDependencies: { tsup: "^8.5.1" },
+        }),
+      );
+      await dir.write("parent/pnpm-workspace.yaml", 'packages:\n  - "pkg"\n');
+      await dir.write("parent/pkg/.git/HEAD", "ref: refs/heads/main\n");
+
+      const result = await runManifestTier(rule(), {
+        cwd: join(dir.path, "parent/pkg"),
+        scannedFiles,
+      });
+
+      expect(result.findings).toEqual([
+        expect.objectContaining({ file: "tsup.config.ts", line: 1 }),
+      ]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("stops inclusively at the FIRST project root above, and reads nothing beyond it", async () => {
+    const dir = await createTempDir("manifest-above-first-root-wins");
+    try {
+      // outer/ is a workspace root too, but inner/ is reached first — so
+      // `tsup` (inner, the stopping root itself) resolves and `vitest`
+      // (outer, one level past the stop) does not.
+      await dir.write(
+        "outer/package.json",
+        JSON.stringify({ devDependencies: { vitest: "^4.0.0" } }),
+      );
+      await dir.write("outer/pnpm-workspace.yaml", 'packages:\n  - "inner/*"\n');
+      await dir.write(
+        "outer/inner/package.json",
+        JSON.stringify({ devDependencies: { tsup: "^8.5.1" } }),
+      );
+      await dir.write("outer/inner/pnpm-workspace.yaml", 'packages:\n  - "pkg"\n');
+      await dir.write(
+        "outer/inner/pkg/package.json",
+        JSON.stringify({ dependencies: { lodash: "^4.0.0" } }),
+      );
+      await dir.write(
+        "outer/inner/pkg/tsup.config.ts",
+        "import { defineConfig } from 'tsup';\nimport { describe } from 'vitest';\n",
+      );
+
+      const result = await runManifestTier(rule(), {
+        cwd: join(dir.path, "outer/inner/pkg"),
+        scannedFiles,
+      });
+
+      expect(result.findings).toEqual([
+        expect.objectContaining({ file: "tsup.config.ts", line: 2 }),
+      ]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("contributes nothing when no project root is found above the scanned root", async () => {
+    const dir = await widgetIn("manifest-above-unbounded");
+    try {
+      // parent/ declares tsup but carries no project-root marker, and
+      // nothing above the temp directory does either — so the walk runs
+      // out of tree and discards everything it collected rather than
+      // letting an unbounded chain of ancestors vouch for the import.
+      await dir.write(
+        "parent/package.json",
+        JSON.stringify({ devDependencies: { tsup: "^8.5.1" } }),
+      );
+
+      const result = await runManifestTier(rule(), {
+        cwd: join(dir.path, "parent/pkg"),
+        scannedFiles,
+      });
+
+      expect(result.findings).toEqual([
+        expect.objectContaining({ file: "tsup.config.ts", line: 1 }),
+      ]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("still flags a genuinely undeclared specifier from a subdirectory scan root", async () => {
+    const dir = await widgetIn("manifest-above-still-flags");
+    try {
+      await dir.write(
+        "parent/package.json",
+        JSON.stringify({ devDependencies: { tsup: "^8.5.1" } }),
+      );
+      await dir.write("parent/.git/HEAD", "ref: refs/heads/main\n");
+      await dir.write(
+        "parent/pkg/src/a.ts",
+        "import { thing } from 'left-pad-plus-plus';\n",
+      );
+
+      const result = await runManifestTier(rule(), {
+        cwd: join(dir.path, "parent/pkg"),
+        scannedFiles: [...scannedFiles, "src/a.ts"],
+      });
+
+      expect(result.findings).toEqual([
+        expect.objectContaining({ file: "src/a.ts", line: 1 }),
+      ]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("applies the same walk to requires-dependency mode", async () => {
+    const dir = await createTempDir("manifest-above-requires-dep");
+    try {
+      // A payment SDK declared at the workspace root is just as installed
+      // as one declared next door — auditing a single package must not
+      // resurrect the finding.
+      await dir.write(
+        "parent/package.json",
+        JSON.stringify({ dependencies: { stripe: "^18.0.0" } }),
+      );
+      await dir.write("parent/pnpm-workspace.yaml", 'packages:\n  - "pkg"\n');
+      await dir.write("parent/pkg/package.json", JSON.stringify({ dependencies: {} }));
+      await dir.write("parent/pkg/src/Checkout.tsx", '<Input id="cardNumber" />\n');
+
+      const result = await runManifestTier(cardInputRule(), {
+        cwd: join(dir.path, "parent/pkg"),
+        scannedFiles: ["package.json", "src/Checkout.tsx"],
       });
 
       expect(result.findings).toEqual([]);
