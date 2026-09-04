@@ -5,12 +5,12 @@ coding assistants skip — security, code quality, docs, discipline, UI/UX, and
 AI-context-token hygiene — and hands back ready-to-paste fix prompts. No LLM
 calls, no network, no config file, no signup.
 
-![pickcheck audit report](docs/report.png)
+![pickcheck audit report](https://raw.githubusercontent.com/Jay21105545/pickcheck/main/docs/report.png)
 
 [![CI](https://github.com/Jay21105545/pickcheck/actions/workflows/ci.yml/badge.svg)](https://github.com/Jay21105545/pickcheck/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/pickcheck.svg)](https://www.npmjs.com/package/pickcheck)
 [![self-audit](https://img.shields.io/badge/self--audit-100%2F100-C6F432)](#dogfooding)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/Jay21105545/pickcheck/blob/main/LICENSE)
 
 ## The gap
 
@@ -43,15 +43,15 @@ npx pickcheck init                  # scaffold a docs-kit + CI audit gate into a
 npx pickcheck gen api               # generate an API.md prompt from your real routes
 ```
 
-Requires Node 18+. Run `npx pickcheck audit --help` for every flag.
+Requires Node 22.12+. Run `npx pickcheck audit --help` for every flag.
 
 ## What it checks
 
 Six scored axes, composited into one number (0–100), plus an unscored
 AI-context-token report. 20 rules today — every one of them lives in
-[`packages/rules/`](packages/rules) as a `rule.yaml` + fixtures, so adding
+[`packages/rules/`](https://github.com/Jay21105545/pickcheck/tree/main/packages/rules) as a `rule.yaml` + fixtures, so adding
 one is a docs contribution, not an engine change (see
-[CONTRIBUTING.md](CONTRIBUTING.md)).
+[CONTRIBUTING.md](https://github.com/Jay21105545/pickcheck/blob/main/CONTRIBUTING.md)).
 
 | Category | Weight | Catches things like |
 |---|---|---|
@@ -93,7 +93,7 @@ the sample — it's the corpus's actual security posture: real AI-generated
 apps ship with real, exploitable security gaps, and pickcheck's gate
 mechanism is specifically built to make that unmissable rather than
 averaged away. Re-run it yourself: `pnpm corpus` (see
-[CONTRIBUTING.md](CONTRIBUTING.md)).
+[CONTRIBUTING.md](https://github.com/Jay21105545/pickcheck/blob/main/CONTRIBUTING.md)).
 
 ## Screenshots
 
@@ -109,8 +109,8 @@ toggle, zero network requests once generated.
 pickcheck audits itself in CI on every push and PR (`pnpm self-audit`,
 gated at `--min 90`) — currently **100/100**. If a change ever drops that
 score, the fix is to fix the actual problem the rule found, never to relax
-the rule. See [CLAUDE.md](CLAUDE.md) and
-[DECISIONS/](DECISIONS) for the reasoning behind every rule and every
+the rule. See [CLAUDE.md](https://github.com/Jay21105545/pickcheck/blob/main/CLAUDE.md) and
+[DECISIONS/](https://github.com/Jay21105545/pickcheck/tree/main/DECISIONS) for the reasoning behind every rule and every
 scoring change.
 
 ## How it's built
@@ -118,7 +118,7 @@ scoring change.
 - **No LLM calls, ever, inside the tool.** `gen <type>` commands write a
   paste-ready prompt file; your own assistant does the writing. Keeps
   pickcheck free, keyless, and private — see
-  [ADR 0002](DECISIONS/0002-no-llm-calls.md).
+  [ADR 0002](https://github.com/Jay21105545/pickcheck/blob/main/DECISIONS/0002-no-llm-calls.md).
 - **No network calls at runtime.** Everything — the scan, the scoring, the
   HTML report — runs entirely on your machine.
 - **Rules are data.** A rule is one folder: `rule.yaml` + a README with a
@@ -126,13 +126,13 @@ scoring change.
   contains rule-specific code.
 - TypeScript, a pnpm workspace, `@ast-grep/napi` for structural rules,
   `gpt-tokenizer` for local token counting, zero heavy deps on the CLI's
-  cold-start path. See [instruction/ARCHITECTURE.md](instruction/ARCHITECTURE.md).
+  cold-start path. See [instruction/ARCHITECTURE.md](https://github.com/Jay21105545/pickcheck/blob/main/instruction/ARCHITECTURE.md).
 
 ## Contributing
 
 Adding a rule takes about ten minutes and needs zero engine knowledge — see
-[CONTRIBUTING.md](CONTRIBUTING.md).
+[CONTRIBUTING.md](https://github.com/Jay21105545/pickcheck/blob/main/CONTRIBUTING.md).
 
 ## License
 
-[MIT](LICENSE)
+[MIT](https://github.com/Jay21105545/pickcheck/blob/main/LICENSE)

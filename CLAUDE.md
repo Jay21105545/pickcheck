@@ -10,7 +10,9 @@ before touching the engine.
 
 - **No LLM API calls in the tool.** Generators output prompt files only.
 - **No network calls at runtime.** Everything local. No telemetry.
-- **Node 18+ compatibility.** No Bun-only APIs.
+- **Node 22.12+ compatibility.** No Bun-only APIs. (Was Node 18+;
+  raised in DECISIONS/0024 — commander@15 requires >=22.12 and both 18
+  and 20 are past EOL.)
 - **Rules are data.** Detection logic lives in `rule.yaml` (zod-validated);
   the engine never contains rule-specific code. If a rule needs new engine
   capability, add a new detection *tier*, not a special case.

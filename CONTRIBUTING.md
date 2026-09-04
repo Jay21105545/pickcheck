@@ -9,7 +9,7 @@ pnpm install
 This repo is pinned to Node 22 via `.nvmrc` (`nvm use`) — see
 [ADR 0003](DECISIONS/0003-tsup-and-node22-toolchain.md) for why the CLI's
 own build/dev tooling needs it even though the shipped CLI still targets
-Node 18+ at runtime.
+Node 22.12+ at runtime.
 
 ## Before opening a PR
 

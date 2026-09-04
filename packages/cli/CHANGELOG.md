@@ -1,5 +1,11 @@
 # pickcheck
 
+## 0.1.3
+
+### Patch Changes
+
+- Fix the npm package page and stop lying about the supported Node version. The README's screenshot and every relative link (CONTRIBUTING.md, LICENSE, DECISIONS/, packages/rules/, ARCHITECTURE.md) now use absolute URLs, so they render on npm as well as GitHub — npm cannot resolve repo-relative paths, so the screenshot was broken and every link 404'd. `engines.node` is raised from `>=18` to `>=22.12.0` to match what we actually ship: `commander@15` requires `>=22.12.0` and `@clack/prompts` requires `>=20.12.0`, so the old `>=18` claim was false and produced a wall of `EBADENGINE` warnings on install. Node 18 and 20 are both past end-of-life. Installs on Node 22.12+ are now warning-free. See DECISIONS/0024.
+
 ## 0.1.2
 
 ### Patch Changes

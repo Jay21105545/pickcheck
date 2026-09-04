@@ -41,12 +41,6 @@ importers:
       '@clack/prompts':
         specifier: ^1.7.0
         version: 1.7.0
-      '@pickcheck/report':
-        specifier: workspace:^
-        version: link:../report
-      '@pickcheck/rules':
-        specifier: workspace:^
-        version: link:../rules
       commander:
         specifier: ^15.0.0
         version: 15.0.0
@@ -69,6 +63,12 @@ importers:
         specifier: ^2.9.0
         version: 2.9.0
     devDependencies:
+      '@pickcheck/report':
+        specifier: workspace:^
+        version: link:../report
+      '@pickcheck/rules':
+        specifier: workspace:^
+        version: link:../rules
       '@types/micromatch':
         specifier: ^4.0.10
         version: 4.0.10

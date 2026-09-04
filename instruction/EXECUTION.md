@@ -7,8 +7,8 @@ the previous phase's acceptance criteria pass.
 
 | Layer | Choice | Why |
 |---|---|---|
-| Language | TypeScript, target Node 18+ | universal `npx` reach; Bun compat still ~90-95% |
-| Toolchain Node | 22 LTS, pinned via `.nvmrc` | dev/CI floor only — rolldown-based deps (tsup's build, vitest 4's vite) need `node:util` `styleText`, added in 20.12+; CLI still targets Node 18+ at runtime — see [ADR 0003](../DECISIONS/0003-tsup-and-node22-toolchain.md) |
+| Language | TypeScript, target Node 22.12+ | universal `npx` reach; Bun compat still ~90-95% |
+| Toolchain Node | 22 LTS, pinned via `.nvmrc` | dev/CI floor only — rolldown-based deps (tsup's build, vitest 4's vite) need `node:util` `styleText`, added in 20.12+; CLI now targets Node 22.12+ at runtime (raised in ADR 0024) — see [ADR 0003](../DECISIONS/0003-tsup-and-node22-toolchain.md) |
 | Build | tsup | swapped in for tsdown, its own documented fallback — tsdown's rolldown dep crashed on Node <20.12; see ADR 0003 |
 | Dev runner | tsx | esbuild-based, ~50ms startup, ts-node is legacy |
 | Structural rules | @ast-grep/napi | YAML code patterns = our rules-as-data design; Rust-fast; multi-language |
