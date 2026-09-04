@@ -36,7 +36,15 @@ jobs:
 
       # Same gate CONTRIBUTING.md asks of every PR — a release workflow
       # publishing without it would be a weaker guarantee than a human PR.
+      #
+      # `build` must precede `test`, exactly as in ci.yml: the artifact
+      # guards in publishable-package.test.ts assert against the real
+      # dist/ (no workspace: protocols, no unbundled @pickcheck/* imports,
+      # data assets shipped, startup graph under budget), which doesn't
+      # exist on a fresh checkout. Adding it to ci.yml alone is what left
+      # this workflow red — see DECISIONS/0021 and 0022.
       - run: pnpm typecheck
+      - run: pnpm build
       - run: pnpm test
       - run: pnpm check
       - run: pnpm self-audit

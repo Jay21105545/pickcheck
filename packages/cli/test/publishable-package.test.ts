@@ -130,6 +130,32 @@ describe("built bundle", () => {
 });
 
 /**
+ * Every workflow that runs `pnpm test` must build first, because the
+ * artifact guards above read dist/. Adding that step to ci.yml but not
+ * release.yml is what left Release red for three commits while CI went
+ * green — the same one-line omission, twice, in two files that have to
+ * stay in step. Cheaper to assert than to notice.
+ */
+describe("CI workflows", () => {
+  const workflowsDir = join(packageDir, "..", "..", ".github", "workflows");
+
+  for (const workflow of ["ci.yml", "release.yml"]) {
+    it(`${workflow} builds before it tests`, () => {
+      const yaml = readFileSync(join(workflowsDir, workflow), "utf-8");
+      const buildAt = yaml.indexOf("run: pnpm build");
+      const testAt = yaml.indexOf("run: pnpm test");
+
+      expect(buildAt, `${workflow} has no \`pnpm build\` step`).toBeGreaterThan(-1);
+      expect(testAt, `${workflow} has no \`pnpm test\` step`).toBeGreaterThan(-1);
+      expect(
+        buildAt,
+        `${workflow} runs \`pnpm test\` before \`pnpm build\`, so the dist/ guards above will fail on a fresh checkout`,
+      ).toBeLessThan(testAt);
+    });
+  }
+});
+
+/**
  * ARCHITECTURE.md budgets the bin entry at "< 50ms before command
  * dispatch". This guards that budget by asserting on the *size of the
  * eagerly-loaded module graph* rather than by timing anything.
