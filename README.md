@@ -97,6 +97,28 @@ mechanism is specifically built to make that unmissable rather than
 averaged away. Re-run it yourself: `pnpm corpus` (see
 [CONTRIBUTING.md](https://github.com/Jay21105545/pickcheck/blob/main/CONTRIBUTING.md)).
 
+## The playbook
+
+The rules encode practices; [`playbook/`](https://github.com/Jay21105545/pickcheck/blob/main/playbook/README.md) explains them.
+Five chapters on how 100+ dev organizations actually work — and, at the end
+of each, **the solo/AI-builder version**: the part of the practice that
+prevents real disasters without the ceremony that only pays off at scale.
+
+- [01 — Branching](https://github.com/Jay21105545/pickcheck/blob/main/playbook/01-branching.md) — why branch age, not branch
+  strategy, is what hurts, and what `main` protection is for when you're
+  the only one pushing to it.
+- [02 — CODEOWNERS and reviews](https://github.com/Jay21105545/pickcheck/blob/main/playbook/02-codeowners-and-reviews.md) —
+  what review is actually for, and what substitutes for it when there is
+  no second human and the author is an assistant.
+- [03 — ADRs and design docs](https://github.com/Jay21105545/pickcheck/blob/main/playbook/03-adrs-and-design-docs.md) — how a
+  decision survives its author, and why that matters more when your
+  collaborator forgets everything between sessions.
+- [04 — Versioning and changelogs](https://github.com/Jay21105545/pickcheck/blob/main/playbook/04-versioning-and-changelogs.md)
+  — the version as a contract with consumers, and the one file that
+  answers "which build?".
+- [05 — Monorepos](https://github.com/Jay21105545/pickcheck/blob/main/playbook/05-monorepos.md) — what one repository buys and
+  what it charges, worked through this repo's own layout.
+
 ## Screenshots
 
 *(Coming soon.)* Run `npx pickcheck audit --report` and open
