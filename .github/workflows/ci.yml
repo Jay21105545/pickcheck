@@ -22,6 +22,14 @@ jobs:
 
       - run: pnpm typecheck
 
+      # Must precede `pnpm test`: publishable-package.test.ts asserts against
+      # the real built artifact in dist/ (no workspace: protocols, no
+      # unbundled @pickcheck/* imports, data assets present, startup graph
+      # under budget). Those guards exist because pickcheck@0.1.0 shipped
+      # uninstallable while every source-level check passed — see
+      # DECISIONS/0021.
+      - run: pnpm build
+
       - run: pnpm test
 
       - run: pnpm check

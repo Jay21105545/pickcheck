@@ -1,8 +1,8 @@
 import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { CATEGORIES } from "@pickcheck/rules/schema";
 import type { CategoryScore } from "./scorer.js";
+import { CATEGORY_WEIGHTS } from "./scorer.js";
 import type { Rule } from "./types.js";
 
 /** Relative to the audited repo's cwd, same as every other .pickcheck/ artifact. */
@@ -174,9 +174,15 @@ function coerceCategoryScore(value: unknown): CategoryScore | undefined {
   }
   const record = value as Record<string, unknown>;
   const category = record.category;
+  // Validated against CATEGORY_WEIGHTS' keys rather than the schema's
+  // CATEGORIES tuple: identical set (the Record<Category, number> type
+  // makes it exhaustive by construction — a new category that missed a
+  // weight wouldn't compile), but scorer.ts is already loaded here, while
+  // importing anything from @pickcheck/rules/schema drags zod onto the
+  // startup path for every command. See DECISIONS/0022.
   if (
     typeof category !== "string" ||
-    !(CATEGORIES as readonly string[]).includes(category) ||
+    !Object.hasOwn(CATEGORY_WEIGHTS, category) ||
     typeof record.score !== "number"
   ) {
     return undefined;

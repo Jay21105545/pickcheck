@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { readFileSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -81,8 +81,10 @@ describe("publishable package manifest", () => {
 });
 
 describe("built bundle", () => {
-  // Reads whatever the last `pnpm build` produced. CI always builds before
-  // testing (self-audit does), so this reflects the artifact that ships.
+  // Reads what `pnpm build` produced — CI runs a build step before `pnpm
+  // test` for exactly this reason (see .github/workflows/ci.yml). If dist/
+  // is missing these fail loudly rather than silently skipping, since a
+  // skipped artifact guard is how 0.1.0 shipped broken in the first place.
   const distDir = join(packageDir, "dist");
 
   it("has no unresolved @pickcheck/* imports left in the bundle", () => {
@@ -124,5 +126,76 @@ describe("built bundle", () => {
 
   it("ships dist/ in the files whitelist so those assets actually reach npm", () => {
     expect(packageJson.files).toContain("dist");
+  });
+});
+
+/**
+ * ARCHITECTURE.md budgets the bin entry at "< 50ms before command
+ * dispatch". This guards that budget by asserting on the *size of the
+ * eagerly-loaded module graph* rather than by timing anything.
+ *
+ * Timing was evaluated first and rejected as a CI gate (DECISIONS/0022):
+ * an absolute-millisecond threshold is machine-speed-dependent, and
+ * subtracting a `node -e ""` baseline only cancels a constant offset, not
+ * the proportional scaling of the import work itself — a contended runner
+ * at half speed reports ~2x the import cost with nothing actually
+ * regressed. `scripts/measure-startup.mjs` keeps that measurement
+ * available as a local diagnostic; this is the part that can gate CI
+ * without flaking, because bytes are deterministic.
+ *
+ * It catches the real regression directly: a heavy module landing back on
+ * the startup path. Loading zod eagerly (the 0.1.1 regression this
+ * replaced) added ~713KB and ~18ms — three orders of magnitude past the
+ * noise floor of a byte count.
+ */
+describe("bin entry startup budget", () => {
+  const distDir = join(packageDir, "dist");
+
+  /**
+   * Generous next to the ~68KB the entry graph actually weighs — this is
+   * a tripwire for "someone put a 700KB dependency back on the startup
+   * path", not a golden-file size assertion that needs updating whenever
+   * a few lines of CLI code are added.
+   */
+  const EAGER_GRAPH_BUDGET_KB = 150;
+
+  it("keeps the eagerly-imported graph small enough to hit the startup budget", () => {
+    const entrySource = readFileSync(join(distDir, "index.js"), "utf-8");
+
+    // Only STATIC imports load at startup. A dynamic `import()` — how
+    // ruleSchema/zod, @ast-grep/napi, gpt-tokenizer and the HTML report
+    // are all loaded — costs nothing until the command that needs it runs.
+    const staticChunks = new Set(
+      [...entrySource.matchAll(/from\s*"\.\/([^"]+\.js)"/g)].map((m) => m[1] as string),
+    );
+
+    let totalBytes = statSync(join(distDir, "index.js")).size;
+    for (const chunk of staticChunks) {
+      totalBytes += statSync(join(distDir, chunk)).size;
+    }
+    const totalKb = totalBytes / 1024;
+
+    expect(
+      totalKb,
+      `The bin entry eagerly loads ${totalKb.toFixed(1)}KB across index.js + ${staticChunks.size} chunk(s), over the ${EAGER_GRAPH_BUDGET_KB}KB tripwire. Something heavy moved onto the startup path — check for a new top-level import that should be a dynamic import() instead (see loader.ts's ruleSchema for the pattern).`,
+    ).toBeLessThan(EAGER_GRAPH_BUDGET_KB);
+  });
+
+  it("keeps zod off the startup path specifically", () => {
+    const entrySource = readFileSync(join(distDir, "index.js"), "utf-8");
+    const staticChunks = [...entrySource.matchAll(/from\s*"\.\/([^"]+\.js)"/g)].map(
+      (m) => m[1] as string,
+    );
+
+    const eagerSource =
+      entrySource +
+      staticChunks
+        .map((chunk) => readFileSync(join(distDir, chunk), "utf-8"))
+        .join("\n");
+
+    // zod's runtime is unmistakable in a bundle; if these appear in the
+    // eager graph, the rule schema is being imported at module scope again.
+    expect(eagerSource).not.toMatch(/ZodError/);
+    expect(eagerSource).not.toMatch(/\$ZodType/);
   });
 });

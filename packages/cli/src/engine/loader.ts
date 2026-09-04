@@ -1,5 +1,4 @@
 import { readFile } from "node:fs/promises";
-import { ruleSchema } from "@pickcheck/rules/schema";
 import fg from "fast-glob";
 import { parse as parseYaml } from "yaml";
 import type { Rule } from "./types.js";
@@ -21,6 +20,13 @@ export interface LoadRulesResult {
  * and fixtures — the fixture test harness still validates it, since a
  * parked rule with broken fixtures would be useless to whoever resumes it
  * — it's just never loaded into a live audit.
+ *
+ * `ruleSchema` is lazy-loaded here rather than imported at module scope,
+ * the same way the astgrep and tokens tiers lazy-load their heavy
+ * dependencies: it pulls in zod (~700KB once bundled), which nothing on
+ * the `--version`/`--help`/`init`/`gen` paths needs. A static import cost
+ * every invocation ~30ms of parse time for a module only `audit` uses —
+ * see DECISIONS/0022 and ARCHITECTURE.md's bin-entry budget.
  */
 export async function loadRules(rulesDir: string): Promise<LoadRulesResult> {
   const files = await fg("**/rule.yaml", {
@@ -30,6 +36,18 @@ export async function loadRules(rulesDir: string): Promise<LoadRulesResult> {
   });
   const rules: Rule[] = [];
   const warnings: string[] = [];
+
+  let ruleSchema: typeof import("@pickcheck/rules/schema").ruleSchema;
+  try {
+    ({ ruleSchema } = await import("@pickcheck/rules/schema"));
+  } catch (error) {
+    return {
+      rules: [],
+      warnings: [
+        `Could not load the rule schema (${describeError(error)}) — no rules were checked`,
+      ],
+    };
+  }
 
   for (const file of files.sort()) {
     let raw: string;

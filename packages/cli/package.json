@@ -40,6 +40,7 @@
     "build": "tsup && node scripts/copy-runtime-assets.mjs",
     "dev": "tsx src/index.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json",
+    "measure-startup": "node scripts/measure-startup.mjs",
     "prepack": "node scripts/prepack.mjs"
   },
   "dependencies": {
