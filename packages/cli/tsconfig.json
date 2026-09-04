@@ -3,5 +3,12 @@
   "compilerOptions": {
     "types": ["node"]
   },
-  "include": ["src", "test"]
+  "include": ["src", "test"],
+  // Fixture repos are audit *input*, not this package's source: they're
+  // deliberately shaped like someone else's project (JSX without our
+  // compiler options, build output that isn't valid under our module
+  // settings) and must keep that exact shape. Same treatment
+  // packages/rules/**/fixtures already gets by living outside any
+  // tsconfig — see DECISIONS/0023.
+  "exclude": ["test/fixtures"]
 }
