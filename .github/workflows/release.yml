@@ -49,28 +49,59 @@ jobs:
       - run: pnpm check
       - run: pnpm self-audit
 
-      # Either opens/updates a "Version Packages" PR (when there are
-      # pending changesets not yet merged) or, when package.json versions
-      # are already bumped past what's on npm (i.e. that PR was just
-      # merged), runs the "publish" command below. See CONTRIBUTING.md
-      # and .changeset/README.md for the authoring side of this flow.
+      # The standard changesets two-phase flow. On every push to main this
+      # step does exactly one of two things:
+      #
+      #   pending changesets in .changeset/  -> opens/updates the
+      #     "Version Packages" PR (runs `changeset version` on a branch).
+      #     Nothing is published.
+      #   no pending changesets              -> runs the `publish` command.
+      #
+      # A push that changes no versions therefore cannot publish: the
+      # publish path still runs, but `changeset publish` asks the registry
+      # for each package's published versions and only publishes when the
+      # local version is absent (getPublishPlan.mjs's
+      # getUnpublishedPackages). Same-version pushes are a no-op, and
+      # private packages (@pickcheck/rules, /report, /corpus) are filtered
+      # out before that check, so they can never be published by accident.
       - name: Create Release Pull Request or Publish
         id: changesets
         uses: changesets/action@v1
         with:
           publish: pnpm release
         env:
+          # Needs "Allow GitHub Actions to create and approve pull
+          # requests" enabled in repo settings, or the Version Packages PR
+          # can't be opened — see CONTRIBUTING.md's release section.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # actions/setup-node's registry-url above writes an .npmrc that
-          # reads the auth token from NODE_AUTH_TOKEN — this is what
-          # `changeset publish`'s underlying `npm publish` calls actually
-          # authenticate with. NPM_TOKEN is set alongside it defensively
-          # (some tooling in this chain reads that name instead).
+          # reads the token from NODE_AUTH_TOKEN. NPM_TOKEN is set
+          # alongside it because some tooling reads that name instead.
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          # npm's env-var config convention (NPM_CONFIG_<KEY> -> config
-          # key <key>) — `changeset publish` shells out to real `npm
-          # publish` per package regardless of this being a pnpm
-          # workspace, so this reaches it the same way `npm publish
-          # --provenance` would on the command line.
+          # Enables `npm publish --provenance` without a CLI flag, via
+          # npm's NPM_CONFIG_<KEY> env convention.
+          #
+          # The path this takes is worth spelling out, because it is not
+          # what it looks like: changesets picks a publish tool from the
+          # workspace type, so in this repo it runs `pnpm publish`, not
+          # `npm publish` — and it never passes --provenance itself.
+          # `pnpm publish` in turn delegates the actual publish to npm,
+          # which inherits this env var (verified: `npm config get
+          # provenance` reports true both directly and when spawned
+          # through pnpm). Provenance also needs `id-token: write` above
+          # and the `repository` field in packages/cli/package.json.
           NPM_CONFIG_PROVENANCE: true
+
+      # Makes the outcome legible in the Actions UI, so "did this publish?"
+      # doesn't require reading the changesets step's log.
+      - name: Summarize outcome
+        run: |
+          if [ "${{ steps.changesets.outputs.published }}" = "true" ]; then
+            echo "### Published to npm with provenance" >> "$GITHUB_STEP_SUMMARY"
+            echo '${{ steps.changesets.outputs.publishedPackages }}' >> "$GITHUB_STEP_SUMMARY"
+          elif [ -n "${{ steps.changesets.outputs.pullRequestNumber }}" ]; then
+            echo "### Version Packages PR #${{ steps.changesets.outputs.pullRequestNumber }} opened/updated — merge it to release" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "### No release: no pending changesets, and every version is already on npm" >> "$GITHUB_STEP_SUMMARY"
+          fi

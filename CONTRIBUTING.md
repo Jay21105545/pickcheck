@@ -223,48 +223,76 @@ boilerplate), and a one-line `note` on why it's there. Run `pnpm corpus
 
 ## Releasing (maintainers)
 
-Only `pickcheck` (`packages/cli`) is versioned and published — see
-`.changeset/config.json`'s `ignore` list and
-[`.changeset/README.md`](.changeset/README.md).
+**Releases are automated. Do not run `npm publish` by hand.** Publishing
+manually skips the validation gate, produces a build with no npm
+provenance attestation, and lets the git tag, the CHANGELOG and the
+registry drift apart. `pickcheck@0.1.0` and `0.1.1` were both published
+by hand and both were broken on the registry — see DECISIONS/0021.
 
-**Normal flow, via CI:** after a user-facing change, run `pnpm changeset`
-and commit the file it writes alongside your PR. `.github/workflows/
-release.yml` runs on every push to `main`: with pending changesets, it
-opens/updates a "Version Packages" PR; merging that PR bumps
-`packages/cli/package.json` and `CHANGELOG.md`, which is itself a push to
-`main` — the workflow runs again, finds no pending changesets but a
-version ahead of what's on npm, and publishes with npm provenance
-(`--provenance`, via `permissions: id-token: write` + `NPM_CONFIG_PROVENANCE`
-in the workflow — GitHub Actions' OIDC token is what makes the attestation
-possible; a workflow trigger from a fork's PR doesn't get one).
+Only `pickcheck` (`packages/cli`) is ever published. The internal
+workspace packages are `private: true` and are filtered out before
+changesets even checks the registry, so they cannot be published by
+accident.
 
-**Provenance only works from that CI context — never from a local
-machine** (there's no OIDC token to mint it from outside GitHub Actions).
-The exact command sequence for the very first publish, if you're doing it
-by hand rather than merging a Version Packages PR and letting CI publish:
+### The flow
+
+Two phases, driven by `.github/workflows/release.yml` on every push to
+`main`:
+
+1. **You describe the change.** After a user-facing change, run `pnpm
+   changeset`, pick a bump type, write a summary, and commit the
+   generated file in `.changeset/` with your PR. A PR can carry zero,
+   one, or several.
+2. **CI proposes the release.** When changesets are pending on `main`,
+   the workflow opens (or updates) a **"Version Packages"** PR that
+   applies the bumps and rewrites `packages/cli/CHANGELOG.md`. Nothing is
+   published at this point.
+3. **You merge that PR.** That lands a version bump on `main`, which runs
+   the workflow again — now with no pending changesets — and it
+   publishes to npm with provenance, then creates the GitHub release.
+
+A push that changes no versions cannot publish. The publish path still
+runs, but `changeset publish` asks the registry which versions exist and
+only publishes ones that don't — so ordinary pushes are a no-op.
+
+### One-time setup
+
+Both are required before the first automated release:
+
+- **`NPM_TOKEN` repository secret** — Settings → Secrets and variables →
+  Actions → New repository secret. Use an npm **Granular Access Token**
+  with *Read and write* on the `pickcheck` package (Automation-type
+  classic tokens also work). It must bypass 2FA, which
+  Granular/Automation tokens do and a Publish-type classic token does
+  not.
+- **"Allow GitHub Actions to create and approve pull requests"** —
+  Settings → Actions → General → Workflow permissions. Off by default in
+  many accounts; without it the Version Packages PR can't be opened.
+
+### Verifying a release
+
+The workflow writes a summary line saying whether it published, opened a
+PR, or did nothing. After a publish, confirm the provenance badge appears
+on the npm page — it's the signal that the OIDC attestation worked
+(`id-token: write` plus `NPM_CONFIG_PROVENANCE`).
+
+### If you must publish by hand
+
+Only for bootstrapping a registry that automation can't reach yet.
+Provenance is impossible here — it requires GitHub Actions' OIDC token,
+which does not exist on a laptop — so the published build will carry no
+attestation, and you should follow up with an automated release.
 
 ```sh
-npm whoami                            # confirm you're authenticated (npm login if not)
-```
-
-Then, one-time only, remove (or set to `false`) `"private": true` in
-`packages/cli/package.json` — it's a deliberate safety gate while this
-repo has never actually published:
-
-```sh
+npm whoami                            # confirm auth
 pnpm install --frozen-lockfile
-pnpm typecheck && pnpm test && pnpm check && pnpm self-audit
-pnpm changeset                        # describe the release (interactive)
-pnpm run version                      # applies the bump + CHANGELOG.md from it
+pnpm typecheck && pnpm build && pnpm test && pnpm check && pnpm self-audit
+pnpm changeset && pnpm run version    # note: `pnpm run version`, not `pnpm version`
 git add -A && git commit -m "chore: version packages"
-pnpm --filter pickcheck run build     # then run the clean-install gate below
-pnpm release                          # pnpm build && changeset publish
-git push --follow-tags
 ```
 
-Note `pnpm run version`, not `pnpm version` — the latter hits pnpm's own
-built-in `version` command instead of the `"version"` script and silently
-does nothing.
+Then run the clean-install gate below, and only then `pnpm release` and
+`git push --follow-tags`.
 
 ### Required before any publish: the clean-install gate
 
@@ -299,9 +327,3 @@ All four must succeed, and `audit` must report a non-zero rule count —
 `packages/cli/test/publishable-package.test.ts` guards the static half of
 this (no `workspace:` protocols, no unbundled `@pickcheck/*` imports,
 data assets present in `dist/`) on every CI run.
-
-That last `pnpm release`, run locally, publishes **without** provenance
-(no `--provenance` flag reaches it outside CI's OIDC context) — acceptable
-for a one-off manual bootstrap, but the intended path for every release
-after the first is: `pnpm changeset` → commit → push → merge the Version
-Packages PR CI opens → CI publishes with provenance automatically.
