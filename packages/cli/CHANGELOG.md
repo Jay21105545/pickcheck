@@ -1,5 +1,37 @@
 # pickcheck
 
+## 0.1.4
+
+### Patch Changes
+
+- 5b7c0ae: Refuse to run on an unsupported Node with a message that names both
+  versions, instead of failing later from inside a dependency.
+  
+  `engines` is advisory — npm only enforces it under `engine-strict` — so
+  installing on a Node below the `>=22.12.0` floor succeeds and stays
+  silent until something breaks somewhere unhelpful. The bin entry now
+  checks the runtime against that declared floor first and exits 1 with
+  `pickcheck requires Node.js >=22.12.0, but this is Node.js v20.11.1.`
+  
+  The CLI moved to `src/cli.ts` behind a dynamic import so the check can
+  actually run: static imports are hoisted and evaluated before any of the
+  importing module's own statements, so a statically imported commander
+  would load on precisely the runtimes the check exists to catch. See
+  DECISIONS/0025.
+- 5b7c0ae: Stop flagging real dependencies as hallucinated imports when auditing a
+  subdirectory of a monorepo.
+  
+  `cd packages/cli && pickcheck audit` reported `tsup.config.ts`'s
+  `import { defineConfig } from "tsup"` as a hallucinated import, because
+  `tsup` is declared in the monorepo root's package.json and manifest
+  resolution stopped at the scan root. It now continues above the scan
+  root, bounded both ways: it doesn't start if the scan root is itself a
+  project root, it stops inclusively at the first project root above
+  (`.git`, `pnpm-workspace.yaml`, or `package.json#workspaces`), and it
+  contributes nothing if none is found. Only manifests are read up there —
+  no file above the scan root is scanned or reported on. See
+  DECISIONS/0026.
+
 ## 0.1.3
 
 ### Patch Changes
