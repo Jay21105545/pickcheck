@@ -29,9 +29,11 @@ pickcheck/
 ├── generators/       # prompt templates used by `gen`
 ├── examples/broken-app/   # deliberately bad demo repo
 ├── corpus/           # backtest corpus (EXECUTION.md's Stress-Test &
-│   │                 # Backtest Protocol) — repos.json (pinned by SHA),
+│   │                 # Backtest Protocol) — repos.json (pinned by SHA,
+│   │                 # a category x stack 2x2 per DECISIONS/0029),
 │   │                 # snapshots/ (committed), .cache/ (gitignored
-│   │                 # clones), run.ts driver (`pnpm corpus`)
+│   │                 # clones), run.ts driver (`pnpm corpus`),
+│   │                 # separators.ts (`pnpm corpus:separators`)
 ├── DECISIONS/        # ADRs
 └── apps/docs/        # Next.js docs site (phase 4+)
 ```

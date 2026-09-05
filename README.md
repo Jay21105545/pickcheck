@@ -68,33 +68,52 @@ Every finding is severity-coded (`error`/`warn`/`info`), and a security
 `error` finding caps the composite at 59 regardless of everything else — a
 repo can't accidentally score "fine" while leaking secrets.
 
-## Does it actually work? The corpus says yes
+## Does it actually work? The corpus says yes — with a caveat it took a bigger corpus to find
 
-pickcheck is backtested against a pinned-by-commit-SHA corpus of real
-repos — four hand-picked, well-engineered controls, and four real
-[Lovable](https://lovable.dev)-generated apps (not merely AI-tool-friendly
-boilerplate — repos an AI assistant actually built end to end):
+pickcheck is backtested against a pinned-by-commit-SHA corpus of 13 real
+repos. It is a 2x2: repos an AI builder actually wrote end to end
+([Lovable](https://lovable.dev) and [v0](https://v0.app), verified by
+generator marker *and* by the share of commits their bot accounts authored)
+against hand-picked, well-engineered human-built controls — each arm
+covering both Next.js and Vite/React, so a rule can't score well by
+detecting the framework and calling it provenance.
 
-| Repo | Type | Composite |
-|---|---|---|
-| `steven-tey/precedent` | control | **86.11** |
-| `shadcn-ui/taxonomy` | control | **79.54** |
-| `nextjs/saas-starter` | control | **78.7** |
-| `vercel/commerce` | control | **76.42** |
-| sports-on-the-go | AI-generated | **59** |
-| fin-bloom-dash | AI-generated | **59** |
-| shelfly-creator-hub | AI-generated | **59** |
-| mindtrack-personalwellness | AI-generated | **59** |
+| Repo | Type | Stack | Composite |
+|---|---|---|---|
+| `steven-tey/precedent` | control | Next.js | **86.11** |
+| `shadcn-ui/taxonomy` | control | Next.js | **79.54** |
+| `nextjs/saas-starter` | control | Next.js | **78.70** |
+| `vercel/commerce` | control | Next.js | **76.42** |
+| `cinnyapp/cinny` | control | Vite | **68.08** |
+| `buildship-ai/rowy` | control | Vite | **47.58** |
+| theghost | AI-generated | Next.js | **65.91** |
+| fin-bloom-dash | AI-generated | Vite | **59.00** |
+| ai-career-assistant | AI-generated | Next.js | **58.50** |
+| shelfly-creator-hub | AI-generated | Vite | **53.88** |
+| mindtrack-personalwellness | AI-generated | Vite | **53.87** |
+| sports-on-the-go | AI-generated | Vite | **40.51** |
+| newattendanceapp | AI-generated | Next.js | **40.44** |
 
-Every control repo separates cleanly above every AI-generated one — and the
-four AI-generated repos aren't clustered near 59 by coincidence: **every
-single one** has at least one `error`-severity security finding, which caps
-the composite at exactly 59 (one point under the default `--min 60` CI
-gate) regardless of how the rest of the repo scores. That's not a fluke of
-the sample — it's the corpus's actual security posture: real AI-generated
-apps ship with real, exploitable security gaps, and pickcheck's gate
-mechanism is specifically built to make that unmissable rather than
-averaged away. Re-run it yourself: `pnpm corpus` (see
+The AI-generated arm scores materially worse — mean 53.2 against the
+controls' 72.7 — and every Lovable app in it has at least one
+`error`-severity security finding, which caps the composite at 59
+regardless of how the rest of the repo scores. That gate mechanism exists
+precisely so a real, exploitable gap can't be averaged away by a tidy UI.
+
+**The separation is not clean, and we'd rather say so than crop the table.**
+`buildship-ai/rowy` is a human-built product that scores 47.58 — below most
+of the AI arm. Nearly all of that is one rule's false positives:
+`sec/no-hallucinated-imports` doesn't yet follow `tsconfig.json`'s
+`extends`, so 1,666 path-aliased imports read as undeclared packages — and
+because they carry `error` severity, they trip the same security gate
+described above on a repo that has done nothing wrong. Excluding that rule
+it scores 64.25, still under the 75 we'd expect of a control. Until the
+four-repo corpus grew a Vite control arm, that bug was invisible and the
+table looked perfect. Adding repos that could embarrass the tool is the
+point of having a corpus, and the write-up is in
+[DECISIONS/0029](https://github.com/Jay21105545/pickcheck/blob/main/DECISIONS/0029-corpus-confound-and-expansion.md).
+
+Re-run it yourself: `pnpm corpus` (see
 [CONTRIBUTING.md](https://github.com/Jay21105545/pickcheck/blob/main/CONTRIBUTING.md)).
 
 ## The playbook

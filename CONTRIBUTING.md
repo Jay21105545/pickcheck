@@ -179,7 +179,7 @@ No diff → exits 0, nothing to do. A diff → exits 1 and prints exactly
 which findings were added/removed, grouped by repo and rule:
 
 ```
-=== commerce (control) ===
+=== commerce (control/next) ===
   ux/input-missing-label: +0 -2
     - components/layout/navbar/search.tsx:15
     - components/layout/navbar/search.tsx:34
@@ -191,7 +191,7 @@ Review the diff:
   touch, your change is broader than you think.
 - **Every added finding should be a real issue in real code**, not new
   noise. If a change adds findings on a well-regarded control repo (the
-  four non-AI-generated repos in `corpus/repos.json`), that's the
+  six non-AI-generated repos in `corpus/repos.json`), that's the
   control-repo alarm from EXECUTION.md — treat it as a bug in the rule,
   not a finding, before shipping.
 
@@ -217,11 +217,47 @@ doesn't actually capture the real pattern.
 ### Adding a repo to the corpus
 
 Append to `corpus/repos.json`: `name`, `url`, a pinned `sha` (not a
-branch — reproducibility requires an exact commit), `category`
-(`"control"` for well-engineered reference repos, `"ai-generated"` for
-repos actually produced by an AI tool, not merely AI-tool-friendly
-boilerplate), and a one-line `note` on why it's there. Run `pnpm corpus
+branch — reproducibility requires an exact commit), `category`, `stack`,
+`provenance`, and a one-line `note` on why it's there. Run `pnpm corpus
 -- --update` to seed its baseline snapshot.
+
+**`category` needs evidence, not a label.** `"ai-generated"` means a repo
+an AI builder actually produced, not one that merely looks like it or uses
+AI-friendly boilerplate. A GitHub topic tag is the author's own assertion
+and is not sufficient on its own. The admission standard, set in
+[DECISIONS/0029](DECISIONS/0029-corpus-confound-and-expansion.md), is:
+
+1. **A generator marker in the tree** — `lovable-tagger` in
+   `devDependencies`, a `gptengineer.js` script tag, the v0 GitHub
+   integration's README sync line, a `.bolt/` directory.
+2. **≥70% of commits authored by the generator's own account**
+   (`lovable-dev[bot]`, `v0`, …). The threshold is the floor measured
+   across the repos already in the corpus (97%, 95%, 100%, 72%) — it is
+   derived, not chosen, so restate it in a decision record rather than
+   relaxing it quietly.
+
+Record both in `provenance`, with the actual count — e.g. *"v0.app —
+README carries the v0 GitHub-sync line; 16/17 commits authored by the v0
+account (94%)."* A `"control"` entry states the opposite — no generator
+marker anywhere in the tree — plus why the repo counts as
+well-engineered.
+
+**`stack` is not decoration.** Until DECISIONS/0029 every control was a
+Next.js app and every AI-generated repo a Vite SPA, so `category` and
+`stack` were perfectly correlated and *any* signal that separated the arms
+separated them on both axes at once — four candidate rules were nearly
+shipped as provenance detectors when three of them were detecting the
+framework. When adding a repo, check what it does to the 2x2:
+
+```sh
+pnpm corpus:separators
+```
+
+It prints which cells every shipped rule fires in, with a generator delta
+and a framework delta for each. **A rule whose framework delta rivals its
+generator delta is measuring the template, not the code.** Adding repos
+that keep the cells filled is worth more than adding repos that agree with
+the ruleset.
 
 ## Releasing (maintainers)
 
