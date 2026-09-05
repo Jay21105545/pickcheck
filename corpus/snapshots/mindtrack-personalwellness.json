@@ -1,5 +1,5 @@
 {
-  "composite": 59,
+  "composite": 53.87,
   "categories": [
     {
       "category": "security",
@@ -7,7 +7,7 @@
     },
     {
       "category": "quality",
-      "score": 100
+      "score": 50
     },
     {
       "category": "docs",
@@ -47,6 +47,30 @@
       "severity": "warn",
       "message": "This project reads environment variables that .env.example doesn't document — anyone cloning it has to read the source to find out what config it needs.",
       "fixPrompt": "Fix \"Environment variables the code needs aren't documented in .env.example\" (docs/env-example-exists) at .env.example: This project reads environment variables that .env.example doesn't document — anyone cloning it has to read the source to find out what config it needs. (0% documented (0/3), threshold 60% — missing: LOVABLE_API_KEY, VITE_SUPABASE_PUBLISHABLE_KEY, VITE_SUPABASE_URL)"
+    },
+    {
+      "ruleId": "qual/supabase-result-unchecked",
+      "file": "supabase/functions/chat/index.ts",
+      "line": 74,
+      "severity": "warn",
+      "message": "This Supabase call's result is thrown away. supabase-js resolves with { data, error } instead of throwing, so a write blocked by row-level security or rejected by a constraint returns here as a success — try/catch does not catch it, and qual/fetch-has-error-handling does not model it.",
+      "fixPrompt": "Fix \"Supabase query result discarded, so its error is invisible\" (qual/supabase-result-unchecked) at supabase/functions/chat/index.ts:74: This Supabase call's result is thrown away. supabase-js resolves with { data, error } instead of throwing, so a write blocked by row-level security or rejected by a constraint returns here as a success — try/catch does not catch it, and qual/fetch-has-error-handling does not model it."
+    },
+    {
+      "ruleId": "qual/supabase-result-unchecked",
+      "file": "supabase/functions/chat/index.ts",
+      "line": 81,
+      "severity": "warn",
+      "message": "This Supabase call's result is thrown away. supabase-js resolves with { data, error } instead of throwing, so a write blocked by row-level security or rejected by a constraint returns here as a success — try/catch does not catch it, and qual/fetch-has-error-handling does not model it.",
+      "fixPrompt": "Fix \"Supabase query result discarded, so its error is invisible\" (qual/supabase-result-unchecked) at supabase/functions/chat/index.ts:81: This Supabase call's result is thrown away. supabase-js resolves with { data, error } instead of throwing, so a write blocked by row-level security or rejected by a constraint returns here as a success — try/catch does not catch it, and qual/fetch-has-error-handling does not model it."
+    },
+    {
+      "ruleId": "qual/supabase-result-unchecked",
+      "file": "supabase/functions/chat/index.ts",
+      "line": 84,
+      "severity": "warn",
+      "message": "This Supabase call's result is thrown away. supabase-js resolves with { data, error } instead of throwing, so a write blocked by row-level security or rejected by a constraint returns here as a success — try/catch does not catch it, and qual/fetch-has-error-handling does not model it.",
+      "fixPrompt": "Fix \"Supabase query result discarded, so its error is invisible\" (qual/supabase-result-unchecked) at supabase/functions/chat/index.ts:84: This Supabase call's result is thrown away. supabase-js resolves with { data, error } instead of throwing, so a write blocked by row-level security or rejected by a constraint returns here as a success — try/catch does not catch it, and qual/fetch-has-error-handling does not model it."
     },
     {
       "ruleId": "sec/no-env-in-git",
@@ -106,7 +130,7 @@
   ],
   "warnings": [],
   "fileCount": 115,
-  "ruleCount": 20,
+  "ruleCount": 23,
   "tokenSurface": {
     "files": [],
     "totalTokens": 0,

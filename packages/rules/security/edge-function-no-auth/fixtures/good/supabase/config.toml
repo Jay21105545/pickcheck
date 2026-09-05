@@ -1,0 +1,22 @@
+project_id = "example-project"
+
+# Explicitly authenticated.
+[functions.chat]
+verify_jwt = true
+
+# No verify_jwt key at all — the platform default is true, so this
+# function is authenticated and must not be flagged.
+[functions.delete-account]
+import_map = "./functions/delete-account/import_map.json"
+
+# Near-miss: the string "verify_jwt = false" appears here as prose about
+# what NOT to do, not as a declaration. The regex tier does not strip
+# comments (DECISIONS/0027), so this pins that the line anchor still
+# refuses a commented line.
+# verify_jwt = false
+
+[db]
+port = 54322
+
+[auth]
+enabled = true

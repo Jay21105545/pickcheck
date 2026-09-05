@@ -1,0 +1,23 @@
+id: sec/edge-function-no-auth
+category: security
+severity: error
+tier: regex
+title: Edge Function deployed with JWT verification turned off
+files:
+  # Supabase's project config, the only place `verify_jwt` is declared.
+  # Leading `**/` so a nested app in a monorepo resolves, matching the
+  # serverless globs DECISIONS/0027 added to the other backend rules.
+  - "**/supabase/config.toml"
+  - "!**/fixtures/**"
+message: "This Supabase Edge Function is deployed with JWT verification disabled, so it accepts unauthenticated requests from anyone who learns its URL — and it runs on your project's server-side secrets."
+weight: 4
+pattern:
+  # `verify_jwt = false` is a declaration, not a heuristic: it is exactly
+  # the switch that tells the Supabase gateway to stop rejecting requests
+  # with no valid `Authorization` bearer token. Matched per line, so a
+  # config declaring several functions produces one finding per function
+  # and the line number points at the offending block.
+  #
+  # A function with no `[functions.<name>]` block at all, or a block with
+  # no `verify_jwt` key, is left alone: the platform default is `true`.
+  regex: '^\s*verify_jwt\s*=\s*false\b'

@@ -78,6 +78,85 @@ describe("runRegexTier", () => {
     }
   });
 
+  it("only reports in files where pattern.when matches somewhere in the content", async () => {
+    const dir = await createTempDir("regex-when-precondition");
+    try {
+      await dir.write("src/Checkout.tsx", "const handleSubmit = 1;\nawait sleep();\n");
+      await dir.write("src/animate.ts", "await sleep();\n");
+
+      const result = await runRegexTier(
+        rule({
+          files: ["**/*.{ts,tsx}"],
+          pattern: {
+            regex: "await sleep\\(\\)",
+            when: { regex: "handleSubmit" },
+          },
+        }),
+        { cwd: dir.path, scannedFiles: ["src/Checkout.tsx", "src/animate.ts"] },
+      );
+
+      expect(result.findings.map((f) => f.file)).toEqual(["src/Checkout.tsx"]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("does not carry when-regex state across files when it uses a global flag", async () => {
+    const dir = await createTempDir("regex-when-global-flag");
+    try {
+      await dir.write("src/a.ts", "handleSubmit;\nawait sleep();\n");
+      await dir.write("src/b.ts", "handleSubmit;\nawait sleep();\n");
+
+      const result = await runRegexTier(
+        rule({
+          pattern: {
+            regex: "await sleep\\(\\)",
+            when: { regex: "handleSubmit", flags: "g" },
+          },
+        }),
+        { cwd: dir.path, scannedFiles: ["src/a.ts", "src/b.ts"] },
+      );
+
+      // A stateful global `when` regex whose lastIndex isn't reset between
+      // files would pass src/a.ts (lastIndex 0) and then fail src/b.ts,
+      // wrongly dropping a real finding.
+      expect(result.findings.map((f) => f.file)).toEqual(["src/a.ts", "src/b.ts"]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("requires both preconditions when when and unless are combined", async () => {
+    const dir = await createTempDir("regex-when-and-unless");
+    try {
+      // handler + no network: the only file that should report.
+      await dir.write("src/Fake.tsx", "handleSubmit;\nawait sleep();\n");
+      // handler, but the file talks to a backend.
+      await dir.write("src/Real.tsx", "handleSubmit;\nfetch(url);\nawait sleep();\n");
+      // no handler.
+      await dir.write("src/Anim.ts", "await sleep();\n");
+
+      const result = await runRegexTier(
+        rule({
+          files: ["**/*.{ts,tsx}"],
+          pattern: {
+            regex: "await sleep\\(\\)",
+            when: { regex: "handleSubmit" },
+            unless: { regex: "fetch\\(" },
+          },
+        }),
+        {
+          cwd: dir.path,
+          scannedFiles: ["src/Anim.ts", "src/Fake.tsx", "src/Real.tsx"],
+        },
+      );
+
+      expect(result.findings.map((f) => f.file)).toEqual(["src/Fake.tsx"]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
   it("suppresses all findings in a file when pattern.unless matches anywhere in it", async () => {
     const dir = await createTempDir("regex-unless-suppressed");
     try {

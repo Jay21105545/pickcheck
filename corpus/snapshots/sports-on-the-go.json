@@ -1,13 +1,13 @@
 {
-  "composite": 54.4,
+  "composite": 40.51,
   "categories": [
     {
       "category": "security",
-      "score": 33.33
+      "score": 25
     },
     {
       "category": "quality",
-      "score": 100
+      "score": 50
     },
     {
       "category": "docs",
@@ -418,6 +418,70 @@
       "fixPrompt": "Fix \"CHANGELOG.md missing\" (docs/changelog-exists) at CHANGELOG.md: No CHANGELOG.md found — users and future-you can't see what changed between versions."
     },
     {
+      "ruleId": "qual/supabase-result-unchecked",
+      "file": "src/components/TermsVersionChecker.tsx",
+      "line": 68,
+      "severity": "warn",
+      "message": "This Supabase call's result is thrown away. supabase-js resolves with { data, error } instead of throwing, so a write blocked by row-level security or rejected by a constraint returns here as a success — try/catch does not catch it, and qual/fetch-has-error-handling does not model it.",
+      "fixPrompt": "Fix \"Supabase query result discarded, so its error is invisible\" (qual/supabase-result-unchecked) at src/components/TermsVersionChecker.tsx:68: This Supabase call's result is thrown away. supabase-js resolves with { data, error } instead of throwing, so a write blocked by row-level security or rejected by a constraint returns here as a success — try/catch does not catch it, and qual/fetch-has-error-handling does not model it."
+    },
+    {
+      "ruleId": "qual/supabase-result-unchecked",
+      "file": "src/contexts/AuthContext.tsx",
+      "line": 110,
+      "severity": "warn",
+      "message": "This Supabase call's result is thrown away. supabase-js resolves with { data, error } instead of throwing, so a write blocked by row-level security or rejected by a constraint returns here as a success — try/catch does not catch it, and qual/fetch-has-error-handling does not model it.",
+      "fixPrompt": "Fix \"Supabase query result discarded, so its error is invisible\" (qual/supabase-result-unchecked) at src/contexts/AuthContext.tsx:110: This Supabase call's result is thrown away. supabase-js resolves with { data, error } instead of throwing, so a write blocked by row-level security or rejected by a constraint returns here as a success — try/catch does not catch it, and qual/fetch-has-error-handling does not model it."
+    },
+    {
+      "ruleId": "qual/supabase-result-unchecked",
+      "file": "src/pages/Community.tsx",
+      "line": 573,
+      "severity": "warn",
+      "message": "This Supabase call's result is thrown away. supabase-js resolves with { data, error } instead of throwing, so a write blocked by row-level security or rejected by a constraint returns here as a success — try/catch does not catch it, and qual/fetch-has-error-handling does not model it.",
+      "fixPrompt": "Fix \"Supabase query result discarded, so its error is invisible\" (qual/supabase-result-unchecked) at src/pages/Community.tsx:573: This Supabase call's result is thrown away. supabase-js resolves with { data, error } instead of throwing, so a write blocked by row-level security or rejected by a constraint returns here as a success — try/catch does not catch it, and qual/fetch-has-error-handling does not model it."
+    },
+    {
+      "ruleId": "qual/supabase-result-unchecked",
+      "file": "src/pages/Discover.tsx",
+      "line": 999,
+      "severity": "warn",
+      "message": "This Supabase call's result is thrown away. supabase-js resolves with { data, error } instead of throwing, so a write blocked by row-level security or rejected by a constraint returns here as a success — try/catch does not catch it, and qual/fetch-has-error-handling does not model it.",
+      "fixPrompt": "Fix \"Supabase query result discarded, so its error is invisible\" (qual/supabase-result-unchecked) at src/pages/Discover.tsx:999: This Supabase call's result is thrown away. supabase-js resolves with { data, error } instead of throwing, so a write blocked by row-level security or rejected by a constraint returns here as a success — try/catch does not catch it, and qual/fetch-has-error-handling does not model it."
+    },
+    {
+      "ruleId": "qual/supabase-result-unchecked",
+      "file": "src/pages/MyGames.tsx",
+      "line": 642,
+      "severity": "warn",
+      "message": "This Supabase call's result is thrown away. supabase-js resolves with { data, error } instead of throwing, so a write blocked by row-level security or rejected by a constraint returns here as a success — try/catch does not catch it, and qual/fetch-has-error-handling does not model it.",
+      "fixPrompt": "Fix \"Supabase query result discarded, so its error is invisible\" (qual/supabase-result-unchecked) at src/pages/MyGames.tsx:642: This Supabase call's result is thrown away. supabase-js resolves with { data, error } instead of throwing, so a write blocked by row-level security or rejected by a constraint returns here as a success — try/catch does not catch it, and qual/fetch-has-error-handling does not model it."
+    },
+    {
+      "ruleId": "qual/supabase-result-unchecked",
+      "file": "src/pages/MyGames.tsx",
+      "line": 846,
+      "severity": "warn",
+      "message": "This Supabase call's result is thrown away. supabase-js resolves with { data, error } instead of throwing, so a write blocked by row-level security or rejected by a constraint returns here as a success — try/catch does not catch it, and qual/fetch-has-error-handling does not model it.",
+      "fixPrompt": "Fix \"Supabase query result discarded, so its error is invisible\" (qual/supabase-result-unchecked) at src/pages/MyGames.tsx:846: This Supabase call's result is thrown away. supabase-js resolves with { data, error } instead of throwing, so a write blocked by row-level security or rejected by a constraint returns here as a success — try/catch does not catch it, and qual/fetch-has-error-handling does not model it."
+    },
+    {
+      "ruleId": "sec/edge-function-no-auth",
+      "file": "supabase/config.toml",
+      "line": 4,
+      "severity": "error",
+      "message": "This Supabase Edge Function is deployed with JWT verification disabled, so it accepts unauthenticated requests from anyone who learns its URL — and it runs on your project's server-side secrets.",
+      "fixPrompt": "Fix \"Edge Function deployed with JWT verification turned off\" (sec/edge-function-no-auth) at supabase/config.toml:4: This Supabase Edge Function is deployed with JWT verification disabled, so it accepts unauthenticated requests from anyone who learns its URL — and it runs on your project's server-side secrets."
+    },
+    {
+      "ruleId": "sec/edge-function-no-auth",
+      "file": "supabase/config.toml",
+      "line": 7,
+      "severity": "error",
+      "message": "This Supabase Edge Function is deployed with JWT verification disabled, so it accepts unauthenticated requests from anyone who learns its URL — and it runs on your project's server-side secrets.",
+      "fixPrompt": "Fix \"Edge Function deployed with JWT verification turned off\" (sec/edge-function-no-auth) at supabase/config.toml:7: This Supabase Edge Function is deployed with JWT verification disabled, so it accepts unauthenticated requests from anyone who learns its URL — and it runs on your project's server-side secrets."
+    },
+    {
       "ruleId": "sec/no-env-in-git",
       "file": ".env",
       "severity": "error",
@@ -499,7 +563,7 @@
   ],
   "warnings": [],
   "fileCount": 186,
-  "ruleCount": 20,
+  "ruleCount": 23,
   "tokenSurface": {
     "files": [],
     "totalTokens": 0,

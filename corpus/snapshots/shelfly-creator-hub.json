@@ -1,5 +1,5 @@
 {
-  "composite": 59,
+  "composite": 53.88,
   "categories": [
     {
       "category": "security",
@@ -7,7 +7,7 @@
     },
     {
       "category": "quality",
-      "score": 100
+      "score": 55.56
     },
     {
       "category": "docs",
@@ -105,6 +105,22 @@
       "severity": "warn",
       "message": "No CHANGELOG.md found — users and future-you can't see what changed between versions.",
       "fixPrompt": "Fix \"CHANGELOG.md missing\" (docs/changelog-exists) at CHANGELOG.md: No CHANGELOG.md found — users and future-you can't see what changed between versions."
+    },
+    {
+      "ruleId": "qual/simulated-backend",
+      "file": "src/pages/CheckoutPage.tsx",
+      "line": 45,
+      "severity": "warn",
+      "message": "This file has a submit/checkout/save handler whose only asynchronous work is an artificial delay, and the file makes no network call at all — the form reports success without anything leaving the browser.",
+      "fixPrompt": "Fix \"Submit handler resolves on a timer instead of a backend\" (qual/simulated-backend) at src/pages/CheckoutPage.tsx:45: This file has a submit/checkout/save handler whose only asynchronous work is an artificial delay, and the file makes no network call at all — the form reports success without anything leaving the browser."
+    },
+    {
+      "ruleId": "qual/simulated-backend",
+      "file": "src/pages/ContactPage.tsx",
+      "line": 28,
+      "severity": "warn",
+      "message": "This file has a submit/checkout/save handler whose only asynchronous work is an artificial delay, and the file makes no network call at all — the form reports success without anything leaving the browser.",
+      "fixPrompt": "Fix \"Submit handler resolves on a timer instead of a backend\" (qual/simulated-backend) at src/pages/ContactPage.tsx:28: This file has a submit/checkout/save handler whose only asynchronous work is an artificial delay, and the file makes no network call at all — the form reports success without anything leaving the browser."
     },
     {
       "ruleId": "sec/raw-card-input-no-payment-sdk",
@@ -261,7 +277,7 @@
   ],
   "warnings": [],
   "fileCount": 110,
-  "ruleCount": 20,
+  "ruleCount": 23,
   "tokenSurface": {
     "files": [],
     "totalTokens": 0,

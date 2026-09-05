@@ -6,7 +6,11 @@ import { buildFixPrompt } from "../findings.js";
 import type { Finding } from "../types.js";
 import type { TierContext, TierResult } from "./types.js";
 
-/** Line-level regex patterns, scoped to files matching the rule's `files` glob. */
+/**
+ * Line-level regex patterns, scoped to files matching the rule's `files`
+ * glob, and optionally gated on whole-file content by `pattern.when` /
+ * `pattern.unless`.
+ */
 export async function runRegexTier(
   rule: RegexRule,
   ctx: TierContext,
@@ -16,6 +20,8 @@ export async function runRegexTier(
   // exclusion pattern like "!**/fixtures/**".
   const matches = micromatch(ctx.scannedFiles, rule.files, { dot: true });
   const regex = new RegExp(rule.pattern.regex, rule.pattern.flags);
+  const when = rule.pattern.when;
+  const whenRegex = when === undefined ? undefined : new RegExp(when.regex, when.flags);
   const unless = rule.pattern.unless;
   const unlessRegex =
     unless === undefined ? undefined : new RegExp(unless.regex, unless.flags);
@@ -32,6 +38,19 @@ export async function runRegexTier(
         `${rule.id}: could not read ${file} (${error instanceof Error ? error.message : String(error)})`,
       );
       continue;
+    }
+
+    // Whole-file precondition, then whole-file suppression — both are
+    // evaluated against the file's raw content before any line is looked
+    // at, so a rule can require context the line-level `regex` can't see
+    // (DECISIONS/0028) and rule out context that makes the match benign
+    // (DECISIONS/0008). `when` runs first only because failing it is the
+    // cheaper, more common exit for the rules that use it.
+    if (whenRegex !== undefined) {
+      whenRegex.lastIndex = 0; // reset in case of a stateful global/sticky flag
+      if (!whenRegex.test(content)) {
+        continue;
+      }
     }
 
     if (unlessRegex !== undefined) {

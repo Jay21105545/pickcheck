@@ -1,0 +1,40 @@
+id: qual/supabase-result-unchecked
+category: quality
+severity: warn
+tier: regex
+title: Supabase query result discarded, so its error is invisible
+files:
+  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
+  - "!**/*.test.*"
+  - "!**/*.spec.*"
+  - "!**/__tests__/**"
+  - "!**/test/**"
+  - "!**/tests/**"
+  - "!**/fixtures/**"
+message: "This Supabase call's result is thrown away. supabase-js resolves with { data, error } instead of throwing, so a write blocked by row-level security or rejected by a constraint returns here as a success — try/catch does not catch it, and qual/fetch-has-error-handling does not model it."
+weight: 2
+pattern:
+  # `await` in *statement position* is the whole discriminator: the line
+  # begins with `await <client>`, so no binding, no `return`, and no
+  # further expression consumes the `{ data, error }` the call resolves
+  # to. Every way of keeping the result — `const { error } = await …`,
+  # `const res = await …`, `return await …`, `x = await …` — puts some
+  # other token first and cannot match.
+  #
+  # Two forms after the client, and only two:
+  #   * end of line — a chain continued on the following lines, which is
+  #     how prettier formats every multi-line `.from().update().eq()`;
+  #   * `.from(` / `.rpc(` / `.functions.invoke(` on the same line.
+  #
+  # `.auth.*` and `.storage.*` are deliberately absent. Corpus-measured
+  # (DECISIONS/0028): the alternation above matches 9 call sites across
+  # two repos, every one a table write or an RPC whose discarded `error`
+  # is a real silent failure. Widening it to the whole client adds 4
+  # `auth.signOut()` calls (a failure the very next page load corrects)
+  # and 2 `storage.remove()` cleanups of an already-orphaned file — 6
+  # findings that would not change what anyone does. Do NOT relax this to
+  # `await supabase\b`.
+  #
+  # `[A-Za-z]*` after `supabase` admits the `supabaseAdmin` /
+  # `supabaseClient` naming the corpus also uses for a second client.
+  regex: '^\s*await\s+supabase[A-Za-z]*\s*(?:$|\.(?:from|rpc)\s*\(|\.functions\.invoke\s*\()'

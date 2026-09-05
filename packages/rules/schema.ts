@@ -63,6 +63,32 @@ const regexRuleSchema = baseRuleSchema.extend({
   pattern: z.object({
     regex: z.string().min(1),
     flags: z.string().optional(),
+    // Optional whole-file *precondition*, the exact mirror of `unless`
+    // below: a matched file produces findings only if `when` matches
+    // somewhere in its content. Same family as the exists tier's
+    // `pattern.when` (DECISIONS/0005) and `unless` itself
+    // (DECISIONS/0008) — a generic, optional capability any regex rule
+    // can opt into, not a rule-specific special case. Added in
+    // DECISIONS/0028 for `qual/simulated-backend`, whose subject is a
+    // *submit handler* that resolves on a timer: the trigger and the
+    // handler are on different lines, and the regex tier reads one line
+    // at a time, so without a file-level precondition the rule could not
+    // say the thing its own README claims.
+    //
+    // Deliberately does NOT affect scoring applicability, unlike the
+    // exists tier's glob-based `when`: applicability is computed from
+    // `files` alone, without reading content (scorer.ts's isApplicable),
+    // and `unless` has always worked that way too. A regex rule is
+    // "checked" if its glob matched files, whatever the content says.
+    //
+    // Unset means unconditional, matching every regex rule written
+    // before this field existed.
+    when: z
+      .object({
+        regex: z.string().min(1),
+        flags: z.string().optional(),
+      })
+      .optional(),
     // Optional whole-file suppression: if `unless` matches anywhere in a
     // matched file's content, that file produces no findings for this
     // rule at all — e.g. "flag req.body reads, unless the file mentions a

@@ -43,7 +43,8 @@ scan (fast-glob, .gitignore- and .pickcheckignore-aware)
   → load rules (zod-validate every rule.yaml; invalid → warn + skip)
   → dispatch by tier:
       exists   — file presence/absence checks
-      regex    — line-level patterns with path scoping
+      regex    — line-level patterns with path scoping, optionally gated
+                 on whole-file content (pattern.when / pattern.unless)
       astgrep  — structural patterns via @ast-grep/napi (lazy-loaded)
       tokens   — gpt-tokenizer counts vs budgets (lazy-loaded)
       manifest — source specifiers cross-referenced against package.json

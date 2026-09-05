@@ -1,0 +1,8 @@
+project_id = "example-project"
+
+# An AI-assistant proxy: no auth, and it spends the project's API budget.
+[functions.chat]
+verify_jwt = false
+
+[functions.moderate-content]
+verify_jwt = false

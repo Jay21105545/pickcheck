@@ -1,0 +1,58 @@
+id: qual/simulated-backend
+category: quality
+severity: warn
+tier: regex
+title: Submit handler resolves on a timer instead of a backend
+files:
+  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
+  - "!**/*.test.*"
+  - "!**/*.spec.*"
+  - "!**/__tests__/**"
+  - "!**/test/**"
+  - "!**/tests/**"
+  - "!**/fixtures/**"
+  - "!**/*.stories.*"
+  - "!**/mocks/**"
+  - "!**/__mocks__/**"
+message: "This file has a submit/checkout/save handler whose only asynchronous work is an artificial delay, and the file makes no network call at all — the form reports success without anything leaving the browser."
+weight: 2
+pattern:
+  # An AWAITED artificial delay: `await new Promise(resolve =>
+  # setTimeout(resolve, ms))`. This exact shape is the whole rule, and it
+  # is chosen because there is no honest reason to write it in a file that
+  # never talks to a server. It is not a timer that schedules work
+  # (debounce, throttle, an auto-dismissing toast, a delayed redirect) —
+  # those pass a callback and never await it. It is a developer inserting
+  # fake latency so a stubbed flow *feels* like a round trip.
+  #
+  # Deliberately NOT `setTimeout\(` on its own. Corpus-measured
+  # (DECISIONS/0028): widening to any setTimeout under the same
+  # preconditions gains two real findings and one duplicate of a file
+  # already flagged, at the cost of a trigger that a debounce, an
+  # optimistic-UI revert, or a toast timer satisfies on its own. The
+  # recall that costs is recorded in the ADR rather than guessed at here.
+  regex: '\bawait\s+new\s+Promise\s*\(\s*(?:\(\s*[\w$]*\s*\)|[\w$]+)\s*=>\s*\{?\s*setTimeout\s*\('
+  # Precondition (DECISIONS/0028): the file must actually contain a
+  # submit-shaped handler. The trigger line and the handler are never the
+  # same line, and the regex tier reads one line at a time, so without
+  # this the rule would flag an awaited sleep anywhere — a retry backoff
+  # helper, an animation sequencer — and its own title would be a lie.
+  #
+  # No trailing word boundary: `handleSendMessage` and `handleSaveProfile`
+  # are as common as `handleSubmit`, and anchoring the verb to the end of
+  # the identifier would miss both. `Pay` is spelled out as `Payment` for
+  # the same reason in reverse — bare `Pay` would match `handlePayload`.
+  when:
+    regex: '(?:handle|on)[A-Za-z]*(?:Submit|Checkout|Save|Payment|Order|Purchase|Register|SignUp|Signup|Send)'
+  # Suppression: any sign the file talks to a backend at all. An awaited
+  # delay next to a real network call is a retry backoff or a poll
+  # interval, which is ordinary code — sports-on-the-go's `geocode` Edge
+  # Function is exactly that, both of its sleeps sitting between real
+  # `fetch` calls to a geocoding API. Ungated, the trigger runs at 50% on
+  # the corpus because of those two; `when` and `unless` each exclude them
+  # independently (an Edge Function has no submit handler either), so the
+  # pair is measured together and neither is ranked above the other. See
+  # DECISIONS/0028.
+  unless:
+    regex: '\bfetch\s*\(|\baxios\b|\bsupabase\b|\bXMLHttpRequest\b|\buseMutation\b|\btrpc\b|\bprisma\b|\bfirebase\b|\bgraphql\b|\bsendBeacon\b|\bnew\s+WebSocket\b|\bEventSource\b|["'']use server["'']'
+    flags: i

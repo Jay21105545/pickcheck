@@ -76,6 +76,31 @@ security .30 · quality .20 · docs .15 · discipline .15 · ui-ux .10 · tokens
 (ui-ux and tokens rules land in Phase 3; weights present from day one so
 scores are comparable across versions.)
 
+## Backend coverage (added after v0.1 — see [ADR 0028](../DECISIONS/0028-backend-coverage-rules.md))
+
+The ten rules above, and the ten added since, all model an app whose data
+layer either throws on failure or goes out over `fetch`. Three rules cover the seam that assumption misses:
+
+### 11. sec/edge-function-no-auth — error, regex
+`verify_jwt = false` in any `**/supabase/config.toml`. One finding per
+function block; a block without the key is fine (the platform default is
+`true`). Third-party webhooks are a genuine exception and are **not**
+excluded — no corpus instance, so the class is documented rather than
+coded against.
+
+### 12. qual/supabase-result-unchecked — warn, regex
+A line beginning `await supabase…` — `await` in statement position, so
+the `{ data, error }` the call resolves to is discarded. Scoped to
+`from`/`rpc`/`functions.invoke`; `auth` and `storage` measured as noise
+and excluded. Not detected: a result that is bound but never read, and a
+fire-and-forget call with no `await`.
+
+### 13. qual/simulated-backend — warn, regex
+`await new Promise(… => setTimeout(…))` in a file that contains a
+submit/checkout/save handler (`pattern.when`) and no network call
+(`pattern.unless`). The awaited form only — a bare `setTimeout` schedules
+work, which debounce and optimistic UI legitimately do.
+
 ## Parked rules
 
 `ux/hardcoded-px-width` (Phase 3) is parked in `packages/rules/_incubating/`
