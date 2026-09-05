@@ -18,6 +18,7 @@ export const TIERS = [
   "tokens",
   "manifest",
   "coverage",
+  "capability",
 ] as const;
 
 const idSchema = z
@@ -263,6 +264,77 @@ const coverageRuleSchema = baseRuleSchema.extend({
   }),
 });
 
+/**
+ * The capability tier answers a question about the repo as a whole rather
+ * than about any file in it: *is some guarantee established anywhere?* —
+ * where "anywhere" spans package.json scripts, CI configuration, and
+ * framework config that provides the guarantee implicitly.
+ *
+ * It is a tier rather than a mode on `exists` because the question is
+ * never "does this path exist". Every other tier answers by matching
+ * content *within* files it then reports against; this one collects
+ * evidence from several unrelated places, ORs it together, and reports
+ * one finding when the OR comes out false. Nothing is reported against
+ * the files it reads — they are the evidence, not the defect.
+ *
+ * The generality that earns it a tier is the *provider list*. "Nothing
+ * type-checks this repo" is one instance; "nothing lints it", "nothing
+ * runs its tests in CI" are the same shape, and all of them have the same
+ * trap: a guarantee a framework supplies for free, which a config flag can
+ * silently switch back off. `providedBy[].revokedBy` is that trap made
+ * into data. See DECISIONS/0030.
+ */
+const capabilityRuleSchema = baseRuleSchema.extend({
+  tier: z.literal("capability"),
+  pattern: z.object({
+    /**
+     * Repo-relative path the single finding is reported against — the file
+     * the user would edit to establish the capability (e.g. `package.json`,
+     * where a `typecheck` script would go). Need not exist.
+     */
+    reportAt: z.string().min(1),
+    /**
+     * Any ONE satisfied provider establishes the capability. A finding is
+     * produced only when none is.
+     */
+    providedBy: z
+      .array(
+        z.object({
+          /** Named in the fix prompt, so the finding says what was looked for and not found. */
+          label: z.string().min(1),
+          /**
+           * Where to look. `package-scripts` reads every scanned
+           * `package.json`'s `scripts` object and matches `regex` against
+           * each entry's name and its command; `files` matches `regex`
+           * against the content of files matching `files`.
+           */
+          source: z.enum(["package-scripts", "files"]),
+          /** Globs to read. Required for `source: files`, ignored for `package-scripts`. */
+          files: z.array(z.string().min(1)).min(1).optional(),
+          /**
+           * What establishes the capability. Omit — only meaningful for
+           * `source: files` — to mean the file merely existing is enough,
+           * which is how a framework config that type-checks by default
+           * gets expressed.
+           */
+          regex: z.string().min(1).optional(),
+          flags: z.string().optional(),
+          /**
+           * What switches the capability back OFF, checked against the same
+           * content that would otherwise establish it — e.g.
+           * `typescript: { ignoreBuildErrors: true }` in a `next.config.mjs`,
+           * which turns `next build` from a type-checker into one that
+           * ships type errors. A provider whose content matches this does
+           * not count as satisfied.
+           */
+          revokedBy: z.string().min(1).optional(),
+          revokedByFlags: z.string().optional(),
+        }),
+      )
+      .min(1),
+  }),
+});
+
 export const ruleSchema = z.discriminatedUnion("tier", [
   existsRuleSchema,
   regexRuleSchema,
@@ -270,6 +342,7 @@ export const ruleSchema = z.discriminatedUnion("tier", [
   tokensRuleSchema,
   manifestRuleSchema,
   coverageRuleSchema,
+  capabilityRuleSchema,
 ]);
 
 export type Rule = z.infer<typeof ruleSchema>;
@@ -279,6 +352,7 @@ export type AstgrepRule = z.infer<typeof astgrepRuleSchema>;
 export type TokensRule = z.infer<typeof tokensRuleSchema>;
 export type ManifestRule = z.infer<typeof manifestRuleSchema>;
 export type CoverageRule = z.infer<typeof coverageRuleSchema>;
+export type CapabilityRule = z.infer<typeof capabilityRuleSchema>;
 export type Category = (typeof CATEGORIES)[number];
 export type Severity = (typeof SEVERITIES)[number];
 export type Tier = (typeof TIERS)[number];
