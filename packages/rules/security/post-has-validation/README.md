@@ -15,15 +15,32 @@ the code does with the object next.
 
 **Detection:** `regex` tier, v1 as staged in RULESET.md (the ruleset's
 own path to a real fix is "regex v1 → astgrep v1.1" — this ships v1
-honestly, not as a finished check). Flags a line matching `req.body` or
-`await request.json()` in a file under a detected API-surface path
-(`app/api/**`, `pages/api/**`, `routes/**`, `src/routes/**`, `api/**`),
+honestly, not as a finished check). Flags a line matching
+`req.body`/`request.body` or `await …req.json()`/`await …request.json()`
+in a file under a detected API-surface path (`app/api/**`, `pages/api/**`,
+`routes/**`, `src/routes/**`, `api/**`, plus the serverless conventions
+`supabase/functions/**`, `netlify/functions/**`,
+`netlify/edge-functions/**`),
 **unless** the file also contains the word `zod`, `yup`, `joi`, `valibot`,
 or `class-validator` anywhere (see
 [ADR 0008](../../../../DECISIONS/0008-regex-unless-precondition.md) for
 the whole-file `pattern.unless` mechanism this relies on). Severity is
 `warn`, and the message says "no validation **detected**" deliberately —
 this is a heuristic, not a proof of absence.
+
+Both the path list and the body-read pattern were widened in
+[DECISIONS/0027](../../../../DECISIONS/0027-recall-drift-in-shipped-rules.md).
+The original path list was Next.js-shaped and missed every serverless
+convention — 7 HTTP endpoints in the backtest corpus, 4 of them reading an
+unvalidated body, none inside any glob this rule had. Widening the globs
+alone would still have matched **zero** of them, because the original
+alternation was `req\.body|await\s+request\.json\(\)`: it hardcoded
+`request` for the `.json()` form, and every one of those handlers reads
+`await req.json()`. `request.body` was invisible for the mirror-image
+reason. The `[\w.]*` prefix now also admits Hono/Elysia's
+`await c.req.json()`, while staying anchored on a `req`/`request` receiver
+so that `await res.json()` — parsing a *response*, far more common in app
+code — can never match.
 
 **Honest limits, by design, not by oversight:**
 - **Proximity, not binding.** It confirms a validation library is

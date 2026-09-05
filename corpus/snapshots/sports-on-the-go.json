@@ -1,9 +1,9 @@
 {
-  "composite": 59,
+  "composite": 54.4,
   "categories": [
     {
       "category": "security",
-      "score": 50
+      "score": 33.33
     },
     {
       "category": "quality",
@@ -11,7 +11,7 @@
     },
     {
       "category": "docs",
-      "score": 71.43
+      "score": 55.56
     },
     {
       "category": "discipline",
@@ -19,7 +19,7 @@
     },
     {
       "category": "ui-ux",
-      "score": 41.67
+      "score": 31.25
     },
     {
       "category": "tokens",
@@ -404,300 +404,11 @@
       "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at src/pages/MyGames.tsx:652: console.log left in source — remove it or replace it with a real logger."
     },
     {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/archive-expired-communities/index.ts",
-      "line": 19,
+      "ruleId": "docs/api-doc-exists",
+      "file": "API.md",
       "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/archive-expired-communities/index.ts:19: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/archive-expired-communities/index.ts",
-      "line": 33,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/archive-expired-communities/index.ts:33: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/archive-expired-communities/index.ts",
-      "line": 58,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/archive-expired-communities/index.ts:58: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/archive-expired-communities/index.ts",
-      "line": 77,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/archive-expired-communities/index.ts:77: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/archive-expired-communities/index.ts",
-      "line": 104,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/archive-expired-communities/index.ts:104: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/delete-user-account/index.ts",
-      "line": 42,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/delete-user-account/index.ts:42: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/delete-user-account/index.ts",
-      "line": 53,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/delete-user-account/index.ts:53: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/delete-user-account/index.ts",
-      "line": 61,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/delete-user-account/index.ts:61: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/delete-user-account/index.ts",
-      "line": 69,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/delete-user-account/index.ts:69: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/delete-user-account/index.ts",
-      "line": 77,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/delete-user-account/index.ts:77: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/delete-user-account/index.ts",
-      "line": 85,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/delete-user-account/index.ts:85: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/delete-user-account/index.ts",
-      "line": 93,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/delete-user-account/index.ts:93: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/delete-user-account/index.ts",
-      "line": 101,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/delete-user-account/index.ts:101: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/delete-user-account/index.ts",
-      "line": 109,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/delete-user-account/index.ts:109: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/delete-user-account/index.ts",
-      "line": 117,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/delete-user-account/index.ts:117: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/delete-user-account/index.ts",
-      "line": 125,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/delete-user-account/index.ts:125: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/delete-user-account/index.ts",
-      "line": 133,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/delete-user-account/index.ts:133: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/delete-user-account/index.ts",
-      "line": 141,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/delete-user-account/index.ts:141: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/delete-user-account/index.ts",
-      "line": 149,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/delete-user-account/index.ts:149: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/delete-user-account/index.ts",
-      "line": 159,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/delete-user-account/index.ts:159: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/geocode/index.ts",
-      "line": 36,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/geocode/index.ts:36: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/geocode/index.ts",
-      "line": 39,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/geocode/index.ts:39: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/geocode/index.ts",
-      "line": 53,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/geocode/index.ts:53: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/geocode/index.ts",
-      "line": 56,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/geocode/index.ts:56: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/geocode/index.ts",
-      "line": 58,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/geocode/index.ts:58: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/geocode/index.ts",
-      "line": 78,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/geocode/index.ts:78: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/geocode/index.ts",
-      "line": 88,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/geocode/index.ts:88: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/geocode/index.ts",
-      "line": 99,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/geocode/index.ts:99: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/geocode/index.ts",
-      "line": 102,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/geocode/index.ts:102: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/geocode/index.ts",
-      "line": 115,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/geocode/index.ts:115: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/geocode/index.ts",
-      "line": 130,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/geocode/index.ts:130: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/geocode/index.ts",
-      "line": 135,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/geocode/index.ts:135: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/geocode/index.ts",
-      "line": 146,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/geocode/index.ts:146: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/geocode/index.ts",
-      "line": 161,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/geocode/index.ts:161: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/geocode/index.ts",
-      "line": 164,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/geocode/index.ts:164: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/geocode/index.ts",
-      "line": 188,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/geocode/index.ts:188: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/moderate-content/index.ts",
-      "line": 65,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/moderate-content/index.ts:65: console.log left in source — remove it or replace it with a real logger."
+      "message": "An API surface was detected but no API.md or openapi.* spec documents it.",
+      "fixPrompt": "Fix \"API surface detected with no API.md or openapi spec\" (docs/api-doc-exists) at API.md: An API surface was detected but no API.md or openapi.* spec documents it."
     },
     {
       "ruleId": "docs/changelog-exists",
@@ -712,6 +423,46 @@
       "severity": "error",
       "message": "A .env file is present and not git-ignored — it will be committed with real secrets in it.",
       "fixPrompt": "Fix \".env file tracked in the repo\" (sec/no-env-in-git) at .env: A .env file is present and not git-ignored — it will be committed with real secrets in it."
+    },
+    {
+      "ruleId": "sec/post-has-validation",
+      "file": "supabase/functions/chat-sporty/index.ts",
+      "line": 14,
+      "severity": "warn",
+      "message": "No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference.",
+      "fixPrompt": "Fix \"Request body read with no apparent validation\" (sec/post-has-validation) at supabase/functions/chat-sporty/index.ts:14: No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference."
+    },
+    {
+      "ruleId": "sec/post-has-validation",
+      "file": "supabase/functions/geocode/index.ts",
+      "line": 35,
+      "severity": "warn",
+      "message": "No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference.",
+      "fixPrompt": "Fix \"Request body read with no apparent validation\" (sec/post-has-validation) at supabase/functions/geocode/index.ts:35: No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference."
+    },
+    {
+      "ruleId": "sec/post-has-validation",
+      "file": "supabase/functions/moderate-content/index.ts",
+      "line": 14,
+      "severity": "warn",
+      "message": "No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference.",
+      "fixPrompt": "Fix \"Request body read with no apparent validation\" (sec/post-has-validation) at supabase/functions/moderate-content/index.ts:14: No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference."
+    },
+    {
+      "ruleId": "ux/destructive-no-confirm",
+      "file": "src/components/NotificationCenter.tsx",
+      "line": 233,
+      "severity": "warn",
+      "message": "This component runs a delete with no confirmation step anywhere in the file — a single accidental click permanently destroys data.",
+      "fixPrompt": "Fix \"Destructive action with no confirmation step\" (ux/destructive-no-confirm) at src/components/NotificationCenter.tsx:233: This component runs a delete with no confirmation step anywhere in the file — a single accidental click permanently destroys data."
+    },
+    {
+      "ruleId": "ux/destructive-no-confirm",
+      "file": "src/components/NotificationCenter.tsx",
+      "line": 253,
+      "severity": "warn",
+      "message": "This component runs a delete with no confirmation step anywhere in the file — a single accidental click permanently destroys data.",
+      "fixPrompt": "Fix \"Destructive action with no confirmation step\" (ux/destructive-no-confirm) at src/components/NotificationCenter.tsx:253: This component runs a delete with no confirmation step anywhere in the file — a single accidental click permanently destroys data."
     },
     {
       "ruleId": "ux/inline-hex-threshold",

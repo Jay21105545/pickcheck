@@ -14,6 +14,22 @@ files:
   - "!corpus/**"
   - "!**/*.config.*"
   - "!**/fixtures/**"
+  # Serverless/edge function directories. `console.log` there is not
+  # leftover debugging — it is the platform's supported observability
+  # mechanism (Supabase surfaces it in the Functions log viewer; there is
+  # no other way to instrument a Deno edge function), the same "this is
+  # not application runtime code" carve-out DECISIONS/0017 made for
+  # package-script targets. Corpus-measured: 36 of sports-on-the-go's 84
+  # findings were server logs inside supabase/functions/**, and they were
+  # what pinned its discipline score at 50. See DECISIONS/0027.
+  #
+  # Scoped to platform-named parent directories only. Firebase's bare
+  # `functions/` is deliberately NOT excluded — the name is too generic to
+  # distinguish a Cloud Functions root from an app's own `src/functions/`
+  # helpers without a platform marker to key off.
+  - "!**/supabase/functions/**"
+  - "!**/netlify/functions/**"
+  - "!**/netlify/edge-functions/**"
 message: "console.log left in source — remove it or replace it with a real logger."
 weight: 1
 excludePackageScriptTargets: true

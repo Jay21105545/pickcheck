@@ -1,7 +1,8 @@
 import { join } from "node:path";
 import type { ManifestRule } from "@pickcheck/rules/schema";
 import { describe, expect, it } from "vitest";
-import { runManifestTier, stripComments } from "../../../src/engine/tiers/manifest.js";
+import { stripComments } from "../../../src/engine/strip-comments.js";
+import { runManifestTier } from "../../../src/engine/tiers/manifest.js";
 import type { TempDir } from "../../helpers/temp-dir.js";
 import { createTempDir } from "../../helpers/temp-dir.js";
 

@@ -3,7 +3,7 @@
   "categories": [
     {
       "category": "security",
-      "score": 50
+      "score": 41.67
     },
     {
       "category": "quality",
@@ -11,15 +11,15 @@
     },
     {
       "category": "docs",
-      "score": 55.56
+      "score": 45.45
     },
     {
       "category": "discipline",
-      "score": 62.5
+      "score": 100
     },
     {
       "category": "ui-ux",
-      "score": 62.5
+      "score": 41.67
     },
     {
       "category": "tokens",
@@ -28,28 +28,11 @@
   ],
   "findings": [
     {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/chat/index.ts",
-      "line": 62,
+      "ruleId": "docs/api-doc-exists",
+      "file": "API.md",
       "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/chat/index.ts:62: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/chat/index.ts",
-      "line": 89,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/chat/index.ts:89: console.log left in source — remove it or replace it with a real logger."
-    },
-    {
-      "ruleId": "disc/no-console-log",
-      "file": "supabase/functions/chat/index.ts",
-      "line": 98,
-      "severity": "warn",
-      "message": "console.log left in source — remove it or replace it with a real logger.",
-      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at supabase/functions/chat/index.ts:98: console.log left in source — remove it or replace it with a real logger."
+      "message": "An API surface was detected but no API.md or openapi.* spec documents it.",
+      "fixPrompt": "Fix \"API surface detected with no API.md or openapi spec\" (docs/api-doc-exists) at API.md: An API surface was detected but no API.md or openapi.* spec documents it."
     },
     {
       "ruleId": "docs/changelog-exists",
@@ -62,8 +45,8 @@
       "ruleId": "docs/env-example-exists",
       "file": ".env.example",
       "severity": "warn",
-      "message": "A .env file exists but there's no .env.example — nobody can tell what environment variables this app needs without reading source.",
-      "fixPrompt": "Fix \".env present with no .env.example\" (docs/env-example-exists) at .env.example: A .env file exists but there's no .env.example — nobody can tell what environment variables this app needs without reading source."
+      "message": "This project reads environment variables that .env.example doesn't document — anyone cloning it has to read the source to find out what config it needs.",
+      "fixPrompt": "Fix \"Environment variables the code needs aren't documented in .env.example\" (docs/env-example-exists) at .env.example: This project reads environment variables that .env.example doesn't document — anyone cloning it has to read the source to find out what config it needs. (0% documented (0/3), threshold 60% — missing: LOVABLE_API_KEY, VITE_SUPABASE_PUBLISHABLE_KEY, VITE_SUPABASE_URL)"
     },
     {
       "ruleId": "sec/no-env-in-git",
@@ -71,6 +54,30 @@
       "severity": "error",
       "message": "A .env file is present and not git-ignored — it will be committed with real secrets in it.",
       "fixPrompt": "Fix \".env file tracked in the repo\" (sec/no-env-in-git) at .env: A .env file is present and not git-ignored — it will be committed with real secrets in it."
+    },
+    {
+      "ruleId": "sec/post-has-validation",
+      "file": "supabase/functions/chat/index.ts",
+      "line": 91,
+      "severity": "warn",
+      "message": "No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference.",
+      "fixPrompt": "Fix \"Request body read with no apparent validation\" (sec/post-has-validation) at supabase/functions/chat/index.ts:91: No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference."
+    },
+    {
+      "ruleId": "ux/destructive-no-confirm",
+      "file": "src/components/ChatBot.tsx",
+      "line": 92,
+      "severity": "warn",
+      "message": "This component runs a delete with no confirmation step anywhere in the file — a single accidental click permanently destroys data.",
+      "fixPrompt": "Fix \"Destructive action with no confirmation step\" (ux/destructive-no-confirm) at src/components/ChatBot.tsx:92: This component runs a delete with no confirmation step anywhere in the file — a single accidental click permanently destroys data."
+    },
+    {
+      "ruleId": "ux/destructive-no-confirm",
+      "file": "src/components/dashboard/HabitList.tsx",
+      "line": 64,
+      "severity": "warn",
+      "message": "This component runs a delete with no confirmation step anywhere in the file — a single accidental click permanently destroys data.",
+      "fixPrompt": "Fix \"Destructive action with no confirmation step\" (ux/destructive-no-confirm) at src/components/dashboard/HabitList.tsx:64: This component runs a delete with no confirmation step anywhere in the file — a single accidental click permanently destroys data."
     },
     {
       "ruleId": "ux/inline-hex-threshold",

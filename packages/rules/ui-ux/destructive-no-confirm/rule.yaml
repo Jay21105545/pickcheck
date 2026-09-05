@@ -12,10 +12,33 @@ files:
   - "!**/tests/**"
   - "!**/fixtures/**"
   - "!**/api/**"
-message: "This component calls a DELETE endpoint with no confirmation step anywhere in the file — a single accidental click permanently destroys data."
+message: "This component runs a delete with no confirmation step anywhere in the file — a single accidental click permanently destroys data."
 weight: 2
 pattern:
-  regex: 'axios\.delete\(|method:\s*["'']DELETE["'']'
+  # Four destructive shapes, all line-level (the regex tier reads one line
+  # at a time — see DECISIONS/0027):
+  #
+  #  1. `axios.delete(` — the original HTTP shape.
+  #  2. `method: "DELETE"` — a fetch/request options object.
+  #  3. `.delete()` with EMPTY parens — a query-builder terminal delete
+  #     (Supabase `.from(t).delete()`, Firestore `docRef.delete()`). The
+  #     empty parens are the whole discriminator and they are load-bearing:
+  #     `Map`/`Set`/`URLSearchParams`/`cookies()` deletes ALWAYS take an
+  #     argument (`newSet.delete(id)`, `newParams.delete("q")`,
+  #     `cookies().delete('session')`), and a query-builder delete never
+  #     does. Corpus-measured: 13 matches across two repos, every one a
+  #     Supabase delete; the 10 argument-taking `.delete(x)` calls in the
+  #     same corpus are all harmless local collection edits and are not
+  #     matched. Do NOT relax this to `\.delete\(` — that is the
+  #     name-based heuristic the README rejects.
+  #  4. A Server Action bound to a form or `useActionState` whose name
+  #     contains `delete`/`destroy`. Deliberately NOT `remove`: corpus
+  #     calibration found `useActionState(removeItem, …)` in
+  #     vercel/commerce is a shopping-cart line-item removal — routine and
+  #     reversible, not destructive — so the verb cannot carry the rule.
+  #     See DECISIONS/0027 for the measurement and the recall this costs.
+  regex: 'axios\.delete\(|method:\s*["'']DELETE["'']|\.delete\(\)|\bdeleteDoc\(|(?:action|formAction)\s*=\s*\{\s*[\w$]*(?:delete|destroy)[\w$]*\s*\}|\buse(?:Action|Form)State\(\s*[\w$]*(?:delete|destroy)[\w$]*\b'
+  flags: i
   unless:
     regex: '\b(confirm|window\.confirm|useConfirm|ConfirmDialog|AlertDialog|areYouSure|isConfirmOpen)\b'
     flags: i

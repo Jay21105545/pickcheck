@@ -19,4 +19,11 @@ pattern:
       - "routes/**"
       - "src/routes/**"
       - "api/**"
+      # Serverless/edge function conventions — an HTTP surface just as
+      # much as an `app/api/` route, and just as much in need of docs.
+      # Same Next.js-shaped blind spot sec/post-has-validation had; both
+      # were widened together in DECISIONS/0027.
+      - "**/supabase/functions/**"
+      - "**/netlify/functions/**"
+      - "**/netlify/edge-functions/**"
       - "!**/fixtures/**"

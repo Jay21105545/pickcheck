@@ -13,9 +13,22 @@ one to reconstruct the surface — there's no single source of truth for
 **Detection:** exists tier, *conditional* via `pattern.when`. The check
 for `API.md` / `openapi.{json,yaml,yml}` only runs if the repo actually
 has an API surface — `app/api/**` or `pages/api/**` (Next.js), `routes/**`
-or `src/routes/**` (Express-style), or a top-level `api/**`. A repo with
+or `src/routes/**` (Express-style), a top-level `api/**`, or a serverless
+function directory (`supabase/functions/**`, `netlify/functions/**`,
+`netlify/edge-functions/**`). A repo with
 none of those paths (a CLI, a static site, a library with no server) never
-gets flagged for missing API docs, because it doesn't need any. Known
+gets flagged for missing API docs, because it doesn't need any.
+
+The serverless conventions were added in
+[DECISIONS/0027](../../../../DECISIONS/0027-recall-drift-in-shipped-rules.md),
+alongside the identical widening of `sec/post-has-validation`'s path list
+— both had the same Next.js-shaped blind spot. A Supabase Edge Function is
+an HTTP endpoint with a public URL, a request body and an auth story; it
+needs documenting for exactly the reasons an `app/api/` route does. Two
+corpus repos ship five and two such endpoints respectively (one of them
+deletes user accounts) and neither was being asked for API docs.
+
+Known
 limits: the API-surface check is path-convention-based, not content-based
 — it won't recognize a FastAPI or Express app that puts its routes
 somewhere unconventional (RULESET.md's spec mentions "fastapi/express

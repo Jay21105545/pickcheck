@@ -81,8 +81,10 @@ pattern:
 `tier` picks the detection engine: `exists` (a file present/absent),
 `regex` (line-level pattern, used here), `astgrep` (structural — for
 anything a regex would false-positive on: comments, strings,
-formatting), `tokens` (budget/duplication via `gpt-tokenizer`), or
-`manifest` (cross-referencing `package.json`). `weight` scales this
+formatting), `tokens` (budget/duplication via `gpt-tokenizer`),
+`manifest` (cross-referencing `package.json`), or `coverage` (identifiers
+used in source vs. declared in a documentation file — see
+[ADR 0027](DECISIONS/0027-recall-drift-in-shipped-rules.md)). `weight` scales this
 rule's contribution to its category's penalty relative to other rules in
 the same category — read [ARCHITECTURE.md's Scoring
 section](instruction/ARCHITECTURE.md) before picking anything other than

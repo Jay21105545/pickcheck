@@ -1,6 +1,7 @@
 import { computePackageScriptTargets } from "../package-scripts.js";
 import type { Rule } from "../types.js";
 import { runAstgrepTier } from "./astgrep.js";
+import { runCoverageTier } from "./coverage.js";
 import { runExistsTier } from "./exists.js";
 import { runManifestTier } from "./manifest.js";
 import { runRegexTier } from "./regex.js";
@@ -38,5 +39,7 @@ export async function dispatchTier(rule: Rule, ctx: TierContext): Promise<TierRe
       return runTokensTier(rule, ctx);
     case "manifest":
       return runManifestTier(rule, ctx);
+    case "coverage":
+      return runCoverageTier(rule, ctx);
   }
 }

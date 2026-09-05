@@ -12,8 +12,10 @@ logs, can leak request/response bodies containing user data, and drowns
 out the log lines that actually matter during an incident.
 
 **Detection:** `astgrep` tier, matching `console.log($$$ARGS)` structurally
-— exactly as RULESET.md specs it. Excludes tests, `scripts/`, and
-`*.config.*` files, where a stray print statement is expected and
+— exactly as RULESET.md specs it. Excludes tests, `scripts/`,
+`*.config.*` files, and **serverless/edge function directories**
+(`supabase/functions/**`, `netlify/functions/**`,
+`netlify/edge-functions/**`), where a stray print statement is expected and
 harmless, plus (via `excludePackageScriptTargets` — DECISIONS/0017) any
 file that's the direct execution target of a `package.json` `scripts`
 entry (`"db:setup": "npx tsx lib/db/setup.ts"` exempts `lib/db/setup.ts`),
@@ -25,7 +27,23 @@ Prisma-ecosystem convention of a `db:setup`/`db:seed` script living under
 prompts, a self-invoking `seed().catch().finally()` at module scope) whose
 entire purpose is printing progress to a developer's terminal, not
 "debug output left in production code." 31 of saas-starter's 36
-`disc/no-console-log` findings were this exact shape. This rule shipped
+`disc/no-console-log` findings were this exact shape.
+
+The serverless exclusion ([DECISIONS/0027](../../../../DECISIONS/0027-recall-drift-in-shipped-rules.md))
+is the same carve-out for the same reason, one layer out: in a Deno edge
+function `console.log` is not leftover debugging, it is *the* observability
+mechanism — Supabase's dashboard log viewer reads exactly this, and there
+is no alternative logger to reach for. 36 of `sports-on-the-go`'s 84
+findings were server logs inside `supabase/functions/**`. Note what that
+fix did and didn't buy: the report drops from 84 findings to 47 genuine
+ones, but the repo's `discipline` score is unchanged at 50, because
+`PER_RULE_PENALTY_CAP` (ADR 0006) had already saturated at 84 findings and
+is still saturated at 47. Scoped to platform-named parent directories only
+— Firebase's bare `functions/` is deliberately *not* excluded, since that
+name is an app's own `src/functions/` helpers as often as a Cloud
+Functions root.
+
+This rule shipped
 as a `regex` tier in an earlier phase (see
 [ADR 0005](../../../../DECISIONS/0005-conditional-exists-precondition.md),
 written back when `tiers/astgrep.ts` was still a stub) matching the

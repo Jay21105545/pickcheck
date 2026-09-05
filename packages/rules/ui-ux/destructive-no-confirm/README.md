@@ -15,23 +15,58 @@ of the few places where a slower, more deliberate interaction is
 kind of judgment call ("this needs to be harder to trigger by accident")
 that isn't visible from "add a delete button" alone.
 
-**Detection:** `regex` tier. Flags a call shaped like `axios.delete(` or a
-`fetch`/request options object with `method: "DELETE"` in a component
+**Detection:** `regex` tier. Flags four destructive shapes in a component
 file, **unless** the same file also references a confirmation mechanism
 anywhere — `confirm`, `window.confirm`, `useConfirm`, `ConfirmDialog`,
-`AlertDialog`, `areYouSure`, `isConfirmOpen` (case-insensitive). Deliberately
-scoped to the DELETE HTTP verb specifically, not to function names like
-`delete`/`remove`/`destroy` — a name-based heuristic would flag things
-like `deleteFromCache` (a harmless local operation) constantly; actually
-calling a DELETE endpoint is a much stronger, lower-false-positive signal
-that something irreversible is happening. Known limits: a confirmation
-step that lives in a *different* file (a shared `<DeleteButton>` wrapper
-component elsewhere in the codebase that already handles confirmation) is
-invisible to this file-scoped check and will be flagged anyway; and a
-destructive action expressed a different way — a GraphQL mutation, a
-server action, a `DELETE` sent via a request library this rule doesn't
-recognize — won't be caught at all. Ship this as a warn and read its
-findings with that in mind.
+`AlertDialog`, `areYouSure`, `isConfirmOpen` (case-insensitive):
+
+1. `axios.delete(`
+2. a `fetch`/request options object with `method: "DELETE"`
+3. **`.delete()` with empty parens** — a query-builder terminal delete
+   (Supabase's `.from(t).delete()`, Firestore's `docRef.delete()`), plus
+   `deleteDoc(`
+4. a **Server Action** named `*delete*`/`*destroy*` bound via
+   `action={…}` or `useActionState(…)`
+
+Shapes 3 and 4 were added in [DECISIONS/0027](../../../../DECISIONS/0027-recall-drift-in-shipped-rules.md).
+Before that this rule knew only the two HTTP shapes and matched **0 of the
+17** real delete call sites in the backtest corpus, because AI-generated
+apps delete through a database client, not `fetch`.
+
+Two design constraints are load-bearing and should not be relaxed:
+
+- **The empty parens in `.delete()` are the entire discriminator.** Every
+  built-in `delete` takes an argument — `newSet.delete(id)`,
+  `params.delete("q")`, `timeouts.delete(id)`, `cookies().delete('session')`
+  — and a query-builder delete never does. Corpus-measured: 13 matches,
+  all Supabase deletes; the 10 argument-taking `.delete(x)` calls in the
+  same corpus are all harmless local collection edits and none matched.
+  Widening this to `\.delete\(` reintroduces exactly the name-based
+  heuristic the next paragraph rejects.
+- **`remove` is deliberately not in the Server Action verb list.**
+  `useActionState(removeItem, …)` in vercel/commerce is a shopping-cart
+  line-item removal: routine, reversible, and not something to put a
+  confirmation dialog in front of. `delete` and `destroy` are unambiguous;
+  `remove` is not. This costs real recall — nextjs/saas-starter's
+  remove-team-member form (`app/(dashboard)/dashboard/page.tsx:157`) has
+  no confirmation and is not caught — and that trade is deliberate.
+
+Still scoped to actual delete *operations*, never to function names like
+`deleteFromCache`, for the same reason: a name-based heuristic false-positives
+constantly.
+
+**Known limits.** A confirmation step that lives in a *different* file (a
+shared `<DeleteButton>` wrapper that already handles it) is invisible to
+this file-scoped check and will be flagged anyway; conversely, one
+`window.confirm` anywhere in a large file clears *every* delete in it,
+which is why `sports-on-the-go/src/pages/Community.tsx`'s five deletes are
+all silent. The `files` glob is `**/*.{tsx,jsx}`, so a delete extracted
+into a `.ts` hook (`useFriends.ts`, `useSavedGames.ts`) is out of scope
+entirely. And a *reversible* state change expressed as a row delete —
+mindtrack's `HabitList.tsx:64` deletes a `habit_completions` row to
+un-tick a checkbox — is indistinguishable from a real delete at this tier
+and was the one measured false positive in the 0027 calibration. Ship
+this as a warn and read its findings with that in mind.
 
 ## Fix prompt
 > The delete action at {{file}}:{{line}} has no confirmation step before

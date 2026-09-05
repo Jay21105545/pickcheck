@@ -27,13 +27,17 @@ Applies only if an API surface is detected (app/api/**, pages/api/**,
 routes/**, fastapi/express markers). Missing API.md or openapi.* → finding.
 Fix hint → `pickcheck gen api`.
 
-## 6. docs/env-example-exists — warn, exists (conditional)
+## 6. docs/env-example-exists — warn, coverage
 Applies only if code references `process.env.X` beyond NODE_ENV; then
 `.env.example` must exist and mention those keys (coverage %, threshold 60%).
+Shipped as an exists-tier presence check in Phase 1; implemented as specced
+on the `coverage` tier in DECISIONS/0027, which also added that tier.
 
 ## 7. disc/no-console-log — warn, astgrep
-`console.log($$$)` in src paths; exclude tests, scripts/, *.config.*.
-Good fixtures: console.error in a logger module, tests.
+`console.log($$$)` in src paths; exclude tests, scripts/, *.config.*, and
+serverless function directories (DECISIONS/0027 — in a Deno edge function
+`console.log` is the platform's supported observability mechanism).
+Good fixtures: console.error in a logger module, tests, an edge function.
 
 ## 8. qual/no-empty-catch — error, astgrep
 catch clause whose block is empty or only a comment. The signature AI smell.
@@ -48,6 +52,8 @@ Good fixtures: fetch inside try/catch; fetch with ok-check; wrapper util.
 ## 10. sec/post-has-validation — warn, regex v1 → astgrep v1.1
 Route handlers reading `req.body` / `await request.json()` with no reference
 to a validation lib (zod|yup|joi|valibot|class-validator) in the same file.
+Path list and body-read pattern widened for serverless conventions in
+DECISIONS/0027; the same record widens rule 5's API-surface preconditions.
 Honest about being a heuristic: severity warn, message says "no validation
 detected", README explains limits.
 

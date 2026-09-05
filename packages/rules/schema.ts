@@ -11,7 +11,14 @@ export const CATEGORIES = [
 
 export const SEVERITIES = ["info", "warn", "error"] as const;
 
-export const TIERS = ["exists", "regex", "astgrep", "tokens", "manifest"] as const;
+export const TIERS = [
+  "exists",
+  "regex",
+  "astgrep",
+  "tokens",
+  "manifest",
+  "coverage",
+] as const;
 
 const idSchema = z
   .string()
@@ -166,12 +173,77 @@ const manifestRuleSchema = baseRuleSchema.extend({
   ]),
 });
 
+/**
+ * The coverage tier answers one question no other tier can: *are the
+ * identifiers this code uses declared in the file that is supposed to
+ * document them?* — a set relation between two extracted name sets, not a
+ * per-occurrence match.
+ *
+ * It is a new tier rather than a new mode on `manifest` (which also
+ * cross-references source against a declaration file) because it shares
+ * essentially no machinery with it: no JSON parsing, no ancestor-manifest
+ * walk, no per-specifier resolution, and an aggregate verdict instead of
+ * one finding per occurrence. Bolting it onto `manifest` would have meant
+ * a mode that opts out of every part of that tier. See DECISIONS/0027.
+ */
+const coverageRuleSchema = baseRuleSchema.extend({
+  tier: z.literal("coverage"),
+  pattern: z.object({
+    /**
+     * Extracts a used identifier from each matched source file. Unlike
+     * the manifest tier's single-capture-group contract, ANY number of
+     * capture groups is allowed and the first one that participated in
+     * the match wins — an alternation over several access syntaxes
+     * (`process.env.X`, `process.env["X"]`, `Deno.env.get("X")`) is far
+     * more readable as one group per branch than as a single group
+     * threaded through all of them.
+     */
+    regex: z.string().min(1),
+    flags: z.string().optional(),
+    /**
+     * Marks an identifier as *optional*, exempting it from the coverage
+     * denominator. Same capture-group contract as `regex`.
+     *
+     * The distinction this draws is real and load-bearing: a value whose
+     * absence the code itself handles (`process.env.X && {…}`,
+     * `process.env.X ?? fallback`) is not a required setting, and
+     * demanding it be documented is a false positive. Corpus calibration
+     * found exactly that on steven-tey/precedent, whose optional
+     * `GITHUB_OAUTH_TOKEN` (a rate-limit raiser, spread in only when set)
+     * is deliberately absent from its .env.example — see DECISIONS/0027
+     * and this rule's fixtures/good/src/optional.ts.
+     */
+    optionalRegex: z.string().min(1).optional(),
+    optionalFlags: z.string().optional(),
+    /** Where the identifiers are supposed to be declared, e.g. `.env.example`. */
+    declaredIn: z.object({
+      files: z.array(z.string().min(1)).min(1),
+      /** Extracts a declared identifier. Same capture-group contract as `regex`. */
+      regex: z.string().min(1),
+      flags: z.string().optional(),
+    }),
+    /**
+     * Minimum fraction of required identifiers that must be declared,
+     * 0–1. RULESET.md §6 specifies 0.6 for docs/env-example-exists.
+     */
+    threshold: z.number().min(0).max(1),
+    /**
+     * Identifiers never counted as required — platform-injected values
+     * nobody is expected to document (`NODE_ENV`, `VERCEL_*`, the
+     * `SUPABASE_*` triple the Edge runtime supplies automatically). An
+     * entry ending in `*` matches any identifier with that prefix.
+     */
+    ignore: z.array(z.string().min(1)).default([]),
+  }),
+});
+
 export const ruleSchema = z.discriminatedUnion("tier", [
   existsRuleSchema,
   regexRuleSchema,
   astgrepRuleSchema,
   tokensRuleSchema,
   manifestRuleSchema,
+  coverageRuleSchema,
 ]);
 
 export type Rule = z.infer<typeof ruleSchema>;
@@ -180,6 +252,7 @@ export type RegexRule = z.infer<typeof regexRuleSchema>;
 export type AstgrepRule = z.infer<typeof astgrepRuleSchema>;
 export type TokensRule = z.infer<typeof tokensRuleSchema>;
 export type ManifestRule = z.infer<typeof manifestRuleSchema>;
+export type CoverageRule = z.infer<typeof coverageRuleSchema>;
 export type Category = (typeof CATEGORIES)[number];
 export type Severity = (typeof SEVERITIES)[number];
 export type Tier = (typeof TIERS)[number];

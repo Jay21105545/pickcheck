@@ -1,17 +1,62 @@
 id: docs/env-example-exists
 category: docs
 severity: warn
-tier: exists
-title: .env present with no .env.example
+tier: coverage
+title: Environment variables the code needs aren't documented in .env.example
+# The *source* set: where env-var reads are found. RULESET.md §6's real
+# precondition ("code references process.env.X beyond NODE_ENV"), not the
+# ".env file exists on disk" proxy the v1 shipped with.
 files:
-  - ".env.example"
-message: "A .env file exists but there's no .env.example — nobody can tell what environment variables this app needs without reading source."
+  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
+  - "!**/*.test.*"
+  - "!**/*.spec.*"
+  - "!**/__tests__/**"
+  - "!**/test/**"
+  - "!**/tests/**"
+  - "!**/fixtures/**"
+message: "This project reads environment variables that .env.example doesn't document — anyone cloning it has to read the source to find out what config it needs."
 weight: 2
 pattern:
-  mode: present
-  when:
+  # One alternation branch per access syntax, each with its own capture
+  # group (the coverage tier takes the first group that participated).
+  # Covers Node/Next (`process.env.X`, `process.env["X"]`), Vite
+  # (`import.meta.env.X`), and Deno edge functions (`Deno.env.get("X")`).
+  regex: '(?:process\.env|import\.meta\.env)\.([A-Z][A-Z0-9_]*)|(?:process\.env|import\.meta\.env)\[\s*["'']([A-Z][A-Z0-9_]*)["'']\s*\]|Deno\.env\.get\(\s*["'']([A-Z][A-Z0-9_]*)["'']\s*\)'
+  # A read used as a value-expression whose falsy branch the code handles
+  # is an OPTIONAL setting, not an undocumented requirement. Matches
+  # `process.env.X && …`, `… || fallback`, `… ?? fallback`, and
+  # `… ? a : b`. Deliberately does NOT match the assign-then-assert shape
+  # (`const K = Deno.env.get("K"); if (!K) throw …`), which is the code
+  # declaring the variable REQUIRED — exactly the opposite intent, and
+  # exactly how the corpus's genuinely-undocumented LOVABLE_API_KEY reads.
+  optionalRegex: '(?:(?:process\.env|import\.meta\.env)\.([A-Z][A-Z0-9_]*)|(?:process\.env|import\.meta\.env)\[\s*["'']([A-Z][A-Z0-9_]*)["'']\s*\]|Deno\.env\.get\(\s*["'']([A-Z][A-Z0-9_]*)["'']\s*\))\s*(?:&&|\|\||\?\?|\?[^?:]*:)'
+  declaredIn:
     files:
-      - "**/.env"
-      - "**/.env.local"
-      - "**/.env.production"
-      - "!**/fixtures/**"
+      - ".env.example"
+      - ".env.sample"
+      - ".env.template"
+    # A KEY= line, with or without a value; `#`-prefixed lines count, since
+    # commenting out an example value is a normal way to document an
+    # optional key.
+    regex: '^\s*(?:export\s+)?#?\s*([A-Z][A-Z0-9_]*)\s*='
+    flags: m
+  # RULESET.md §6's specified threshold.
+  threshold: 0.6
+  # Values the platform injects, which no one is expected to document.
+  # SUPABASE_URL / SUPABASE_ANON_KEY / SUPABASE_SERVICE_ROLE_KEY are
+  # supplied to every Supabase Edge Function automatically; VERCEL_* and
+  # NETLIFY* likewise on those platforms.
+  ignore:
+    - NODE_ENV
+    - CI
+    - PORT
+    - HOST
+    - NEXT_RUNTIME
+    - "VERCEL*"
+    - "NETLIFY*"
+    - "AWS_*"
+    - "DENO_*"
+    - SUPABASE_URL
+    - SUPABASE_ANON_KEY
+    - SUPABASE_SERVICE_ROLE_KEY
+    - SUPABASE_DB_URL

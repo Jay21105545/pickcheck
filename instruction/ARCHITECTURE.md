@@ -46,6 +46,8 @@ scan (fast-glob, .gitignore- and .pickcheckignore-aware)
       regex    — line-level patterns with path scoping
       astgrep  — structural patterns via @ast-grep/napi (lazy-loaded)
       tokens   — gpt-tokenizer counts vs budgets (lazy-loaded)
+      manifest — source specifiers cross-referenced against package.json
+      coverage — identifiers used in source vs. declared in a doc file
   → findings[] { ruleId, file, line?, severity, message, fixPrompt }
   → scorer: per-category 0–100 (severity-weighted), composite = weighted mean
   → renderer: terminal | --json | --report (HTML)
@@ -89,7 +91,7 @@ all carry forward unchanged; ADR 0006 itself supersedes
   gated on a match existing); a *conditional* `exists`-tier rule
   (`pattern.when` set — [ADR 0005](../DECISIONS/0005-conditional-exists-precondition.md))
   is applicable only if `when.files` matched at least one scanned file; a
-  `regex`/`astgrep`/`tokens`/`manifest`-tier rule is applicable only if
+  `regex`/`astgrep`/`tokens`/`manifest`/`coverage`-tier rule is applicable only if
   its `files` glob matched at least one scanned file.
 - Category penalty accumulation is **additive, not normalized** — no
   division by applicable-rule count — and per-rule contributions are

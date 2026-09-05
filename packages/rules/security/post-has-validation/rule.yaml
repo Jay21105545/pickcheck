@@ -9,12 +9,30 @@ files:
   - "routes/**/*.{ts,tsx,js,jsx}"
   - "src/routes/**/*.{ts,tsx,js,jsx}"
   - "api/**/*.{ts,tsx,js,jsx}"
+  # Serverless/edge function conventions. The list above is Next.js-shaped
+  # and misses every one of them — corpus calibration found 7 HTTP
+  # endpoints across two repos, 4 reading an unvalidated body, none inside
+  # any glob this rule had. Globbed with a leading `**/` so a nested app in
+  # a monorepo resolves too. See DECISIONS/0027.
+  - "**/supabase/functions/**/*.{ts,tsx,js,jsx}"
+  - "**/netlify/functions/**/*.{ts,tsx,js,jsx}"
+  - "**/netlify/edge-functions/**/*.{ts,tsx,js,jsx}"
   - "!**/*.test.*"
   - "!**/*.spec.*"
   - "!**/fixtures/**"
 message: "No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference."
 weight: 2
 pattern:
-  regex: 'req\.body|await\s+request\.json\(\)'
+  # Widened alongside the globs above, because the glob fix alone would
+  # still have matched 0 of the 4 unvalidated bodies: every one of them
+  # reads `await req.json()`, and the original alternation hardcoded
+  # `request` for the .json() form (`req.body|await\s+request\.json\(\)`)
+  # — so `req.json()` and `request.body` were both invisible.
+  #
+  # `[\w.]*` before the receiver admits Hono/Elysia's `await c.req.json()`.
+  # It stays anchored on a `req`/`request` receiver specifically so that
+  # `await res.json()` / `await response.json()` — parsing a *response*,
+  # by far the more common shape in app code — can never match.
+  regex: '\breq(?:uest)?\.body\b|\bawait\s+[\w.]*\breq(?:uest)?\.json\(\)'
   unless:
     regex: '\b(zod|yup|joi|valibot|class-validator)\b'
