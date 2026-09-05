@@ -1,5 +1,85 @@
 # pickcheck
 
+## 0.2.0
+
+### Minor Changes
+
+- 8b495a4: Add three rules for the backend seam — the layer the ruleset had no
+  vocabulary for — plus a `when` precondition on the regex tier.
+  
+  Every previous rule assumed the app's data layer either throws on failure
+  or goes out over `fetch`. The AI-generated arm of the backtest corpus is
+  Vite + React + Supabase, where neither is true, and re-reading it by hand
+  found three defect classes nothing was looking for:
+  
+  - **`sec/edge-function-no-auth`** (error) — a Supabase Edge Function
+    declared `verify_jwt = false` in `supabase/config.toml`. That flag makes
+    the function callable by anyone who learns its URL while it still runs
+    with the project's server-side secrets. The corpus has two, both
+    unauthenticated proxies that forward the caller's input to an LLM
+    gateway on the owner's API key with no quota and no rate limit.
+  - **`qual/supabase-result-unchecked`** (warn) — a Supabase call whose
+    result is discarded. supabase-js never throws; it resolves with
+    `{ data, error }`, so a write blocked by row-level security returns as
+    success and a surrounding `try`/`catch` does nothing. Nine in the
+    corpus, including one that discards a `profiles` update and then renders
+    "Welcome back!", and two that discard the write to a rate-limit counter.
+    Scoped to `from`/`rpc`/`functions.invoke`; `auth` and `storage` are
+    excluded on measurement.
+  - **`qual/simulated-backend`** (warn) — a submit, checkout or save handler
+    whose only asynchronous work is `await new Promise(r => setTimeout(r,
+    ms))`, in a file that makes no network call at all. The corpus case
+    collects card details, waits 1.5s, and renders "Payment Successful!".
+    Deliberately narrow: triggering on any `setTimeout` under the same
+    conditions catches two more real cases but takes a debounce, an
+    optimistic-UI revert and a toast timer with it.
+  
+  The regex tier gains `pattern.when`, the mirror of the existing
+  `pattern.unless`: a whole-file content precondition, so a rule can require
+  context that isn't on the matched line. Existing rules are unaffected.
+  
+  All four control repos score identically before and after. The thirteen
+  new findings are all on the AI-generated arm, every one hand-classified:
+  12 true positives, 1 arguable, 0 false positives. See DECISIONS/0028.
+- 13b1bda: Teach four shipped rules what a serverless, Supabase-shaped app actually
+  looks like, and implement `docs/env-example-exists` as RULESET.md §6
+  always specified it.
+  
+  All four rules were calibrated against Next.js control repos and had
+  drifted from what their own READMEs claimed to detect. Measured against
+  the 8-repo backtest corpus:
+  
+  - **`ux/destructive-no-confirm`** matched **0 of the 17** real delete call
+    sites, because it knew only `axios.delete(` and `method: "DELETE"`. It
+    now also matches `.delete()` with empty parens (the discriminator that
+    separates a query-builder delete from `newSet.delete(id)` and
+    `params.delete("q")`), `deleteDoc(`, and a `*delete*`/`*destroy*`-named
+    Server Action bound via `action={…}` or `useActionState(…)`. `remove` is
+    deliberately excluded — measured, it only ever fired on control repos,
+    where it flagged a shopping-cart line-item removal.
+  - **`disc/no-console-log`** no longer flags `supabase/functions/**` or
+    `netlify/{functions,edge-functions}/**`, where `console.log` is the
+    platform's supported observability mechanism rather than leftover
+    debugging. Removes 37 false findings from one corpus repo.
+  - **`sec/post-has-validation`** and **`docs/api-doc-exists`** now cover
+    those same serverless directories. `sec/post-has-validation` also
+    matches `req.body`/`request.body` and `await …req.json()`, where it
+    previously hardcoded `request` for the `.json()` form and so saw none of
+    the corpus's unvalidated bodies even once the glob was widened.
+  - **`docs/env-example-exists`** now triggers on the code actually reading
+    environment variables (`process.env`, `import.meta.env`, `Deno.env.get`)
+    and requires ≥60% of them to be documented, naming the missing keys —
+    instead of only checking that `.env.example` existed at all whenever a
+    `.env` was on disk. A key whose absence the code handles
+    (`process.env.X && …`, `… ?? fallback`) is correctly treated as
+    optional.
+  
+  Adds a `coverage` tier to support that last one: set coverage between
+  identifiers extracted from source and identifiers declared in a
+  documentation file. All four control repos score identically before and
+  after; the ten new findings are all on the AI-generated arm, hand-reviewed
+  at 87.5% precision. See DECISIONS/0027.
+
 ## 0.1.4
 
 ### Patch Changes
