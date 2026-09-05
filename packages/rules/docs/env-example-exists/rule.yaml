@@ -46,6 +46,21 @@ pattern:
   # SUPABASE_URL / SUPABASE_ANON_KEY / SUPABASE_SERVICE_ROLE_KEY are
   # supplied to every Supabase Edge Function automatically; VERCEL_* and
   # NETLIFY* likewise on those platforms.
+  #
+  # BASE_URL / MODE / PROD / DEV / SSR are the whole of Vite's built-in
+  # `import.meta.env` set — injected by the bundler, documented by Vite,
+  # and impossible to put in a .env.example meaningfully. cinnyapp/cinny
+  # reads exactly two of them (BASE_URL 8x, MODE 1x) and nothing else, and
+  # was flagged for it: a control repo told to document variables it does
+  # not own. See DECISIONS/0030.
+  #
+  # Like every entry here these are matched by NAME, not by access syntax,
+  # so a project that genuinely defines its own `process.env.BASE_URL`
+  # loses the finding. That is the trade this list has always made —
+  # PORT, HOST and the SUPABASE_* triple are all names a project could
+  # equally define — and it is the right way round: a systematic false
+  # positive on every Vite app costs more than a rare false negative on
+  # one name.
   ignore:
     - NODE_ENV
     - CI
@@ -60,3 +75,8 @@ pattern:
     - SUPABASE_ANON_KEY
     - SUPABASE_SERVICE_ROLE_KEY
     - SUPABASE_DB_URL
+    - BASE_URL
+    - MODE
+    - PROD
+    - DEV
+    - SSR

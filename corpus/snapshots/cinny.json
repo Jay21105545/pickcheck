@@ -1,5 +1,5 @@
 {
-  "composite": 68.08,
+  "composite": 70.72,
   "categories": [
     {
       "category": "security",
@@ -11,7 +11,7 @@
     },
     {
       "category": "docs",
-      "score": 55.56
+      "score": 71.43
     },
     {
       "category": "discipline",
@@ -49,13 +49,6 @@
       "severity": "warn",
       "message": "No CHANGELOG.md found — users and future-you can't see what changed between versions.",
       "fixPrompt": "Fix \"CHANGELOG.md missing\" (docs/changelog-exists) at CHANGELOG.md: No CHANGELOG.md found — users and future-you can't see what changed between versions."
-    },
-    {
-      "ruleId": "docs/env-example-exists",
-      "file": ".env.example",
-      "severity": "warn",
-      "message": "This project reads environment variables that .env.example doesn't document — anyone cloning it has to read the source to find out what config it needs.",
-      "fixPrompt": "Fix \"Environment variables the code needs aren't documented in .env.example\" (docs/env-example-exists) at .env.example: This project reads environment variables that .env.example doesn't document — anyone cloning it has to read the source to find out what config it needs. (0% documented (0/1), threshold 60% — missing: MODE)"
     },
     {
       "ruleId": "qual/fetch-has-error-handling",
