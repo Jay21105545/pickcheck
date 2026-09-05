@@ -68,7 +68,7 @@ Every finding is severity-coded (`error`/`warn`/`info`), and a security
 `error` finding caps the composite at 59 regardless of everything else — a
 repo can't accidentally score "fine" while leaking secrets.
 
-## Does it actually work? The corpus says yes — with a caveat it took a bigger corpus to find
+## Does it actually work? The corpus says yes — with one honest overlap
 
 pickcheck is backtested against a pinned-by-commit-SHA corpus of 13 real
 repos. It is a 2x2: repos an AI builder actually wrote end to end
@@ -84,36 +84,40 @@ detecting the framework and calling it provenance.
 | `shadcn-ui/taxonomy` | control | Next.js | **79.54** |
 | `nextjs/saas-starter` | control | Next.js | **78.70** |
 | `vercel/commerce` | control | Next.js | **76.42** |
-| `cinnyapp/cinny` | control | Vite | **68.08** |
+| `cinnyapp/cinny` | control | Vite | **70.72** |
+| theghost | AI-generated | Next.js | **56.96** |
+| fin-bloom-dash | AI-generated | Vite | **55.64** |
+| shelfly-creator-hub | AI-generated | Vite | **50.18** |
+| mindtrack-personalwellness | AI-generated | Vite | **50.07** |
+| ai-career-assistant | AI-generated | Next.js | **49.55** |
 | `buildship-ai/rowy` | control | Vite | **47.58** |
-| theghost | AI-generated | Next.js | **65.91** |
-| fin-bloom-dash | AI-generated | Vite | **59.00** |
-| ai-career-assistant | AI-generated | Next.js | **58.50** |
-| shelfly-creator-hub | AI-generated | Vite | **53.88** |
-| mindtrack-personalwellness | AI-generated | Vite | **53.87** |
-| sports-on-the-go | AI-generated | Vite | **40.51** |
-| newattendanceapp | AI-generated | Next.js | **40.44** |
+| newattendanceapp | AI-generated | Next.js | **39.10** |
+| sports-on-the-go | AI-generated | Vite | **37.63** |
 
-The AI-generated arm scores materially worse — mean 53.2 against the
-controls' 72.7 — and every Lovable app in it has at least one
+The AI-generated arm scores materially worse — mean 48.5 against the
+controls' 73.2 — and every Lovable app in it has at least one
 `error`-severity security finding, which caps the composite at 59
 regardless of how the rest of the repo scores. That gate mechanism exists
 precisely so a real, exploitable gap can't be averaged away by a tidy UI.
 
-**The separation is not clean, and we'd rather say so than crop the table.**
-`buildship-ai/rowy` is a human-built product that scores 47.58 — below most
-of the AI arm. Nearly all of that is one rule's false positives:
-`sec/no-hallucinated-imports` doesn't yet follow `tsconfig.json`'s
-`extends`, so 1,666 path-aliased imports read as undeclared packages — and
-because they carry `error` severity, they trip the same security gate
-described above on a repo that has done nothing wrong. Excluding that rule
-it scores 64.25, still under the 75 we'd expect of a control. Until the
-four-repo corpus grew a Vite control arm, that bug was invisible and the
-table looked perfect. Adding repos that could embarrass the tool is the
-point of having a corpus, and the write-up is in
-[DECISIONS/0029](https://github.com/Jay21105545/pickcheck/blob/main/DECISIONS/0029-corpus-confound-and-expansion.md).
+**One control still sits inside the AI band, and we'd rather say so than
+crop the table.** `buildship-ai/rowy` is a human-built product scoring
+47.58. Growing the corpus a Vite control arm is what exposed why: a rule
+that didn't follow `tsconfig.json`'s `extends` chain was reading 1,655
+path-aliased imports as undeclared npm packages. That is now
+[fixed](https://github.com/Jay21105545/pickcheck/blob/main/DECISIONS/0030-two-false-positives-and-two-rules.md)
+— the rule's corpus-wide precision went from 1.3% to 56.4% — and rowy's
+report went from 1,706 findings to 77.
 
-Re-run it yourself: `pnpm corpus` (see
+Its *score* did not move at all, which is worth being precise about: a
+single rule's penalty is capped, so one finding and 1,666 findings cost the
+same, and rowy still has 20 genuine phantom dependencies (packages it
+imports but never declares). The rest of the gap is a second false-positive
+class the first fix uncovered — commented-out sample imports inside
+template literals — which is documented and not yet fixed.
+
+Adding repos that could embarrass the tool is the entire point of having a
+corpus. Re-run it yourself: `pnpm corpus` (see
 [CONTRIBUTING.md](https://github.com/Jay21105545/pickcheck/blob/main/CONTRIBUTING.md)).
 
 ## The playbook
