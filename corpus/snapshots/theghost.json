@@ -1,0 +1,261 @@
+{
+  "composite": 65.91,
+  "categories": [
+    {
+      "category": "security",
+      "score": 50
+    },
+    {
+      "category": "quality",
+      "score": 100
+    },
+    {
+      "category": "docs",
+      "score": 45.45
+    },
+    {
+      "category": "discipline",
+      "score": 50
+    },
+    {
+      "category": "ui-ux",
+      "score": 100
+    },
+    {
+      "category": "tokens",
+      "score": 100
+    }
+  ],
+  "findings": [
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "hooks/useSocket.ts",
+      "line": 51,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at hooks/useSocket.ts:51: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/ably.ts",
+      "line": 36,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/ably.ts:36: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/ably.ts",
+      "line": 40,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/ably.ts:40: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/ably.ts",
+      "line": 48,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/ably.ts:48: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/socket.ts",
+      "line": 26,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/socket.ts:26: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/socket.ts",
+      "line": 32,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/socket.ts:32: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/socket.ts",
+      "line": 41,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/socket.ts:41: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "lib/socket.ts",
+      "line": 55,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at lib/socket.ts:55: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "server/index.js",
+      "line": 23,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at server/index.js:23: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "server/index.js",
+      "line": 35,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at server/index.js:35: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "server/index.js",
+      "line": 68,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at server/index.js:68: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "server/index.js",
+      "line": 75,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at server/index.js:75: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "server/index.js",
+      "line": 103,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at server/index.js:103: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "server/index.js",
+      "line": 106,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at server/index.js:106: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "server/index.js",
+      "line": 135,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at server/index.js:135: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "server/index.js",
+      "line": 136,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at server/index.js:136: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "docs/api-doc-exists",
+      "file": "API.md",
+      "severity": "warn",
+      "message": "An API surface was detected but no API.md or openapi.* spec documents it.",
+      "fixPrompt": "Fix \"API surface detected with no API.md or openapi spec\" (docs/api-doc-exists) at API.md: An API surface was detected but no API.md or openapi.* spec documents it."
+    },
+    {
+      "ruleId": "docs/changelog-exists",
+      "file": "CHANGELOG.md",
+      "severity": "warn",
+      "message": "No CHANGELOG.md found — users and future-you can't see what changed between versions.",
+      "fixPrompt": "Fix \"CHANGELOG.md missing\" (docs/changelog-exists) at CHANGELOG.md: No CHANGELOG.md found — users and future-you can't see what changed between versions."
+    },
+    {
+      "ruleId": "docs/env-example-exists",
+      "file": ".env.example",
+      "severity": "warn",
+      "message": "This project reads environment variables that .env.example doesn't document — anyone cloning it has to read the source to find out what config it needs.",
+      "fixPrompt": "Fix \"Environment variables the code needs aren't documented in .env.example\" (docs/env-example-exists) at .env.example: This project reads environment variables that .env.example doesn't document — anyone cloning it has to read the source to find out what config it needs. (0% documented (0/4), threshold 60% — missing: ABLY_KEY, DATABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_SUPABASE_URL)"
+    },
+    {
+      "ruleId": "sec/post-has-validation",
+      "file": "app/api/ably-token/route.ts",
+      "line": 14,
+      "severity": "warn",
+      "message": "No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference.",
+      "fixPrompt": "Fix \"Request body read with no apparent validation\" (sec/post-has-validation) at app/api/ably-token/route.ts:14: No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference."
+    },
+    {
+      "ruleId": "sec/post-has-validation",
+      "file": "app/api/admin/users/ban/route.ts",
+      "line": 6,
+      "severity": "warn",
+      "message": "No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference.",
+      "fixPrompt": "Fix \"Request body read with no apparent validation\" (sec/post-has-validation) at app/api/admin/users/ban/route.ts:6: No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference."
+    },
+    {
+      "ruleId": "sec/post-has-validation",
+      "file": "app/api/admin/users/delete/route.ts",
+      "line": 6,
+      "severity": "warn",
+      "message": "No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference.",
+      "fixPrompt": "Fix \"Request body read with no apparent validation\" (sec/post-has-validation) at app/api/admin/users/delete/route.ts:6: No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference."
+    },
+    {
+      "ruleId": "sec/post-has-validation",
+      "file": "app/api/chat-requests/route.ts",
+      "line": 6,
+      "severity": "warn",
+      "message": "No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference.",
+      "fixPrompt": "Fix \"Request body read with no apparent validation\" (sec/post-has-validation) at app/api/chat-requests/route.ts:6: No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference."
+    },
+    {
+      "ruleId": "sec/post-has-validation",
+      "file": "app/api/chat-requests/route.ts",
+      "line": 39,
+      "severity": "warn",
+      "message": "No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference.",
+      "fixPrompt": "Fix \"Request body read with no apparent validation\" (sec/post-has-validation) at app/api/chat-requests/route.ts:39: No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference."
+    },
+    {
+      "ruleId": "sec/post-has-validation",
+      "file": "app/api/upload/route.ts",
+      "line": 15,
+      "severity": "warn",
+      "message": "No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference.",
+      "fixPrompt": "Fix \"Request body read with no apparent validation\" (sec/post-has-validation) at app/api/upload/route.ts:15: No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference."
+    },
+    {
+      "ruleId": "sec/post-has-validation",
+      "file": "app/api/users/activity/route.ts",
+      "line": 6,
+      "severity": "warn",
+      "message": "No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference.",
+      "fixPrompt": "Fix \"Request body read with no apparent validation\" (sec/post-has-validation) at app/api/users/activity/route.ts:6: No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference."
+    },
+    {
+      "ruleId": "sec/post-has-validation",
+      "file": "app/api/users/route.ts",
+      "line": 6,
+      "severity": "warn",
+      "message": "No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference.",
+      "fixPrompt": "Fix \"Request body read with no apparent validation\" (sec/post-has-validation) at app/api/users/route.ts:6: No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference."
+    }
+  ],
+  "warnings": [],
+  "fileCount": 56,
+  "ruleCount": 23,
+  "tokenSurface": {
+    "files": [],
+    "totalTokens": 0,
+    "estimatedWastePercent": 0,
+    "ignoreCoverage": {
+      "ignoreFilesFound": [],
+      "artifacts": [
+        {
+          "target": "pnpm-lock.yaml",
+          "covered": false
+        }
+      ]
+    }
+  }
+}

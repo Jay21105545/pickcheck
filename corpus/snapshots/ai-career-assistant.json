@@ -1,0 +1,325 @@
+{
+  "composite": 58.5,
+  "categories": [
+    {
+      "category": "security",
+      "score": 33.33
+    },
+    {
+      "category": "quality",
+      "score": 100
+    },
+    {
+      "category": "docs",
+      "score": 45.45
+    },
+    {
+      "category": "discipline",
+      "score": 50
+    },
+    {
+      "category": "ui-ux",
+      "score": 83.33
+    },
+    {
+      "category": "tokens",
+      "score": 100
+    }
+  ],
+  "findings": [
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "app/api/certificates/generate/route.ts",
+      "line": 89,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at app/api/certificates/generate/route.ts:89: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "app/api/certificates/generate/route.ts",
+      "line": 112,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at app/api/certificates/generate/route.ts:112: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "app/api/certificates/generate/route.ts",
+      "line": 113,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at app/api/certificates/generate/route.ts:113: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "app/api/certificates/generate/route.ts",
+      "line": 125,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at app/api/certificates/generate/route.ts:125: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "app/api/certificates/generate/route.ts",
+      "line": 145,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at app/api/certificates/generate/route.ts:145: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "app/api/certificates/verify/route.ts",
+      "line": 66,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at app/api/certificates/verify/route.ts:66: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "app/api/certificates/verify/route.ts",
+      "line": 103,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at app/api/certificates/verify/route.ts:103: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "app/api/certificates/verify/route.ts",
+      "line": 144,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at app/api/certificates/verify/route.ts:144: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "app/api/interviews/complete/route.ts",
+      "line": 150,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at app/api/interviews/complete/route.ts:150: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "app/api/interviews/complete/route.ts",
+      "line": 151,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at app/api/interviews/complete/route.ts:151: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "app/api/interviews/complete/route.ts",
+      "line": 162,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at app/api/interviews/complete/route.ts:162: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "app/api/interviews/create/route.ts",
+      "line": 211,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at app/api/interviews/create/route.ts:211: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "app/api/interviews/create/route.ts",
+      "line": 227,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at app/api/interviews/create/route.ts:227: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "app/api/jobs/ingest/route.ts",
+      "line": 312,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at app/api/jobs/ingest/route.ts:312: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "app/api/jobs/ingest/route.ts",
+      "line": 320,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at app/api/jobs/ingest/route.ts:320: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "app/api/jobs/ingest/route.ts",
+      "line": 326,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at app/api/jobs/ingest/route.ts:326: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "app/api/jobs/ingest/route.ts",
+      "line": 332,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at app/api/jobs/ingest/route.ts:332: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "app/api/jobs/ingest/route.ts",
+      "line": 343,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at app/api/jobs/ingest/route.ts:343: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "app/api/roadmap/generate/route.ts",
+      "line": 410,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at app/api/roadmap/generate/route.ts:410: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "app/api/roadmap/generate/route.ts",
+      "line": 414,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at app/api/roadmap/generate/route.ts:414: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "app/resume/page.tsx",
+      "line": 152,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at app/resume/page.tsx:152: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "docs/api-doc-exists",
+      "file": "API.md",
+      "severity": "warn",
+      "message": "An API surface was detected but no API.md or openapi.* spec documents it.",
+      "fixPrompt": "Fix \"API surface detected with no API.md or openapi spec\" (docs/api-doc-exists) at API.md: An API surface was detected but no API.md or openapi.* spec documents it."
+    },
+    {
+      "ruleId": "docs/changelog-exists",
+      "file": "CHANGELOG.md",
+      "severity": "warn",
+      "message": "No CHANGELOG.md found — users and future-you can't see what changed between versions.",
+      "fixPrompt": "Fix \"CHANGELOG.md missing\" (docs/changelog-exists) at CHANGELOG.md: No CHANGELOG.md found — users and future-you can't see what changed between versions."
+    },
+    {
+      "ruleId": "docs/env-example-exists",
+      "file": ".env.example",
+      "severity": "warn",
+      "message": "This project reads environment variables that .env.example doesn't document — anyone cloning it has to read the source to find out what config it needs.",
+      "fixPrompt": "Fix \"Environment variables the code needs aren't documented in .env.example\" (docs/env-example-exists) at .env.example: This project reads environment variables that .env.example doesn't document — anyone cloning it has to read the source to find out what config it needs. (0% documented (0/5), threshold 60% — missing: ADZUNA_API_KEY, ADZUNA_APP_ID, ARBEITNOW_API_KEY, CAREERJET_API_KEY, OPENROUTER_API_KEY)"
+    },
+    {
+      "ruleId": "sec/no-secrets-in-code",
+      "file": "app/api/roadmap/generate/route.ts",
+      "line": 50,
+      "severity": "error",
+      "message": "A hardcoded secret looks like it's committed to source — rotate it and load it from the environment instead.",
+      "fixPrompt": "Fix \"Hardcoded secret in source\" (sec/no-secrets-in-code) at app/api/roadmap/generate/route.ts:50: A hardcoded secret looks like it's committed to source — rotate it and load it from the environment instead."
+    },
+    {
+      "ruleId": "sec/post-has-validation",
+      "file": "app/api/certificates/generate/route.ts",
+      "line": 118,
+      "severity": "warn",
+      "message": "No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference.",
+      "fixPrompt": "Fix \"Request body read with no apparent validation\" (sec/post-has-validation) at app/api/certificates/generate/route.ts:118: No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference."
+    },
+    {
+      "ruleId": "sec/post-has-validation",
+      "file": "app/api/certificates/verify/route.ts",
+      "line": 97,
+      "severity": "warn",
+      "message": "No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference.",
+      "fixPrompt": "Fix \"Request body read with no apparent validation\" (sec/post-has-validation) at app/api/certificates/verify/route.ts:97: No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference."
+    },
+    {
+      "ruleId": "sec/post-has-validation",
+      "file": "app/api/interviews/complete/route.ts",
+      "line": 144,
+      "severity": "warn",
+      "message": "No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference.",
+      "fixPrompt": "Fix \"Request body read with no apparent validation\" (sec/post-has-validation) at app/api/interviews/complete/route.ts:144: No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference."
+    },
+    {
+      "ruleId": "sec/post-has-validation",
+      "file": "app/api/interviews/create/route.ts",
+      "line": 204,
+      "severity": "warn",
+      "message": "No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference.",
+      "fixPrompt": "Fix \"Request body read with no apparent validation\" (sec/post-has-validation) at app/api/interviews/create/route.ts:204: No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference."
+    },
+    {
+      "ruleId": "sec/post-has-validation",
+      "file": "app/api/jobs/ingest/route.ts",
+      "line": 304,
+      "severity": "warn",
+      "message": "No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference.",
+      "fixPrompt": "Fix \"Request body read with no apparent validation\" (sec/post-has-validation) at app/api/jobs/ingest/route.ts:304: No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference."
+    },
+    {
+      "ruleId": "sec/post-has-validation",
+      "file": "app/api/jobs/recommend/route.ts",
+      "line": 257,
+      "severity": "warn",
+      "message": "No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference.",
+      "fixPrompt": "Fix \"Request body read with no apparent validation\" (sec/post-has-validation) at app/api/jobs/recommend/route.ts:257: No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference."
+    },
+    {
+      "ruleId": "sec/post-has-validation",
+      "file": "app/api/resume/ats-check/route.ts",
+      "line": 235,
+      "severity": "warn",
+      "message": "No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference.",
+      "fixPrompt": "Fix \"Request body read with no apparent validation\" (sec/post-has-validation) at app/api/resume/ats-check/route.ts:235: No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference."
+    },
+    {
+      "ruleId": "sec/post-has-validation",
+      "file": "app/api/resume/generate/route.ts",
+      "line": 216,
+      "severity": "warn",
+      "message": "No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference.",
+      "fixPrompt": "Fix \"Request body read with no apparent validation\" (sec/post-has-validation) at app/api/resume/generate/route.ts:216: No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference."
+    },
+    {
+      "ruleId": "sec/post-has-validation",
+      "file": "app/api/roadmap/generate/route.ts",
+      "line": 404,
+      "severity": "warn",
+      "message": "No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference.",
+      "fixPrompt": "Fix \"Request body read with no apparent validation\" (sec/post-has-validation) at app/api/roadmap/generate/route.ts:404: No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference."
+    },
+    {
+      "ruleId": "ux/inline-hex-threshold",
+      "file": "app/globals.css",
+      "line": 12,
+      "severity": "warn",
+      "message": "This file has several one-off inline hex colors instead of a shared design-token/theme reference — a sign colors have drifted out of any central palette.",
+      "fixPrompt": "Fix \"Many inline hex colors in one file\" (ux/inline-hex-threshold) at app/globals.css:12: This file has several one-off inline hex colors instead of a shared design-token/theme reference — a sign colors have drifted out of any central palette. (27 occurrences, threshold 5)"
+    }
+  ],
+  "warnings": [],
+  "fileCount": 53,
+  "ruleCount": 23,
+  "tokenSurface": {
+    "files": [],
+    "totalTokens": 0,
+    "estimatedWastePercent": 0,
+    "ignoreCoverage": {
+      "ignoreFilesFound": [],
+      "artifacts": [
+        {
+          "target": "pnpm-lock.yaml",
+          "covered": false
+        }
+      ]
+    }
+  }
+}

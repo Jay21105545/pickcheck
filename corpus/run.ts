@@ -23,6 +23,16 @@ interface CorpusRepo {
   url: string;
   sha: string;
   category: "control" | "ai-generated";
+  /**
+   * Build stack, recorded so the corpus can be read as a 2x2 rather than a
+   * single control/ai-generated axis. Before DECISIONS/0029 every control was
+   * `next` and every ai-generated repo was `vite`, so the two fields were
+   * perfectly correlated and no rule measured on this corpus could tell
+   * "AI-written" from "Vite SPA".
+   */
+  stack: "next" | "vite";
+  /** How the category was established — the marker, and the measured share of commits carrying it. */
+  provenance: string;
   note: string;
 }
 
@@ -81,7 +91,7 @@ async function main(): Promise<void> {
   let anyNewBaseline = false;
 
   for (const repo of repos) {
-    console.log(`\n=== ${repo.name} (${repo.category}) ===`);
+    console.log(`\n=== ${repo.name} (${repo.category}/${repo.stack}) ===`);
 
     let repoDir: string;
     try {

@@ -1,0 +1,158 @@
+{
+  "composite": 68.08,
+  "categories": [
+    {
+      "category": "security",
+      "score": 100
+    },
+    {
+      "category": "quality",
+      "score": 33.33
+    },
+    {
+      "category": "docs",
+      "score": 55.56
+    },
+    {
+      "category": "discipline",
+      "score": 71.43
+    },
+    {
+      "category": "ui-ux",
+      "score": 55.56
+    },
+    {
+      "category": "tokens",
+      "score": 100
+    }
+  ],
+  "findings": [
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "src/app/components/user-profile/UserChips.tsx",
+      "line": 242,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at src/app/components/user-profile/UserChips.tsx:242: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "disc/no-console-log",
+      "file": "src/util/cryptE2ERoomKeys.js",
+      "line": 63,
+      "severity": "warn",
+      "message": "console.log left in source — remove it or replace it with a real logger.",
+      "fixPrompt": "Fix \"console.log left in source\" (disc/no-console-log) at src/util/cryptE2ERoomKeys.js:63: console.log left in source — remove it or replace it with a real logger."
+    },
+    {
+      "ruleId": "docs/changelog-exists",
+      "file": "CHANGELOG.md",
+      "severity": "warn",
+      "message": "No CHANGELOG.md found — users and future-you can't see what changed between versions.",
+      "fixPrompt": "Fix \"CHANGELOG.md missing\" (docs/changelog-exists) at CHANGELOG.md: No CHANGELOG.md found — users and future-you can't see what changed between versions."
+    },
+    {
+      "ruleId": "docs/env-example-exists",
+      "file": ".env.example",
+      "severity": "warn",
+      "message": "This project reads environment variables that .env.example doesn't document — anyone cloning it has to read the source to find out what config it needs.",
+      "fixPrompt": "Fix \"Environment variables the code needs aren't documented in .env.example\" (docs/env-example-exists) at .env.example: This project reads environment variables that .env.example doesn't document — anyone cloning it has to read the source to find out what config it needs. (0% documented (0/1), threshold 60% — missing: MODE)"
+    },
+    {
+      "ruleId": "qual/fetch-has-error-handling",
+      "file": "src/app/components/ClientConfigLoader.tsx",
+      "line": 8,
+      "severity": "warn",
+      "message": "This fetch() call isn't wrapped in try/catch, doesn't check response.ok, and has no .catch — a failed or non-2xx request will fail silently.",
+      "fixPrompt": "Fix \"fetch() call with no error handling\" (qual/fetch-has-error-handling) at src/app/components/ClientConfigLoader.tsx:8: This fetch() call isn't wrapped in try/catch, doesn't check response.ok, and has no .catch — a failed or non-2xx request will fail silently."
+    },
+    {
+      "ruleId": "qual/fetch-has-error-handling",
+      "file": "src/app/utils/dom.ts",
+      "line": 93,
+      "severity": "warn",
+      "message": "This fetch() call isn't wrapped in try/catch, doesn't check response.ok, and has no .catch — a failed or non-2xx request will fail silently.",
+      "fixPrompt": "Fix \"fetch() call with no error handling\" (qual/fetch-has-error-handling) at src/app/utils/dom.ts:93: This fetch() call isn't wrapped in try/catch, doesn't check response.ok, and has no .catch — a failed or non-2xx request will fail silently."
+    },
+    {
+      "ruleId": "qual/fetch-has-error-handling",
+      "file": "src/app/utils/matrix.ts",
+      "line": 301,
+      "severity": "warn",
+      "message": "This fetch() call isn't wrapped in try/catch, doesn't check response.ok, and has no .catch — a failed or non-2xx request will fail silently.",
+      "fixPrompt": "Fix \"fetch() call with no error handling\" (qual/fetch-has-error-handling) at src/app/utils/matrix.ts:301: This fetch() call isn't wrapped in try/catch, doesn't check response.ok, and has no .catch — a failed or non-2xx request will fail silently."
+    },
+    {
+      "ruleId": "qual/fetch-has-error-handling",
+      "file": "src/sw.ts",
+      "line": 145,
+      "severity": "warn",
+      "message": "This fetch() call isn't wrapped in try/catch, doesn't check response.ok, and has no .catch — a failed or non-2xx request will fail silently.",
+      "fixPrompt": "Fix \"fetch() call with no error handling\" (qual/fetch-has-error-handling) at src/sw.ts:145: This fetch() call isn't wrapped in try/catch, doesn't check response.ok, and has no .catch — a failed or non-2xx request will fail silently."
+    },
+    {
+      "ruleId": "qual/fetch-has-error-handling",
+      "file": "src/sw.ts",
+      "line": 153,
+      "severity": "warn",
+      "message": "This fetch() call isn't wrapped in try/catch, doesn't check response.ok, and has no .catch — a failed or non-2xx request will fail silently.",
+      "fixPrompt": "Fix \"fetch() call with no error handling\" (qual/fetch-has-error-handling) at src/sw.ts:153: This fetch() call isn't wrapped in try/catch, doesn't check response.ok, and has no .catch — a failed or non-2xx request will fail silently."
+    },
+    {
+      "ruleId": "qual/fetch-has-error-handling",
+      "file": "src/sw.ts",
+      "line": 155,
+      "severity": "warn",
+      "message": "This fetch() call isn't wrapped in try/catch, doesn't check response.ok, and has no .catch — a failed or non-2xx request will fail silently.",
+      "fixPrompt": "Fix \"fetch() call with no error handling\" (qual/fetch-has-error-handling) at src/sw.ts:155: This fetch() call isn't wrapped in try/catch, doesn't check response.ok, and has no .catch — a failed or non-2xx request will fail silently."
+    },
+    {
+      "ruleId": "qual/no-empty-catch",
+      "file": "src/client/initMatrix.ts",
+      "line": 61,
+      "severity": "error",
+      "message": "Errors are being silently swallowed — the catch block is empty or contains only a comment.",
+      "fixPrompt": "Fix \"Empty catch block\" (qual/no-empty-catch) at src/client/initMatrix.ts:61: Errors are being silently swallowed — the catch block is empty or contains only a comment."
+    },
+    {
+      "ruleId": "ux/destructive-no-confirm",
+      "file": "src/app/features/settings/devices/OtherDevices.tsx",
+      "line": 221,
+      "severity": "warn",
+      "message": "This component runs a delete with no confirmation step anywhere in the file — a single accidental click permanently destroys data.",
+      "fixPrompt": "Fix \"Destructive action with no confirmation step\" (ux/destructive-no-confirm) at src/app/features/settings/devices/OtherDevices.tsx:221: This component runs a delete with no confirmation step anywhere in the file — a single accidental click permanently destroys data."
+    },
+    {
+      "ruleId": "ux/inline-hex-threshold",
+      "file": "src/app/hooks/usePowerLevelTags.ts",
+      "line": 67,
+      "severity": "warn",
+      "message": "This file has several one-off inline hex colors instead of a shared design-token/theme reference — a sign colors have drifted out of any central palette.",
+      "fixPrompt": "Fix \"Many inline hex colors in one file\" (ux/inline-hex-threshold) at src/app/hooks/usePowerLevelTags.ts:67: This file has several one-off inline hex colors instead of a shared design-token/theme reference — a sign colors have drifted out of any central palette. (7 occurrences, threshold 5)"
+    },
+    {
+      "ruleId": "ux/inline-hex-threshold",
+      "file": "src/colors.css.ts",
+      "line": 10,
+      "severity": "warn",
+      "message": "This file has several one-off inline hex colors instead of a shared design-token/theme reference — a sign colors have drifted out of any central palette.",
+      "fixPrompt": "Fix \"Many inline hex colors in one file\" (ux/inline-hex-threshold) at src/colors.css.ts:10: This file has several one-off inline hex colors instead of a shared design-token/theme reference — a sign colors have drifted out of any central palette. (155 occurrences, threshold 5)"
+    }
+  ],
+  "warnings": [],
+  "fileCount": 847,
+  "ruleCount": 23,
+  "tokenSurface": {
+    "files": [],
+    "totalTokens": 0,
+    "estimatedWastePercent": 0,
+    "ignoreCoverage": {
+      "ignoreFilesFound": [],
+      "artifacts": [
+        {
+          "target": "package-lock.json",
+          "covered": false
+        }
+      ]
+    }
+  }
+}

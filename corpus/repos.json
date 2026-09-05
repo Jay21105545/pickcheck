@@ -4,6 +4,8 @@
     "url": "https://github.com/shadcn-ui/taxonomy.git",
     "sha": "298a8857c7128a0d121e7f699dfd729f23b3966d",
     "category": "control",
+    "stack": "next",
+    "provenance": "Human-authored; no generator marker. Reference app by the shadcn/ui author.",
     "note": "Reference Next.js App Router app — auth, dashboard, post CRUD, delete flows."
   },
   {
@@ -11,6 +13,8 @@
     "url": "https://github.com/nextjs/saas-starter.git",
     "sha": "6e33e58b1e553a41fe22e6b941a7229a002de361",
     "category": "control",
+    "stack": "next",
+    "provenance": "Human-authored; no generator marker. Official Vercel template.",
     "note": "Official Vercel SaaS template — team dashboard, Stripe, sign-out."
   },
   {
@@ -18,6 +22,8 @@
     "url": "https://github.com/vercel/commerce.git",
     "sha": "3761e52e60df9c6a316e067dbfd7032e494d3634",
     "category": "control",
+    "stack": "next",
+    "provenance": "Human-authored; no generator marker. Maintained by Vercel.",
     "note": "Shopify storefront — product fetching, cart mutations, search, filters."
   },
   {
@@ -25,6 +31,8 @@
     "url": "https://github.com/steven-tey/precedent.git",
     "sha": "3be40205d7cdf56082cd284f07f12251b9208f79",
     "category": "control",
+    "stack": "next",
+    "provenance": "Human-authored; no generator marker.",
     "note": "SaaS starter kit — closest control-set proxy for a template-ish, commonly-forked AI-assisted-build base."
   },
   {
@@ -32,27 +40,80 @@
     "url": "https://github.com/SudarshanaSRao/sports-on-the-go-4c575e84.git",
     "sha": "b5bf7b934ce46094df3efbdfc67a3447770996e1",
     "category": "ai-generated",
-    "note": "Lovable-generated (lovable-dev topic) — React/Supabase, real-time pickup-game discovery, OAuth."
+    "stack": "vite",
+    "provenance": "Lovable — `lovable-dev` topic; 97/100 sampled commits authored by `lovable-dev[bot]` (97%).",
+    "note": "React/Supabase, real-time pickup-game discovery, OAuth."
   },
   {
     "name": "fin-bloom-dash",
     "url": "https://github.com/Gowtham3424/fin-bloom-dash.git",
     "sha": "007de6882014a72c58e84de393d5aa3a726ef817",
     "category": "ai-generated",
-    "note": "Lovable-generated (lovable-dev topic) — personal finance management dashboard."
+    "stack": "vite",
+    "provenance": "Lovable — `lovable-dev` topic; 41/43 commits authored by `lovable-dev[bot]` (95%).",
+    "note": "Personal finance management dashboard."
   },
   {
     "name": "shelfly-creator-hub",
     "url": "https://github.com/beyagency/shelfly-creator-hub.git",
     "sha": "2afcadff42f35091528c3aa3e47f882cb0993318",
     "category": "ai-generated",
-    "note": "Lovable-generated (lovable-dev topic) — digital-product storefront with a checkout flow."
+    "stack": "vite",
+    "provenance": "Lovable — `lovable-dev` topic; 8/8 commits authored by `lovable-dev[bot]` (100%).",
+    "note": "Digital-product storefront with a checkout flow."
   },
   {
     "name": "mindtrack-personalwellness",
     "url": "https://github.com/Shivshanker869/mindtrack-personalwellness.git",
     "sha": "e1fdacf717412c78d5e174959931e558b639726a",
     "category": "ai-generated",
-    "note": "Lovable-generated (lovable-dev topic) — habit/mood tracking dashboard."
+    "stack": "vite",
+    "provenance": "Lovable — `lovable-dev` topic; 23/32 commits authored by `lovable-dev[bot]` (72%).",
+    "note": "Habit/mood tracking dashboard."
+  },
+  {
+    "name": "ai-career-assistant",
+    "url": "https://github.com/Gnaneswar22/ai-career-assistant.git",
+    "sha": "4737a760b9cf22508cea156e6485ac1b36a75704",
+    "category": "ai-generated",
+    "stack": "next",
+    "provenance": "v0.app — README carries the v0 GitHub-sync line; 2/2 commits authored by the `v0` account (100%).",
+    "note": "Added in DECISIONS/0029. Career-coaching app — 10 App Router pages, 9 API route handlers, no database layer."
+  },
+  {
+    "name": "theghost",
+    "url": "https://github.com/Tirth1107/THEGHOST.git",
+    "sha": "e533713ef01220516382b533ff25249e17636dd8",
+    "category": "ai-generated",
+    "stack": "next",
+    "provenance": "v0.app — README carries the v0 GitHub-sync line; 16/17 commits authored by the `v0` account (94%).",
+    "note": "Added in DECISIONS/0029. Private chat app — 11 API route handlers over Supabase + Neon serverless."
+  },
+  {
+    "name": "newattendanceapp",
+    "url": "https://github.com/oakghana/newattendanceapp.git",
+    "sha": "f00f73d7198978bc248afbf9700b3f9fd4cfc18b",
+    "category": "ai-generated",
+    "stack": "next",
+    "provenance": "v0.app — README carries the v0 GitHub-sync line; 95/100 sampled commits authored by the `v0` account (95%).",
+    "note": "Added in DECISIONS/0029. Large staff attendance/leave/payroll app — 70 pages, 260 API route handlers, Supabase. Size-matched to the professional Vite arm."
+  },
+  {
+    "name": "cinny",
+    "url": "https://github.com/cinnyapp/cinny.git",
+    "sha": "e046757d1b4ef16d734354022a7426a858b1e38f",
+    "category": "control",
+    "stack": "vite",
+    "provenance": "Human-authored; no generator marker. Team-maintained since 2021 (3.9k stars, 575 forks).",
+    "note": "Added in DECISIONS/0029. Matrix chat client — single-root Vite + React + TS SPA against a hosted backend."
+  },
+  {
+    "name": "rowy",
+    "url": "https://github.com/buildship-ai/rowy.git",
+    "sha": "a5b4316cf04c7b653f007e8420ca189b587637cf",
+    "category": "control",
+    "stack": "vite",
+    "provenance": "Human-authored; no generator marker. Company-built product (6.8k stars, 557 forks).",
+    "note": "Added in DECISIONS/0029. Firestore admin UI — single-root Vite + React + TS SPA against a BaaS backend, the closest structural analogue to the Lovable arm."
   }
 ]
