@@ -329,6 +329,210 @@ describe("runManifestTier", () => {
     }
   });
 
+  it("exempts a specifier claimed by a paths alias inherited through extends (DECISIONS/0030)", async () => {
+    const dir = await createTempDir("manifest-extends-paths");
+    try {
+      await dir.write(
+        "package.json",
+        JSON.stringify({ dependencies: { lodash: "^4.0.0" } }),
+      );
+      // buildship-ai/rowy's exact shape: baseUrl in the extending file,
+      // paths in the file it extends.
+      await dir.write(
+        "tsconfig.json",
+        JSON.stringify({
+          extends: "./tsconfig.extend.json",
+          compilerOptions: { baseUrl: "src" },
+        }),
+      );
+      await dir.write(
+        "tsconfig.extend.json",
+        JSON.stringify({
+          compilerOptions: { paths: { "@root/*": ["../*"], "@src/*": ["./*"] } },
+        }),
+      );
+      await dir.write(
+        "src/a.ts",
+        "import { Button } from '@src/components/button';\nimport { log } from '@root/shared/log';\n",
+      );
+
+      const result = await runManifestTier(rule(), {
+        cwd: dir.path,
+        scannedFiles: [
+          "package.json",
+          "tsconfig.json",
+          "tsconfig.extend.json",
+          "src/a.ts",
+        ],
+      });
+
+      expect(result.findings).toEqual([]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("still flags an alias-shaped specifier no paths pattern claims", async () => {
+    const dir = await createTempDir("manifest-extends-unclaimed");
+    try {
+      await dir.write(
+        "package.json",
+        JSON.stringify({ dependencies: { lodash: "^4.0.0" } }),
+      );
+      await dir.write(
+        "tsconfig.json",
+        JSON.stringify({ extends: "./base.json", compilerOptions: { baseUrl: "." } }),
+      );
+      await dir.write(
+        "base.json",
+        JSON.stringify({ compilerOptions: { paths: { "@src/*": ["./src/*"] } } }),
+      );
+      await dir.write("src/a.ts", "import { track } from '@lib/telemetry-pro';\n");
+
+      const result = await runManifestTier(rule(), {
+        cwd: dir.path,
+        scannedFiles: ["package.json", "tsconfig.json", "base.json", "src/a.ts"],
+      });
+
+      expect(result.findings).toEqual([
+        expect.objectContaining({ file: "src/a.ts", line: 1 }),
+      ]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("resolves a baseUrl declared in an extended config against that config's own directory", async () => {
+    const dir = await createTempDir("manifest-extends-baseurl-origin");
+    try {
+      await dir.write(
+        "package.json",
+        JSON.stringify({ dependencies: { lodash: "^4.0.0" } }),
+      );
+      // The base lives in config/, and its "baseUrl": "../src" is relative
+      // to config/ — the file it was written in — not to the tsconfig.json
+      // that inherits it. Resolving it against the wrong directory, or not
+      // following `extends` at all, leaves baseDir at the repo root, where
+      // "components/button" does not exist.
+      await dir.write(
+        "tsconfig.json",
+        JSON.stringify({ extends: "./config/base.json" }),
+      );
+      await dir.write(
+        "config/base.json",
+        JSON.stringify({ compilerOptions: { baseUrl: "../src" } }),
+      );
+      await dir.write("src/components/button.tsx", "export function Button() {}\n");
+      await dir.write("app/page.tsx", "import { Button } from 'components/button';\n");
+
+      const result = await runManifestTier(rule(), {
+        cwd: dir.path,
+        scannedFiles: [
+          "package.json",
+          "tsconfig.json",
+          "config/base.json",
+          "src/components/button.tsx",
+          "app/page.tsx",
+        ],
+      });
+
+      expect(result.findings).toEqual([]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("lets a nearer config's paths replace an inherited one rather than merging", async () => {
+    const dir = await createTempDir("manifest-extends-paths-override");
+    try {
+      await dir.write(
+        "package.json",
+        JSON.stringify({ dependencies: { lodash: "^4.0.0" } }),
+      );
+      await dir.write(
+        "tsconfig.json",
+        JSON.stringify({
+          extends: "./base.json",
+          compilerOptions: { baseUrl: ".", paths: { "@new/*": ["./src/*"] } },
+        }),
+      );
+      await dir.write(
+        "base.json",
+        JSON.stringify({ compilerOptions: { paths: { "@old/*": ["./src/*"] } } }),
+      );
+      await dir.write("src/a.ts", "import { gone } from '@old/thing';\n");
+
+      const result = await runManifestTier(rule(), {
+        cwd: dir.path,
+        scannedFiles: ["package.json", "tsconfig.json", "base.json", "src/a.ts"],
+      });
+
+      // `paths` is a single compiler option: the extending file's mapping
+      // wins outright, so the inherited "@old/*" no longer applies.
+      expect(result.findings).toEqual([
+        expect.objectContaining({ file: "src/a.ts", line: 1 }),
+      ]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("survives a cyclic extends chain instead of recursing forever", async () => {
+    const dir = await createTempDir("manifest-extends-cycle");
+    try {
+      await dir.write(
+        "package.json",
+        JSON.stringify({ dependencies: { lodash: "^4.0.0" } }),
+      );
+      await dir.write(
+        "tsconfig.json",
+        JSON.stringify({
+          extends: "./b.json",
+          compilerOptions: { paths: { "@src/*": ["./src/*"] } },
+        }),
+      );
+      await dir.write("b.json", JSON.stringify({ extends: "./tsconfig.json" }));
+      await dir.write("src/a.ts", "import { ok } from '@src/thing';\n");
+
+      const result = await runManifestTier(rule(), {
+        cwd: dir.path,
+        scannedFiles: ["package.json", "tsconfig.json", "b.json", "src/a.ts"],
+      });
+
+      expect(result.findings).toEqual([]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
+  it("follows an extends chain into node_modules", async () => {
+    const dir = await createTempDir("manifest-extends-package");
+    try {
+      await dir.write(
+        "package.json",
+        JSON.stringify({ dependencies: { lodash: "^4.0.0" } }),
+      );
+      await dir.write(
+        "tsconfig.json",
+        JSON.stringify({ extends: "@repo/tsconfig/base.json" }),
+      );
+      await dir.write(
+        "node_modules/@repo/tsconfig/base.json",
+        JSON.stringify({ compilerOptions: { paths: { "@app/*": ["./src/*"] } } }),
+      );
+      await dir.write("src/a.ts", "import { thing } from '@app/thing';\n");
+
+      const result = await runManifestTier(rule(), {
+        cwd: dir.path,
+        scannedFiles: ["package.json", "tsconfig.json", "src/a.ts"],
+      });
+
+      expect(result.findings).toEqual([]);
+    } finally {
+      await dir.cleanup();
+    }
+  });
+
   it("exempts URL-scheme and npm:/jsr: specifiers — Deno/edge-function imports (DECISIONS/0015)", async () => {
     const dir = await createTempDir("manifest-url-imports");
     try {

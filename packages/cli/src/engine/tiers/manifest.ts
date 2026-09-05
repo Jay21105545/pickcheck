@@ -1,6 +1,6 @@
 import { readFile, stat } from "node:fs/promises";
 import { builtinModules } from "node:module";
-import { dirname, join } from "node:path";
+import { dirname, isAbsolute, join } from "node:path";
 import { dirname as posixDirname } from "node:path/posix";
 import type { ManifestRule } from "@pickcheck/rules/schema";
 import micromatch from "micromatch";
@@ -68,7 +68,7 @@ async function runHallucinatedImportCheck(
   const findings: Finding[] = [];
   const warnings: string[] = [];
   const manifestCache = createManifestCache();
-  const baseDirCache = new Map<string, string>();
+  const tsconfigCache = new Map<string, TsconfigResolution>();
 
   for (const file of matches) {
     const fileDir = posixDirname(file);
@@ -95,7 +95,7 @@ async function runHallucinatedImportCheck(
       continue;
     }
 
-    const baseDir = await resolveBaseDir(ctx.cwd, fileDir, baseDirCache);
+    const tsconfig = await resolveTsconfig(ctx.cwd, fileDir, tsconfigCache);
     const lines = stripComments(content).split("\n");
     for (const [index, line] of lines.entries()) {
       regex.lastIndex = 0;
@@ -104,7 +104,7 @@ async function runHallucinatedImportCheck(
         if (specifier === undefined) {
           continue;
         }
-        if (!(await isHallucinated(specifier, declared, baseDir))) {
+        if (!(await isHallucinated(specifier, declared, tsconfig))) {
           continue;
         }
         const lineNumber = index + 1;
@@ -438,15 +438,29 @@ async function tryReadManifest(
 /**
  * A bare specifier absent from `declared`, that isn't a Node builtin, a
  * relative import, a URL/scheme import, a local path alias, or a bare
- * specifier that resolves to a real file/directory relative to `baseDir`
- * (DECISIONS/0015) — the same "isn't actually a package" question,
- * answered a fourth way.
+ * specifier that resolves to a real file/directory relative to the
+ * resolved `baseDir` (DECISIONS/0015) — the same "isn't actually a
+ * package" question, answered five ways.
+ *
+ * A specifier claimed by a `compilerOptions.paths` pattern is exempt
+ * *without* checking that the target file exists, deliberately. This rule
+ * is about supply chain: an undeclared specifier is a finding because a
+ * build resolves it against the npm registry, where an attacker can
+ * publish the name (slopsquatting). A path alias never reaches the
+ * registry — the bundler rewrites it to a local file first — so it is out
+ * of scope whether or not the file behind it is there. A broken alias is
+ * a build error for `tsc` to report, not a security finding. This is the
+ * same standard `derivePackageName` already applies to `@/`-style
+ * aliases, which it exempts on shape alone. See DECISIONS/0030.
  */
 async function isHallucinated(
   specifier: string,
   declared: Set<string>,
-  baseDir: string,
+  tsconfig: TsconfigResolution,
 ): Promise<boolean> {
+  if (matchesPathAlias(specifier, tsconfig.pathPatterns)) {
+    return false;
+  }
   const packageName = derivePackageName(specifier);
   if (packageName === undefined) {
     return false;
@@ -457,7 +471,7 @@ async function isHallucinated(
   if (declared.has(packageName)) {
     return false;
   }
-  return !(await resolvesLocally(baseDir, specifier));
+  return !(await resolvesLocally(tsconfig.baseDir, specifier));
 }
 
 /** A scheme prefix (`https:`, `http:`, `npm:`, `jsr:`, `node:`, …) — never a bare npm specifier. */
@@ -531,68 +545,254 @@ async function resolvesLocally(baseDir: string, specifier: string): Promise<bool
 }
 
 /**
- * The directory bare specifiers resolve against for a given file's
- * directory: the `baseUrl` of the nearest ancestor `tsconfig.json`/
- * `jsconfig.json` (up to the scanned root), or the scanned root itself if
- * none declares one — DECISIONS/0015. This intentionally does *not* union
- * across ancestors the way manifest dependency lookup does: `baseUrl` is a
- * single resolved value from whichever config actually applies, not a
- * cumulative set. Falling back to the scanned root (rather than "no
- * baseUrl, so nothing resolves locally") also covers bundler setups
- * (Vite's default root resolution, `webpack`'s `resolve.modules`) that
- * allow root-relative bare imports with no `tsconfig.json` in the picture
- * at all.
+ * The tsconfig facts a bare specifier is checked against, resolved for one
+ * directory: where root-relative imports resolve from, and which
+ * specifiers are local path aliases rather than package names.
  */
-async function resolveBaseDir(
+interface TsconfigResolution {
+  /** Absolute directory bare specifiers resolve against. */
+  baseDir: string;
+  /** `compilerOptions.paths` keys, e.g. `["@src/*", "@root/*"]`. */
+  pathPatterns: string[];
+}
+
+/**
+ * The tsconfig resolution for a given file's directory: from the nearest
+ * ancestor `tsconfig.json`/`jsconfig.json` (up to the scanned root),
+ * falling back to the scanned root with no aliases if none applies.
+ *
+ * `baseUrl` gives the directory bare specifiers resolve against
+ * (DECISIONS/0015) — the scanned-root fallback also covers bundler setups
+ * (Vite's default root resolution, webpack's `resolve.modules`) that allow
+ * root-relative bare imports with no `tsconfig.json` in the picture at all.
+ * `paths` gives the local alias patterns (DECISIONS/0030).
+ *
+ * Both are single resolved values from whichever config actually applies,
+ * not the cumulative union manifest dependency lookup builds: a nearer
+ * config's `baseUrl` replaces an ancestor's rather than adding to it, and
+ * TypeScript treats `paths` the same way. Each is inherited from the
+ * parent directory *independently*, though — a config that sets only
+ * `paths` leaves an ancestor's `baseUrl` in force, which is exactly what
+ * `compilerOptions` merging does.
+ */
+async function resolveTsconfig(
   cwd: string,
   dir: string,
-  cache: Map<string, string>,
-): Promise<string> {
+  cache: Map<string, TsconfigResolution>,
+): Promise<TsconfigResolution> {
   const cached = cache.get(dir);
   if (cached !== undefined) {
     return cached;
   }
 
-  const ownBaseUrl = await tryReadTsconfigBaseUrl(join(cwd, dir));
-  let result: string;
-  if (ownBaseUrl !== undefined) {
-    result = join(cwd, dir, ownBaseUrl);
-  } else if (dir === ".") {
-    result = cwd;
-  } else {
-    result = await resolveBaseDir(cwd, posixDirname(dir), cache);
-  }
+  const own = await readTsconfigChain(join(cwd, dir));
+  const inherited: TsconfigResolution =
+    dir === "."
+      ? { baseDir: cwd, pathPatterns: [] }
+      : await resolveTsconfig(cwd, posixDirname(dir), cache);
+
+  const result: TsconfigResolution = {
+    baseDir:
+      own?.baseUrl === undefined
+        ? inherited.baseDir
+        : join(own.baseUrl.declaredIn, own.baseUrl.value),
+    pathPatterns: own?.pathPatterns ?? inherited.pathPatterns,
+  };
 
   cache.set(dir, result);
   return result;
 }
 
-/** Reads `compilerOptions.baseUrl` out of a `tsconfig.json`/`jsconfig.json` in `absDir`, tolerating JSONC comments. */
-async function tryReadTsconfigBaseUrl(absDir: string): Promise<string | undefined> {
+/**
+ * A `compilerOptions` value together with the directory of the config file
+ * that declared it. TypeScript resolves a relative `baseUrl` against the
+ * file it was *written in*, not against the file that inherited it, so an
+ * `extends` chain has to carry the origin along with the value.
+ */
+interface DeclaredValue {
+  value: string;
+  declaredIn: string;
+}
+
+interface TsconfigChain {
+  baseUrl?: DeclaredValue;
+  pathPatterns?: string[];
+}
+
+/** Resolves `tsconfig.json`, else `jsconfig.json`, in `absDir` — each through its full `extends` chain. */
+async function readTsconfigChain(absDir: string): Promise<TsconfigChain | undefined> {
   for (const name of ["tsconfig.json", "jsconfig.json"]) {
-    const baseUrl = await tryParseBaseUrl(join(absDir, name));
-    if (baseUrl !== undefined) {
-      return baseUrl;
+    const chain = await readConfigChain(join(absDir, name), new Set(), 0);
+    if (chain !== undefined) {
+      return chain;
     }
   }
   return undefined;
 }
 
-/** Reads and parses a single tsconfig/jsconfig candidate, or `undefined` if it's missing, unparsable, or declares no `baseUrl` — same silent-skip philosophy as `tryReadManifest` for an unparsable package.json. */
-async function tryParseBaseUrl(path: string): Promise<string | undefined> {
+/**
+ * How many `extends` hops to follow before giving up. Real chains are two
+ * or three long (`@tsconfig/*` bases, a shared monorepo config); this only
+ * has to be larger than anything sane, since a cycle is already caught by
+ * `visited`.
+ */
+const MAX_EXTENDS_DEPTH = 16;
+
+/**
+ * Reads one tsconfig and everything it `extends`, merging base-first so a
+ * nearer config's value wins — the same precedence `tsc` applies.
+ *
+ * Following `extends` is what tells a local path alias apart from an npm
+ * package name. `buildship-ai/rowy` declares `"@src/*"` and `"@root/*"` in
+ * a `tsconfig.extend.json` that its `tsconfig.json` inherits; read one
+ * file deep, the `paths` are invisible and `@src/components` reads as an
+ * undeclared scoped package. That was 1,655 false positives on one control
+ * repo — see DECISIONS/0030.
+ *
+ * `undefined` means no config file at this path. A config that exists but
+ * declares neither option returns an empty chain, which is *not* the same
+ * thing: it stops the caller inheriting nothing, while still letting each
+ * option fall through to the parent directory independently.
+ */
+async function readConfigChain(
+  path: string,
+  visited: Set<string>,
+  depth: number,
+): Promise<TsconfigChain | undefined> {
+  if (depth > MAX_EXTENDS_DEPTH || visited.has(path)) {
+    return undefined;
+  }
+  visited.add(path);
+
   const raw = await tryReadFile(path);
   if (raw === undefined) {
     return undefined;
   }
+
+  let parsed: {
+    extends?: unknown;
+    compilerOptions?: { baseUrl?: unknown; paths?: unknown };
+  };
   try {
-    const parsed = JSON.parse(stripComments(raw)) as {
-      compilerOptions?: { baseUrl?: unknown };
-    };
-    const baseUrl = parsed.compilerOptions?.baseUrl;
-    return typeof baseUrl === "string" ? baseUrl : undefined;
+    parsed = JSON.parse(stripComments(raw));
   } catch {
+    // Same silent-skip philosophy as `tryReadManifest` for an unparsable
+    // package.json: an unreadable config means "nothing learned here",
+    // never a finding of its own.
     return undefined;
   }
+
+  const dir = dirname(path);
+  const merged: TsconfigChain = {};
+
+  // Bases first, in declaration order — TS 5.0's array form resolves left
+  // to right with later entries winning, and the extending file wins over
+  // all of them.
+  for (const spec of extendsSpecifiers(parsed.extends)) {
+    const target = await resolveExtendsTarget(dir, spec);
+    if (target === undefined) {
+      continue;
+    }
+    const base = await readConfigChain(target, visited, depth + 1);
+    if (base?.baseUrl !== undefined) {
+      merged.baseUrl = base.baseUrl;
+    }
+    if (base?.pathPatterns !== undefined) {
+      merged.pathPatterns = base.pathPatterns;
+    }
+  }
+
+  const options = parsed.compilerOptions;
+  if (typeof options?.baseUrl === "string") {
+    merged.baseUrl = { value: options.baseUrl, declaredIn: dir };
+  }
+  if (typeof options?.paths === "object" && options.paths !== null) {
+    // `paths` is one compiler option, so a nearer config's mapping
+    // replaces an inherited one wholesale rather than merging key by key.
+    merged.pathPatterns = Object.keys(options.paths);
+  }
+
+  return merged;
+}
+
+/** Normalizes `extends` to a list — a string, TS 5.0's array of strings, or nothing at all. */
+function extendsSpecifiers(value: unknown): string[] {
+  if (typeof value === "string") {
+    return [value];
+  }
+  if (Array.isArray(value)) {
+    return value.filter((entry): entry is string => typeof entry === "string");
+  }
+  return [];
+}
+
+/**
+ * Resolves one `extends` specifier to a config file on disk, or
+ * `undefined` if nothing is there. Two forms, matching `tsc`:
+ *
+ * - **Relative or absolute** (`./tsconfig.extend.json`, `../base`) —
+ *   against the extending file's own directory, with `.json` appended and
+ *   a directory's `tsconfig.json` tried in turn, since both are written
+ *   without the full path in practice.
+ * - **Bare** (`@tsconfig/node20/tsconfig.json`, `@repo/tsconfig/base`) —
+ *   looked up in each ancestor `node_modules`, the way Node resolves any
+ *   other package.
+ */
+async function resolveExtendsTarget(
+  fromDir: string,
+  spec: string,
+): Promise<string | undefined> {
+  if (spec.startsWith(".") || isAbsolute(spec)) {
+    return firstExistingConfig(join(fromDir, spec));
+  }
+
+  let dir = fromDir;
+  let previous = "";
+  while (dir !== previous) {
+    const found = await firstExistingConfig(join(dir, "node_modules", spec));
+    if (found !== undefined) {
+      return found;
+    }
+    previous = dir;
+    dir = dirname(dir);
+  }
+  return undefined;
+}
+
+/** The first of `<target>`, `<target>.json`, `<target>/tsconfig.json` that is a real file. */
+async function firstExistingConfig(target: string): Promise<string | undefined> {
+  for (const candidate of [target, `${target}.json`, join(target, "tsconfig.json")]) {
+    if (await isFile(candidate)) {
+      return candidate;
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Whether `specifier` is matched by a `compilerOptions.paths` pattern —
+ * i.e. the bundler rewrites it to a local file and it never reaches a
+ * package registry.
+ *
+ * A TypeScript path pattern holds at most one `*`, which matches any run
+ * of characters (including none), so matching is a prefix/suffix test
+ * rather than a glob. Which mapping *wins* is `tsc`'s business; this tier
+ * only asks whether any claims the specifier.
+ */
+function matchesPathAlias(specifier: string, patterns: string[]): boolean {
+  return patterns.some((pattern) => {
+    const star = pattern.indexOf("*");
+    if (star === -1) {
+      return specifier === pattern;
+    }
+    const prefix = pattern.slice(0, star);
+    const suffix = pattern.slice(star + 1);
+    return (
+      specifier.length >= prefix.length + suffix.length &&
+      specifier.startsWith(prefix) &&
+      specifier.endsWith(suffix)
+    );
+  });
 }
 
 async function tryReadFile(path: string): Promise<string | undefined> {
