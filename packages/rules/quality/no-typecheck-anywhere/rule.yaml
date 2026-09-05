@@ -1,0 +1,49 @@
+id: qual/no-typecheck-anywhere
+category: quality
+severity: warn
+tier: capability
+title: Nothing in this project ever type-checks it
+# Applicability: a TypeScript project. A repo with no TS source was never
+# subject to this rule, so it is neither passed nor failed (scorer.ts's
+# isApplicable). Test and fixture trees are excluded from the question of
+# whether the project is a TS project at all, matching every other rule.
+files:
+  - "**/*.{ts,tsx}"
+  - "!**/*.test.*"
+  - "!**/*.spec.*"
+  - "!**/__tests__/**"
+  - "!**/test/**"
+  - "!**/tests/**"
+  - "!**/fixtures/**"
+message: "Nothing in this project runs the TypeScript compiler — no typecheck script, no CI step, and no framework build that would catch a type error. The types are documentation, not a check."
+weight: 3
+pattern:
+  reportAt: package.json
+  # Any ONE of these establishes that a type error would be caught.
+  providedBy:
+    - label: "a package.json script that runs tsc (`typecheck`, or `tsc &&` inside `build`)"
+      source: package-scripts
+      # `\btsc\b(?![-\w])` so `tsconfig` and `tsc-alias` don't count as
+      # type-checking — neither runs the compiler over the project.
+      regex: '\btsc\b(?![-\w])|\bvue-tsc\b|\btype-?check\b'
+      flags: i
+    - label: "a CI job that runs tsc"
+      source: files
+      files:
+        - ".github/workflows/*.{yml,yaml}"
+        - ".circleci/**/*.{yml,yaml}"
+        - ".gitlab-ci.yml"
+        - "azure-pipelines.yml"
+        - ".buildkite/**/*.{yml,yaml}"
+      regex: '\btsc\b(?![-\w])|\bvue-tsc\b|\btype-?check\b'
+      flags: i
+    - label: "a Next.js build, which type-checks unless `typescript.ignoreBuildErrors` switches it off"
+      source: files
+      files:
+        - "next.config.{js,mjs,cjs,ts}"
+      # No `regex`: the config existing means `next build` runs, and
+      # `next build` fails on a type error. `revokedBy` is the off-switch —
+      # all three v0-generated apps in the corpus ship it, which is why the
+      # framework-blind form of this rule convicted every Next.js repo,
+      # control and generated alike. See DECISIONS/0029 and 0030.
+      revokedBy: 'ignoreBuildErrors\s*:\s*true'

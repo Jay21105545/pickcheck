@@ -1,0 +1,8 @@
+{
+  "name": "vite_react_shadcn_ts",
+  "private": true,
+  "devDependencies": {
+    "lovable-tagger": "^1.1.10",
+    "vite": "^5.4.1"
+  }
+}

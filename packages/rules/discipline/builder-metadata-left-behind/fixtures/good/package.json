@@ -1,0 +1,7 @@
+{
+  "name": "my-actual-product",
+  "private": true,
+  "devDependencies": {
+    "vite": "^5.4.1"
+  }
+}

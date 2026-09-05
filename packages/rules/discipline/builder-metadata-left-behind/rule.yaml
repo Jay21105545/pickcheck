@@ -1,0 +1,33 @@
+id: disc/builder-metadata-left-behind
+category: discipline
+severity: info
+tier: regex
+title: The AI builder's scaffolding is still in the repo
+# The three files a builder actually signs. Deliberately NOT the whole tree:
+# a marker is only evidence when it sits where the generator wrote it, and
+# scanning source would turn any file that mentions Lovable or v0 into a
+# finding.
+files:
+  - "package.json"
+  - "index.html"
+  - "README.md"
+  - "readme.md"
+message: "This repo still carries the AI builder's scaffolding — a generator dependency, an injected script tag, a sync line, or the template's own package name. It's leftover setup, not something the project chose."
+weight: 1
+pattern:
+  # Four STRUCTURAL markers — things a generator writes into the tree, not
+  # things prose can mention. A bare `lovable.dev` or `v0.app` URL is
+  # deliberately excluded: a README that links to a builder (a comparison,
+  # a tutorial, an awesome-list) is not a repo built by one, and on the
+  # corpus the URL markers add nothing — all 7 AI-generated repos already
+  # fire on a structural marker alone. See DECISIONS/0030.
+  #
+  #   1. `lovable-tagger`      — Lovable's Vite plugin, in devDependencies
+  #   2. `gptengineer.js`      — the script tag Lovable injects into index.html
+  #   3. the v0 sync line      — written into README.md by v0's GitHub integration
+  #   4. an unrenamed template package name
+  regex: 'lovable-tagger|gptengineer\.js|Automatically synced with your \[?v0|"name"\s*:\s*"(?:my-v0-project|vite_react_shadcn_ts)"'
+  # One finding per file, not one per marker occurrence: the instruction is
+  # "clean up the scaffolding", and repeating it per line is repeating one
+  # instruction.
+  minCount: 1

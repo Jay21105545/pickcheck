@@ -1,5 +1,5 @@
 {
-  "composite": 59,
+  "composite": 55.64,
   "categories": [
     {
       "category": "security",
@@ -7,7 +7,7 @@
     },
     {
       "category": "quality",
-      "score": 50
+      "score": 38.46
     },
     {
       "category": "docs",
@@ -15,7 +15,7 @@
     },
     {
       "category": "discipline",
-      "score": 100
+      "score": 92.59
     },
     {
       "category": "ui-ux",
@@ -27,6 +27,14 @@
     }
   ],
   "findings": [
+    {
+      "ruleId": "disc/builder-metadata-left-behind",
+      "file": "package.json",
+      "line": 2,
+      "severity": "info",
+      "message": "This repo still carries the AI builder's scaffolding — a generator dependency, an injected script tag, a sync line, or the template's own package name. It's leftover setup, not something the project chose.",
+      "fixPrompt": "Fix \"The AI builder's scaffolding is still in the repo\" (disc/builder-metadata-left-behind) at package.json:2: This repo still carries the AI builder's scaffolding — a generator dependency, an injected script tag, a sync line, or the template's own package name. It's leftover setup, not something the project chose. (2 occurrences, threshold 1)"
+    },
     {
       "ruleId": "docs/changelog-exists",
       "file": "CHANGELOG.md",
@@ -57,6 +65,13 @@
       "severity": "error",
       "message": "Errors are being silently swallowed — the catch block is empty or contains only a comment.",
       "fixPrompt": "Fix \"Empty catch block\" (qual/no-empty-catch) at src/contexts/CurrencyContext.tsx:36: Errors are being silently swallowed — the catch block is empty or contains only a comment."
+    },
+    {
+      "ruleId": "qual/no-typecheck-anywhere",
+      "file": "package.json",
+      "severity": "warn",
+      "message": "Nothing in this project runs the TypeScript compiler — no typecheck script, no CI step, and no framework build that would catch a type error. The types are documentation, not a check.",
+      "fixPrompt": "Fix \"Nothing in this project ever type-checks it\" (qual/no-typecheck-anywhere) at package.json: Nothing in this project runs the TypeScript compiler — no typecheck script, no CI step, and no framework build that would catch a type error. The types are documentation, not a check. (looked for and did not find: a package.json script that runs tsc (`typecheck`, or `tsc &&` inside `build`); a CI job that runs tsc; a Next.js build, which type-checks unless `typescript.ignoreBuildErrors` switches it off)"
     },
     {
       "ruleId": "sec/no-hallucinated-imports",
@@ -189,7 +204,7 @@
   ],
   "warnings": [],
   "fileCount": 117,
-  "ruleCount": 23,
+  "ruleCount": 25,
   "tokenSurface": {
     "files": [],
     "totalTokens": 0,

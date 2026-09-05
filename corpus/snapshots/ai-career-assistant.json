@@ -1,5 +1,5 @@
 {
-  "composite": 58.5,
+  "composite": 49.55,
   "categories": [
     {
       "category": "security",
@@ -7,7 +7,7 @@
     },
     {
       "category": "quality",
-      "score": 100
+      "score": 62.5
     },
     {
       "category": "docs",
@@ -15,7 +15,7 @@
     },
     {
       "category": "discipline",
-      "score": 50
+      "score": 46.3
     },
     {
       "category": "ui-ux",
@@ -27,6 +27,22 @@
     }
   ],
   "findings": [
+    {
+      "ruleId": "disc/builder-metadata-left-behind",
+      "file": "package.json",
+      "line": 2,
+      "severity": "info",
+      "message": "This repo still carries the AI builder's scaffolding — a generator dependency, an injected script tag, a sync line, or the template's own package name. It's leftover setup, not something the project chose.",
+      "fixPrompt": "Fix \"The AI builder's scaffolding is still in the repo\" (disc/builder-metadata-left-behind) at package.json:2: This repo still carries the AI builder's scaffolding — a generator dependency, an injected script tag, a sync line, or the template's own package name. It's leftover setup, not something the project chose. (1 occurrences, threshold 1)"
+    },
+    {
+      "ruleId": "disc/builder-metadata-left-behind",
+      "file": "README.md",
+      "line": 3,
+      "severity": "info",
+      "message": "This repo still carries the AI builder's scaffolding — a generator dependency, an injected script tag, a sync line, or the template's own package name. It's leftover setup, not something the project chose.",
+      "fixPrompt": "Fix \"The AI builder's scaffolding is still in the repo\" (disc/builder-metadata-left-behind) at README.md:3: This repo still carries the AI builder's scaffolding — a generator dependency, an injected script tag, a sync line, or the template's own package name. It's leftover setup, not something the project chose. (1 occurrences, threshold 1)"
+    },
     {
       "ruleId": "disc/no-console-log",
       "file": "app/api/certificates/generate/route.ts",
@@ -217,6 +233,13 @@
       "fixPrompt": "Fix \"Environment variables the code needs aren't documented in .env.example\" (docs/env-example-exists) at .env.example: This project reads environment variables that .env.example doesn't document — anyone cloning it has to read the source to find out what config it needs. (0% documented (0/5), threshold 60% — missing: ADZUNA_API_KEY, ADZUNA_APP_ID, ARBEITNOW_API_KEY, CAREERJET_API_KEY, OPENROUTER_API_KEY)"
     },
     {
+      "ruleId": "qual/no-typecheck-anywhere",
+      "file": "package.json",
+      "severity": "warn",
+      "message": "Nothing in this project runs the TypeScript compiler — no typecheck script, no CI step, and no framework build that would catch a type error. The types are documentation, not a check.",
+      "fixPrompt": "Fix \"Nothing in this project ever type-checks it\" (qual/no-typecheck-anywhere) at package.json: Nothing in this project runs the TypeScript compiler — no typecheck script, no CI step, and no framework build that would catch a type error. The types are documentation, not a check. (looked for and did not find: a package.json script that runs tsc (`typecheck`, or `tsc &&` inside `build`); a CI job that runs tsc; a Next.js build, which type-checks unless `typescript.ignoreBuildErrors` switches it off)"
+    },
+    {
       "ruleId": "sec/no-secrets-in-code",
       "file": "app/api/roadmap/generate/route.ts",
       "line": 50,
@@ -307,7 +330,7 @@
   ],
   "warnings": [],
   "fileCount": 53,
-  "ruleCount": 23,
+  "ruleCount": 25,
   "tokenSurface": {
     "files": [],
     "totalTokens": 0,
