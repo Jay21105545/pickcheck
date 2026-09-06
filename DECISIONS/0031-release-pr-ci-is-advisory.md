@@ -2,12 +2,18 @@
 
 **Status:** accepted · **Date:** 2026-09-06 · **Amended:** 2026-09-06
 
-> **Amendment.** Decision 1's residual risk was originally stated as *"a
+> **Amendment 1.** Decision 1's residual risk was originally stated as *"a
 > skipped approval is invisible"*. The `0.3.0` release, which happened
 > while this record was being written, showed the failure mode is not
 > forgetting to approve — it is that approving does not block anything.
 > Restated below, and branch protection promoted from noted alternative to
 > the recommended next step.
+>
+> **Amendment 2.** The open item is closed. The repository setting that
+> looked responsible was checked and ruled out; the cause is platform
+> behaviour for `GITHUB_TOKEN`-authored PRs. Decision 2 is no longer a
+> recommendation — branch protection is active on `main`, and its
+> configuration is recorded below.
 
 ## Context
 
@@ -44,13 +50,30 @@ Every CI run on `changeset-release/main` to date:
 
 Three facts in that table are load-bearing:
 
-1. **The parking started partway through.** Before 2026-09-05 07:23,
-   bot-triggered runs executed normally; from 09:12 that same morning they
-   park. Something in the repository's Actions settings changed inside that
-   two-hour window. **The specific setting has not been identified** — it is
-   not recorded in this repo, and the two parked runs carry no approver.
-   Whoever next touches Settings → Actions → General should record what they
-   find there against this ADR.
+1. **The cause is platform behaviour, not repository configuration.**
+   Settings → Actions → General was read on 2026-09-06. *"Approval for
+   running fork pull request workflows from contributors"* is set to
+   **"Require approval for first-time contributors who are new to
+   GitHub"** — the least restrictive of the three options. **That setting
+   is ruled out**: it governs *fork* PRs from *human* contributors, and
+   `changeset-release/main` is a same-repository branch pushed by
+   `github-actions[bot]`, which is neither. No other setting on that page
+   gates workflow runs.
+
+   What remains is GitHub's own handling of PRs authored with
+   `secrets.GITHUB_TOKEN`, which exists to stop workflows triggering
+   workflows recursively. This repository did not switch it on and cannot
+   switch it off — a fact decision 3 leans on.
+
+   **One thing this does not explain, and it is left open honestly:** a
+   static platform rule does not account for the transition in the table.
+   Runs on `0d7bf67` and `f5f98a1` executed unapproved; every run from
+   `861ae20` onward parks. Same branch, same bot, same token, different
+   outcome. Whether that was a platform rollout or something subtler is
+   unresolved, and nothing in this repository records a change in that
+   window. It is not worth further archaeology: every fix below is chosen
+   against the *current* behaviour, and none of them depends on knowing why
+   it changed.
 2. **The signal is not decorative.** The only two runs that executed
    unapproved were both red. Losing a check that has never been green is
    not a theoretical loss.
@@ -101,7 +124,7 @@ mitigation, it is a receipt.
 This is why decision 2 exists, and why decision 1 is now understood as *the
 status quo being documented*, not as a control being relied upon.
 
-### 2. Branch protection is the recommended next step
+### 2. Branch protection — adopted, active on `main`
 
 **Require the `ci` status check on `main`.** This is the only one of the
 three options that puts the check *before* the merge rather than beside it,
@@ -110,16 +133,29 @@ no change to `release.yml`. The bot-authored PR still parks; the difference
 is that the merge button stays disabled until someone approves the run and
 it comes back green, which is exactly the ordering that was missing above.
 
-**The stuck-release objection is answered by admin override.** The original
-version of this record declined branch protection partly because
-hard-blocking merges on an Actions setting whose origin is unidentified
-risked trading a silent gap for a stuck release. That concern is real but
-it is not load-bearing: a repository admin can lift the rule — by setting
-the ruleset's enforcement status to disabled — so the worst case is a
-deliberate, logged act by the owner, not a release that cannot ship. A gate
-you can consciously step over when you must is strictly better than a gate
-that is always open. The unidentified setting (fact 1) remains worth
-finding, but it is no longer a reason to wait.
+**As configured on 2026-09-06**, ruleset `main` (id 22404084):
+
+| Setting | Value |
+|---|---|
+| Enforcement | `active` |
+| Bypass list | **empty** |
+| Target | `~DEFAULT_BRANCH` |
+| Rule | `required_status_checks` — context `ci`, GitHub Actions |
+| Rule | `non_fast_forward` — force pushes to `main` blocked |
+| Require branches up to date | off (`strict_required_status_checks_policy: false`) |
+
+"Require branches up to date" is off deliberately: `changesets/action`
+force-pushes the release branch on every push to `main`, and with the
+strict policy on, each such push would invalidate the release PR's check
+and park a fresh run needing another approval. That is churn, not safety.
+
+**The stuck-release objection is answered by the owner being able to lift
+the rule.** The original version of this record declined branch protection
+partly because hard-blocking merges risked trading a silent gap for a stuck
+release. That concern is real but it is not load-bearing: enforcement can
+be set to disabled, so the worst case is a deliberate, logged act by the
+owner, not a release that cannot ship. A gate you can consciously step over
+when you must is strictly better than a gate that is always open.
 
 **The override must be an action, not a standing exemption.** Adding a
 repository admin to the ruleset's *bypass list* would also unblock a stuck
@@ -129,10 +165,12 @@ only committer it makes the rule advisory again — which is precisely the
 failure this record exists to describe. Bypass list empty; disable the
 ruleset when you genuinely must.
 
-The residual cost is that direct pushes to `main` become subject to the
-same rule, which matters here because this repository is pushed to
-directly. Admin bypass covers that too, at the price of the push being an
-explicit override rather than an ordinary push.
+**The residual cost is real and is accepted: direct pushes to `main` are
+now blocked.** A required status check applies to pushes, not only to
+merges, and a freshly pushed commit has no check yet. With the bypass list
+empty this binds the owner too — by design, per the paragraph above. Work
+happens on a branch and lands through a PR; the three commits that produced
+this record were the last that could have gone straight to `main`.
 
 ### 3. A GitHub App token is the longer-term structural fix — still deferred
 
@@ -140,6 +178,16 @@ Not adopted now. With decision 2 in place the manual approval is at least
 load-bearing, which removes the urgency; this becomes worth doing when the
 per-release click is the thing slowing releases down, rather than when the
 gap is unsafe.
+
+**Fact 1 strengthens this fix rather than weakening it.** While the cause
+was believed to be a repository setting, the cheapest imaginable remedy was
+to find that setting and change it — which would have made an App
+unnecessary. Ruling the setting out removes that possibility: the parking
+is platform behaviour attached to `GITHUB_TOKEN`-authored PRs, and it
+cannot be configured away from inside this repository. Changing the
+*author* of the PR is therefore not one option among several, it is the
+only way to make the check run unattended. That raises this from a
+convenience to the eventual correct fix.
 
 The mechanism: a GitHub App scoped to this repository with `contents:
 write` and `pull_requests: write`, an installation token minted per run via
@@ -173,26 +221,30 @@ comment doing harm.
 
 ## Consequences
 
-- **Until branch protection is on, a Version Packages PR can still be
-  merged with no CI signal at all** — and on the `0.3.0` release, one
-  effectively was. The reviewer is the only control, and fact 4 shows the
-  reviewer can satisfy the convention and still gate nothing.
-- **Branch protection changes how `main` is pushed to.** This repository is
-  pushed to directly, and a required status check applies to those pushes,
-  not just to merges. Admin bypass keeps them possible; it makes them
-  deliberate. That is a real workflow cost and it is accepted, because the
-  alternative is a control that only fires when it is not needed.
+- **The gap this record opened is closed.** A Version Packages PR can no
+  longer be merged without a green `ci`, because the merge button is now
+  bound by the ruleset rather than by the reviewer's diligence. `0.3.0`,
+  released under the old regime, is the one release in this repository's
+  history that shipped on a check that completed after its own merge.
+- **`main` is now branch-only.** Direct pushes are blocked for everyone,
+  the owner included, and force pushes are blocked outright by the
+  `non_fast_forward` rule. Every change lands through a PR whose `ci` is
+  green. `CONTRIBUTING.md` does not yet say this, and should.
 - **Two of the three options are ordering fixes and one is an identity
   fix, and they compose.** Branch protection makes the check block the
   merge; the App token makes the check run without a human at all. Doing
   the first does not make the second unnecessary — it makes it the
   difference between one deliberate click per release and none.
-- **The unidentified setting is an open item.** Until someone reads the
-  repository's Actions settings, this ADR describes a behaviour without its
-  cause, and the App-token fix in decision 3 is chosen against a mechanism
-  inferred from the run history rather than confirmed at its source.
-  Decision 2 does not depend on that inference — it constrains the merge
-  regardless of why runs park.
+- **The cause is settled; one loose end is documented, not chased.** The
+  repository setting is ruled out and the behaviour is platform-side (fact
+  1). What no explanation covers is why two early runs executed and every
+  later one parks. That is recorded rather than resolved, because no fix
+  here depends on it.
+- **The release PR still needs one human click.** Branch protection orders
+  the check before the merge; it does not make the check run. Until
+  decision 3 lands, every release requires someone to approve the parked
+  run — the difference is that forgetting now blocks the merge instead of
+  silently permitting it.
 - **CONTRIBUTING.md's release flow is unchanged and still correct.** Its
   step 3 already says merging the PR is what publishes; it simply never
   claimed the PR was tested, and now `release.yml` doesn't either.
