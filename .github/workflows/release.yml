@@ -34,8 +34,21 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      # Same gate CONTRIBUTING.md asks of every PR — a release workflow
-      # publishing without it would be a weaker guarantee than a human PR.
+      # Same gate CONTRIBUTING.md asks of every PR. Note precisely what it
+      # does and does not cover — see DECISIONS/0031.
+      #
+      # Covered: every push to main, which includes the merge of a Version
+      # Packages PR. So `changeset publish` below never runs on an ungated
+      # tree, and nothing reaches npm without these five steps passing.
+      #
+      # NOT covered: the Version Packages PR itself, before that merge.
+      # changesets/action authors it as github-actions[bot] via
+      # GITHUB_TOKEN, and ci.yml's pull_request run for a bot-authored PR
+      # lands in `action_required` — created, but executing nothing until a
+      # human clicks "Approve and run". Two release PRs have been opened
+      # and superseded having run no checks at all. Approve the run and
+      # require it green before merging; a PR with no checks and a PR whose
+      # checks are still queued look identical at a glance.
       #
       # `build` must precede `test`, exactly as in ci.yml: the artifact
       # guards in publishable-package.test.ts assert against the real
