@@ -1,6 +1,6 @@
 {
   "name": "pickcheck",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Lighthouse for AI-built apps — a zero-config CLI that audits security, quality, docs, discipline, UI/UX, and AI-context-token hygiene, and hands back ready-to-paste fix prompts. No LLM calls, no network, no config required.",
   "keywords": [
     "ai",
