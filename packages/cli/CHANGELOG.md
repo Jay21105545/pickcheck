@@ -1,5 +1,65 @@
 # pickcheck
 
+## 0.3.0
+
+### Minor Changes
+
+- 4d99704: Fix two false positives on control repos, and ship two new rules.
+  
+  `sec/no-hallucinated-imports` now follows `tsconfig.json` `extends` chains
+  and treats a specifier claimed by a `compilerOptions.paths` pattern as a
+  local alias rather than an npm package. Reading only one config file deep,
+  it flagged 1,655 path-aliased imports on a human-built control repo as
+  undeclared packages, at `error` severity. Corpus-wide precision for the
+  rule goes from 1.3% to 56.4% with no loss of recall.
+  
+  `docs/env-example-exists` now ignores Vite's built-in `import.meta.env` set
+  (`BASE_URL`, `MODE`, `PROD`, `DEV`, `SSR`) — the same class of
+  platform-injected values it already ignores for `NODE_ENV` and `SUPABASE_*`.
+  
+  Two new rules:
+  
+  - **`qual/no-typecheck-anywhere`** (quality, warn) — nothing in the project
+    ever runs the TypeScript compiler: no `typecheck` script, no CI step, and
+    no framework build that would catch a type error. Credits `next build`,
+    which type-checks by default, unless `typescript.ignoreBuildErrors`
+    switches that off.
+  - **`disc/builder-metadata-left-behind`** (discipline, info) — the AI
+    builder's scaffolding is still in the repo: a `lovable-tagger`
+    dependency, an injected `gptengineer.js` script tag, v0's README sync
+    line, or an unrenamed template package name.
+  
+  Both are new capabilities rather than tightened patterns, so existing
+  projects may see new findings. See DECISIONS/0030.
+
+### Patch Changes
+
+- 910f747: Rewrite the README as the project's front door, and correct the npm package
+  metadata.
+  
+  The README now leads with what pickcheck is for — AI writes the happy path
+  and skips the sad path; this is the inspection that catches what it skipped
+  — and carries the full 13-repo corpus table with its `stack` and
+  `provenance` columns, the published precision history (36% → 90% after
+  calibration; `sec/no-hallucinated-imports` 1.3% → 56.4% after the `extends`
+  fix; `ux/hardcoded-px-width` pulled at 18% rather than shipped noisy), and
+  the honest limits from DECISIONS/0029 — that the original corpus confounded
+  stack with provenance, and that two candidate rules were dropped for
+  tracking the framework rather than the generator.
+  
+  The published `description` omitted the `quality` category, listing five of
+  the six scored axes; it now lists all six. Keywords are aligned with the
+  repository's topics for discoverability. No rule or engine behaviour
+  changed.
+- 21e9934: Correct the README's corpus claim. The backtest corpus grew from 8 repos to
+  13 (DECISIONS/0029), adding the two cells it was missing — AI-generated
+  Next.js apps and professionally-built Vite/React SPAs — so that "separates
+  AI-generated from human-built" is no longer indistinguishable from
+  "separates Vite from Next.js". With those cells filled, the old claim that
+  every control repo scores above every AI-generated one is false, and the
+  README now shows the full 2x2 and names the overlap. No rule or engine
+  behaviour changed.
+
 ## 0.2.0
 
 ### Minor Changes
