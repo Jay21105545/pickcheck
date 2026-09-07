@@ -9,6 +9,15 @@ Patterns: `sk-[A-Za-z0-9]{20,}`, `AKIA[0-9A-Z]{16}`, `ghp_[A-Za-z0-9]{36}`,
 Scope: exclude fixtures, *.md, test files by default.
 Good fixtures: `process.env.API_KEY`, key-like strings in comments/docs.
 
+A fifth, **shape**-anchored branch was added in DECISIONS/0033 — a JWT
+literal — closing a recall gap: every other name-independent branch needed a
+vendor prefix, so a credential passed *positionally*
+(`createClient(url, "eyJ...")`) had no name to anchor on and the rule was
+silent. The branch excludes Supabase-issued tokens, which are covered by
+rule 14 (`service_role`) and deliberately not flagged at all (`anon`, which
+is public by design). Widening the name-anchored branch instead was measured
+and rejected: zero additional findings across all 13 corpus repos.
+
 ## 2. sec/no-env-in-git — error, exists
 Trigger if `.env`, `.env.local`, `.env.production` are git-tracked
 (`git ls-files` check, not mere presence).
@@ -100,6 +109,41 @@ fire-and-forget call with no `await`.
 submit/checkout/save handler (`pattern.when`) and no network call
 (`pattern.unless`). The awaited form only — a bare `setTimeout` schedules
 work, which debounce and optimistic UI legitimately do.
+
+## Security batch (added after v0.3 — see [ADR 0033](../DECISIONS/0033-security-batch.md))
+
+The first three rules proposed by [ADR 0032](../DECISIONS/0032-rule-batch-candidates-and-two-more-confounds.md)'s
+measurement pass, shipped together with the rule-1 fix above. All three
+were measured against the 13-repo corpus before a `rule.yaml` existed.
+
+### 14. sec/hardcoded-service-role-key — error, regex
+A Supabase service-role key exposed in source, in two forms: the key
+*literal*, and the key read from a **client-exposed** env prefix
+(`NEXT_PUBLIC_`/`VITE_`/`REACT_APP_`/`EXPO_PUBLIC_`). The literal is
+identified **by role, without decoding it**: base64 maps 3 bytes to 4
+characters, so `","role":"service_role"` has only three possible encodings
+depending on its offset mod 3, and three literals cover every project-ref
+length. `"role":"anon"` encodes differently and never matches — the anon
+key is public by design and flagging it would be wrong. Deliberately does
+*not* set `excludePackageScriptTargets`: a one-off script is exactly where
+this key gets pasted.
+
+### 15. sec/admin-route-no-auth — error, regex
+An exported HTTP handler in a route file under both an `api` and an `admin`
+path segment, in a file containing no authorization marker at all
+(`unless`). The path scoping is the rule: ADR 0032 measured and rejected the
+unscoped "API route with no auth" form as a framework detector (framework Δ
+−0.71). `service_role` is deliberately **absent** from the auth marker list
+— a handler reaching for it is bypassing RLS, not authorizing its caller.
+Corpus precision 8 TP / 1 FP / 1 arguable.
+
+### 16. sec/weak-default-credential — error, regex
+A password-shaped identifier assigned a *closed* literal from a known-weak
+list, each base word taking an optional short numeric suffix
+(`password123`, `admin@123`, `demo_2024`). Sets
+`excludePackageScriptTargets` (ADR 0017), which is what keeps a legitimate
+`npm run db:seed` script — the corpus's only control hit — out of the
+findings without a rule-specific carve-out.
 
 ## Parked rules
 

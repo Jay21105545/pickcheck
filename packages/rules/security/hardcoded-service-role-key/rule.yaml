@@ -1,0 +1,57 @@
+id: sec/hardcoded-service-role-key
+category: security
+severity: error
+tier: regex
+title: Supabase service-role key exposed in source
+files:
+  - "**/*.{ts,tsx,js,jsx,mjs,cjs}"
+  - "!**/*.test.*"
+  - "!**/*.spec.*"
+  - "!**/__tests__/**"
+  - "!**/test/**"
+  - "!**/tests/**"
+  - "!**/fixtures/**"
+# Deliberately does NOT set `excludePackageScriptTargets`. A one-off
+# developer script is exactly where a service-role key gets pasted, and a
+# committed credential is committed whether or not `npm run` can reach the
+# file it sits in. The exemption ADR 0017 added is for rules about
+# *application runtime code*; this rule is about a secret being in the
+# repository at all.
+message: "A Supabase service-role key is exposed in this file. That key bypasses row-level security on every table in the project — it is the database's root credential, not an API key. Rotate it in the Supabase dashboard now, then load it from a server-only environment variable."
+weight: 5
+pattern:
+  # Two branches, both about the same credential.
+  #
+  # 1. THE KEY ITSELF, IDENTIFIED BY ROLE, WITHOUT DECODING IT.
+  #
+  # A Supabase key is a JWT whose payload is
+  # `{"iss":"supabase","ref":"<ref>","role":"<role>",...}`. The engine has
+  # no base64 decoder and does not need one: base64 encodes 3 bytes to 4
+  # characters, so a fixed substring of the payload has a *deterministic*
+  # encoding once its byte offset mod 3 is known. There are only three
+  # possible alignments, so three literals cover every case regardless of
+  # how long the project ref is or what precedes `"role"`.
+  #
+  # Each literal below is the invariant middle of base64url(`","role":
+  # "service_role"`) at one alignment — the leading and trailing
+  # characters, which depend on the neighbouring bytes, are trimmed off.
+  # Verified two ways: against both real service-role tokens in the corpus,
+  # and against synthesised tokens for every project-ref length from 16 to
+  # 24, all three alignments. See DECISIONS/0033.
+  #
+  # This is why the rule can tell the two Supabase roles apart, which is
+  # the whole point: `role":"anon"` encodes to a different run of
+  # characters and never matches. An anon key is public by design and
+  # flagging it at error severity would be wrong.
+  #
+  # NOTE: no `flags: i`. base64url is case-sensitive and these literals
+  # must be matched exactly.
+  #
+  # 2. THE KEY ROUTED THROUGH A CLIENT-EXPOSED ENV NAME.
+  #
+  # `NEXT_PUBLIC_*` / `VITE_*` / `REACT_APP_*` / `EXPO_PUBLIC_*` are not
+  # naming conventions — they are instructions to the bundler to inline the
+  # value into the browser bundle. There is no legitimate reason for a
+  # service-role key to sit behind one, so the name alone is the finding;
+  # the rule does not need to prove the variable is currently set.
+  regex: '(Iiwicm9sZSI6InNlcnZpY2Vfcm9sZS|IsInJvbGUiOiJzZXJ2aWNlX3JvbGUi|iLCJyb2xlIjoic2VydmljZV9yb2xlI|(?:NEXT_PUBLIC|VITE|REACT_APP|EXPO_PUBLIC)_[A-Z0-9_]*SERVICE_ROLE[A-Z0-9_]*)'

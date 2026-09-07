@@ -15,5 +15,43 @@ files:
 message: "A hardcoded secret looks like it's committed to source — rotate it and load it from the environment instead."
 weight: 4
 pattern:
-  regex: '(sk-[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|(api[_-]?key|secret|token)\s*[:=]\s*[''"][A-Za-z0-9_-]{16,})'
+  # Five branches. Four are *shape*-anchored — the credential identifies
+  # itself and no variable name is needed — and one is *name*-anchored.
+  #
+  # The name-anchored branch was the only one this rule had for anything
+  # without a vendor prefix, and that was a recall gap: a credential passed
+  # positionally never touches a name. `createClient(url, "eyJ...")` reads
+  # its key as argument two, so there is no `key =` for the branch to
+  # anchor on and the rule stayed silent (DECISIONS/0033).
+  #
+  # The fix is a fourth shape branch rather than a wider name list. A JWT
+  # is three dot-separated base64url runs, each starting `eyJ` because a
+  # JSON object starts `{"` — self-identifying, and the most common
+  # credential shape in a JS app that has no vendor prefix.
+  #
+  # The negative lookahead excludes Supabase-issued tokens, whose payload
+  # begins `{"iss":"supabase"` → `eyJpc3MiOiJzdXBhYmFz` (a payload segment
+  # always starts at base64 offset 0, so that prefix is exact). Both
+  # Supabase roles are deliberately handled elsewhere, and neither belongs
+  # here:
+  #   - `service_role` is `sec/hardcoded-service-role-key`, which says the
+  #     specific and much more urgent thing. Matching it here too would
+  #     bill one defect to two error-severity rules, and the scorer's
+  #     diminishing-returns curve (ADR 0009) charges real points for the
+  #     second one.
+  #   - `anon` is *not a secret*. It ships to every browser by design, so
+  #     this rule's own message — "rotate it" — would be wrong advice at
+  #     error severity behind a composite gate.
+  #
+  # Widening the name branch instead was measured and rejected: adding
+  # backticks to the quote class, and adding password/passwd/credential/
+  # private_key/access_key/anon_key to the name list, gains **zero**
+  # findings across all 13 corpus repos. See DECISIONS/0033.
+  #
+  # `flags: i` is inherited by the lookahead, so a JWT whose payload
+  # case-insensitively matches the Supabase prefix but does not match it
+  # exactly would also be skipped. base64url is case-sensitive, so such a
+  # payload decodes to something else entirely; the case is theoretical
+  # and fails closed (one missed finding, never a false one).
+  regex: '(sk-[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|eyJ[A-Za-z0-9_-]{10,}\.(?!eyJpc3MiOiJzdXBhYmFz)eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}|(api[_-]?key|secret|token)\s*[:=]\s*[''"][A-Za-z0-9_-]{16,})'
   flags: i

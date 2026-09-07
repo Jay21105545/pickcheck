@@ -1,0 +1,55 @@
+id: sec/weak-default-credential
+category: security
+severity: error
+tier: regex
+title: Known-weak password literal in application code
+files:
+  - "**/*.{ts,tsx,js,jsx,mjs,cjs,py,rb,go,java}"
+  - "!**/*.md"
+  - "!**/*.test.*"
+  - "!**/*.spec.*"
+  - "!**/__tests__/**"
+  - "!**/test/**"
+  - "!**/tests/**"
+  - "!**/fixtures/**"
+  - "!**/*.stories.*"
+# A seed or setup script legitimately hardcodes a throwaway password so a
+# fresh local database has something to sign in with. `nextjs/saas-starter`
+# does exactly that — `const password = 'admin123'` in `lib/db/setup.ts`,
+# reachable only as `npm run db:seed` — and it is the corpus's only control
+# hit. DECISIONS/0017 added this flag for precisely that population, so the
+# exemption is machinery that already exists rather than a new carve-out.
+excludePackageScriptTargets: true
+message: "A password literal here is one of the passwords attackers try first. If this is a real credential, rotate it; if it seeds an account, that account is trivially reachable in any environment this code runs in."
+weight: 4
+pattern:
+  # A password-shaped assignment whose value is a *closed* literal from a
+  # known-weak list. The closing quote is the discriminator and it is
+  # load-bearing: without it, `password: "admin_supplied_hash_..."` and any
+  # other value merely *starting* with one of these words would match.
+  #
+  # Anchored on the identifier before the `:`/`=`, so the many places the
+  # word "password" appears as a *value* cannot match — `type="password"`,
+  # `placeholder="password"`, `autocomplete="current-password"`,
+  # `name="password"` all have a different identifier on the left.
+  # A schema declaration (`password: z.string().min(8)`) has no quoted
+  # literal at all.
+  #
+  # Word list is deliberately closed rather than entropy-based. "Short or
+  # low-entropy string assigned to a password" would fire on every
+  # placeholder and truncated example in a codebase; these are the values
+  # that appear at the top of every credential-stuffing list, and nothing
+  # else.
+  #
+  # Each base word takes an optional short numeric suffix, with an optional
+  # separator — `admin123`, `password123`, `demo_2024`, `admin@123` are the
+  # same credential as their base word and enumerating every combination by
+  # hand is how a list like this goes stale. The corpus's own instance is
+  # `password123`, which an earlier draft of this rule missed for exactly
+  # that reason. The final `\d{4,12}` branch covers the all-numeric
+  # classics (`123456`, `000000`).
+  #
+  # A hashed value cannot match: bcrypt and argon2 digests start with `$`,
+  # which is outside every branch.
+  regex: '\b(?:password|passwd|pwd)\s*[:=]\s*[''"`](?:(?:admin|administrator|password|passwd|pass|passw0rd|p@ssword|letmein|changeme|change_me|qwerty|welcome|secret|default|test|user|temp|demo|guest|root|abc)(?:[._@-]?\d{1,6})?|\d{4,12})[''"`]'
+  flags: i

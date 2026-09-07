@@ -1,0 +1,45 @@
+id: sec/admin-route-no-auth
+category: security
+severity: error
+tier: regex
+title: Admin route handler with no authorization check
+files:
+  # App Router: a `route.ts` under an `api` segment with an `admin` segment
+  # somewhere beneath it. Both `**` can match zero path segments, so
+  # `app/api/admin/route.ts` and `app/api/v2/admin/users/route.ts` both
+  # resolve. Leading `**/` for a nested app in a monorepo, matching the
+  # serverless globs DECISIONS/0027 added to the other backend rules.
+  - "**/api/**/admin/**/route.{ts,tsx,js,mjs}"
+  # Pages Router: no `route.ts` convention, the file itself is the handler.
+  - "**/pages/api/**/admin/**/*.{ts,tsx,js,mjs}"
+  - "**/pages/api/**/admin.{ts,tsx,js,mjs}"
+  - "!**/*.test.*"
+  - "!**/*.spec.*"
+  - "!**/__tests__/**"
+  - "!**/test/**"
+  - "!**/tests/**"
+  - "!**/fixtures/**"
+message: "This admin route handler contains no authorization check of any kind — no session lookup, no user fetch, no role test. Anyone who can reach the URL can run it."
+weight: 4
+pattern:
+  # An exported HTTP method handler, in either export form. One finding per
+  # handler, so a route file exporting both GET and DELETE reports twice
+  # and the line numbers point at each.
+  regex: '^\s*export\s+(?:async\s+)?function\s+(?:GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\b|^\s*export\s+const\s+(?:GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\s*[:=]|^\s*export\s+default\s+(?:async\s+)?function\b'
+  # Whole-file suppression (DECISIONS/0008). Deliberately generous: this
+  # rule's value is precision, so any plausible sign that the file thinks
+  # about who is calling silences it, including a bare mention in a
+  # comment. That trades recall for trustworthiness — a missed finding is
+  # cheap here, a false accusation on an admin route is not.
+  #
+  # `service_role` is NOT in this list. A handler reaching for the
+  # service-role key is bypassing row-level security, which is the opposite
+  # of authorizing the caller; treating it as an auth marker would exempt
+  # precisely the worst handlers.
+  #
+  # `\bauth\b` does not match `Authorization` (the `o` defeats the trailing
+  # word boundary), so a route that merely forwards an Authorization header
+  # without checking it is still flagged — which is correct.
+  unless:
+    regex: '\b(?:auth|session|getUser|getSession|currentUser|getCurrentUser|jwt|verifyToken|requireAdmin|requireUser|requireRole|isAdmin|isAuthorized|authorize|permission|hasRole|clerk|nextauth|next-auth|getServerSession|withApiAuth|unauthorized|forbidden|401|403)\b'
+    flags: i

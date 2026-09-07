@@ -1,9 +1,9 @@
 {
-  "composite": 56.96,
+  "composite": 51.4,
   "categories": [
     {
       "category": "security",
-      "score": 50
+      "score": 33.33
     },
     {
       "category": "quality",
@@ -200,6 +200,46 @@
       "fixPrompt": "Fix \"Nothing in this project ever type-checks it\" (qual/no-typecheck-anywhere) at package.json: Nothing in this project runs the TypeScript compiler — no typecheck script, no CI step, and no framework build that would catch a type error. The types are documentation, not a check. (looked for and did not find: a package.json script that runs tsc (`typecheck`, or `tsc &&` inside `build`); a CI job that runs tsc; a Next.js build, which type-checks unless `typescript.ignoreBuildErrors` switches it off)"
     },
     {
+      "ruleId": "sec/admin-route-no-auth",
+      "file": "app/api/admin/messages/route.ts",
+      "line": 3,
+      "severity": "error",
+      "message": "This admin route handler contains no authorization check of any kind — no session lookup, no user fetch, no role test. Anyone who can reach the URL can run it.",
+      "fixPrompt": "Fix \"Admin route handler with no authorization check\" (sec/admin-route-no-auth) at app/api/admin/messages/route.ts:3: This admin route handler contains no authorization check of any kind — no session lookup, no user fetch, no role test. Anyone who can reach the URL can run it."
+    },
+    {
+      "ruleId": "sec/admin-route-no-auth",
+      "file": "app/api/admin/stats/route.ts",
+      "line": 4,
+      "severity": "error",
+      "message": "This admin route handler contains no authorization check of any kind — no session lookup, no user fetch, no role test. Anyone who can reach the URL can run it.",
+      "fixPrompt": "Fix \"Admin route handler with no authorization check\" (sec/admin-route-no-auth) at app/api/admin/stats/route.ts:4: This admin route handler contains no authorization check of any kind — no session lookup, no user fetch, no role test. Anyone who can reach the URL can run it."
+    },
+    {
+      "ruleId": "sec/admin-route-no-auth",
+      "file": "app/api/admin/users/[userId]/messages/route.ts",
+      "line": 4,
+      "severity": "error",
+      "message": "This admin route handler contains no authorization check of any kind — no session lookup, no user fetch, no role test. Anyone who can reach the URL can run it.",
+      "fixPrompt": "Fix \"Admin route handler with no authorization check\" (sec/admin-route-no-auth) at app/api/admin/users/[userId]/messages/route.ts:4: This admin route handler contains no authorization check of any kind — no session lookup, no user fetch, no role test. Anyone who can reach the URL can run it."
+    },
+    {
+      "ruleId": "sec/admin-route-no-auth",
+      "file": "app/api/admin/users/ban/route.ts",
+      "line": 4,
+      "severity": "error",
+      "message": "This admin route handler contains no authorization check of any kind — no session lookup, no user fetch, no role test. Anyone who can reach the URL can run it.",
+      "fixPrompt": "Fix \"Admin route handler with no authorization check\" (sec/admin-route-no-auth) at app/api/admin/users/ban/route.ts:4: This admin route handler contains no authorization check of any kind — no session lookup, no user fetch, no role test. Anyone who can reach the URL can run it."
+    },
+    {
+      "ruleId": "sec/admin-route-no-auth",
+      "file": "app/api/admin/users/delete/route.ts",
+      "line": 4,
+      "severity": "error",
+      "message": "This admin route handler contains no authorization check of any kind — no session lookup, no user fetch, no role test. Anyone who can reach the URL can run it.",
+      "fixPrompt": "Fix \"Admin route handler with no authorization check\" (sec/admin-route-no-auth) at app/api/admin/users/delete/route.ts:4: This admin route handler contains no authorization check of any kind — no session lookup, no user fetch, no role test. Anyone who can reach the URL can run it."
+    },
+    {
       "ruleId": "sec/post-has-validation",
       "file": "app/api/ably-token/route.ts",
       "line": 14,
@@ -266,7 +306,7 @@
   ],
   "warnings": [],
   "fileCount": 56,
-  "ruleCount": 25,
+  "ruleCount": 28,
   "tokenSurface": {
     "files": [],
     "totalTokens": 0,

@@ -1,9 +1,9 @@
 {
-  "composite": 39.1,
+  "composite": 29.1,
   "categories": [
     {
       "category": "security",
-      "score": 50
+      "score": 20
     },
     {
       "category": "quality",
@@ -7544,6 +7544,142 @@
       "fixPrompt": "Fix \"Supabase query result discarded, so its error is invisible\" (qual/supabase-result-unchecked) at scripts/simulate-staff-crud.mjs:124: This Supabase call's result is thrown away. supabase-js resolves with { data, error } instead of throwing, so a write blocked by row-level security or rejected by a constraint returns here as a success — try/catch does not catch it, and qual/fetch-has-error-handling does not model it."
     },
     {
+      "ruleId": "sec/admin-route-no-auth",
+      "file": "app/api/admin/bulk-upload/template/route.ts",
+      "line": 3,
+      "severity": "error",
+      "message": "This admin route handler contains no authorization check of any kind — no session lookup, no user fetch, no role test. Anyone who can reach the URL can run it.",
+      "fixPrompt": "Fix \"Admin route handler with no authorization check\" (sec/admin-route-no-auth) at app/api/admin/bulk-upload/template/route.ts:3: This admin route handler contains no authorization check of any kind — no session lookup, no user fetch, no role test. Anyone who can reach the URL can run it."
+    },
+    {
+      "ruleId": "sec/admin-route-no-auth",
+      "file": "app/api/admin/supabase-config/route.ts",
+      "line": 3,
+      "severity": "error",
+      "message": "This admin route handler contains no authorization check of any kind — no session lookup, no user fetch, no role test. Anyone who can reach the URL can run it.",
+      "fixPrompt": "Fix \"Admin route handler with no authorization check\" (sec/admin-route-no-auth) at app/api/admin/supabase-config/route.ts:3: This admin route handler contains no authorization check of any kind — no session lookup, no user fetch, no role test. Anyone who can reach the URL can run it."
+    },
+    {
+      "ruleId": "sec/admin-route-no-auth",
+      "file": "app/api/admin/test-users/route.ts",
+      "line": 4,
+      "severity": "error",
+      "message": "This admin route handler contains no authorization check of any kind — no session lookup, no user fetch, no role test. Anyone who can reach the URL can run it.",
+      "fixPrompt": "Fix \"Admin route handler with no authorization check\" (sec/admin-route-no-auth) at app/api/admin/test-users/route.ts:4: This admin route handler contains no authorization check of any kind — no session lookup, no user fetch, no role test. Anyone who can reach the URL can run it."
+    },
+    {
+      "ruleId": "sec/admin-route-no-auth",
+      "file": "app/api/admin/user-credentials/route.ts",
+      "line": 4,
+      "severity": "error",
+      "message": "This admin route handler contains no authorization check of any kind — no session lookup, no user fetch, no role test. Anyone who can reach the URL can run it.",
+      "fixPrompt": "Fix \"Admin route handler with no authorization check\" (sec/admin-route-no-auth) at app/api/admin/user-credentials/route.ts:4: This admin route handler contains no authorization check of any kind — no session lookup, no user fetch, no role test. Anyone who can reach the URL can run it."
+    },
+    {
+      "ruleId": "sec/admin-route-no-auth",
+      "file": "app/api/admin/users/by-role/route.ts",
+      "line": 13,
+      "severity": "error",
+      "message": "This admin route handler contains no authorization check of any kind — no session lookup, no user fetch, no role test. Anyone who can reach the URL can run it.",
+      "fixPrompt": "Fix \"Admin route handler with no authorization check\" (sec/admin-route-no-auth) at app/api/admin/users/by-role/route.ts:13: This admin route handler contains no authorization check of any kind — no session lookup, no user fetch, no role test. Anyone who can reach the URL can run it."
+    },
+    {
+      "ruleId": "sec/hardcoded-service-role-key",
+      "file": "scripts/add-missing-columns.js",
+      "line": 5,
+      "severity": "error",
+      "message": "A Supabase service-role key is exposed in this file. That key bypasses row-level security on every table in the project — it is the database's root credential, not an API key. Rotate it in the Supabase dashboard now, then load it from a server-only environment variable.",
+      "fixPrompt": "Fix \"Supabase service-role key exposed in source\" (sec/hardcoded-service-role-key) at scripts/add-missing-columns.js:5: A Supabase service-role key is exposed in this file. That key bypasses row-level security on every table in the project — it is the database's root credential, not an API key. Rotate it in the Supabase dashboard now, then load it from a server-only environment variable."
+    },
+    {
+      "ruleId": "sec/hardcoded-service-role-key",
+      "file": "scripts/check-offpremises-requests.ts",
+      "line": 4,
+      "severity": "error",
+      "message": "A Supabase service-role key is exposed in this file. That key bypasses row-level security on every table in the project — it is the database's root credential, not an API key. Rotate it in the Supabase dashboard now, then load it from a server-only environment variable.",
+      "fixPrompt": "Fix \"Supabase service-role key exposed in source\" (sec/hardcoded-service-role-key) at scripts/check-offpremises-requests.ts:4: A Supabase service-role key is exposed in this file. That key bypasses row-level security on every table in the project — it is the database's root credential, not an API key. Rotate it in the Supabase dashboard now, then load it from a server-only environment variable."
+    },
+    {
+      "ruleId": "sec/hardcoded-service-role-key",
+      "file": "scripts/check-offpremises-review.js",
+      "line": 5,
+      "severity": "error",
+      "message": "A Supabase service-role key is exposed in this file. That key bypasses row-level security on every table in the project — it is the database's root credential, not an API key. Rotate it in the Supabase dashboard now, then load it from a server-only environment variable.",
+      "fixPrompt": "Fix \"Supabase service-role key exposed in source\" (sec/hardcoded-service-role-key) at scripts/check-offpremises-review.js:5: A Supabase service-role key is exposed in this file. That key bypasses row-level security on every table in the project — it is the database's root credential, not an API key. Rotate it in the Supabase dashboard now, then load it from a server-only environment variable."
+    },
+    {
+      "ruleId": "sec/hardcoded-service-role-key",
+      "file": "scripts/check_columns.js",
+      "line": 5,
+      "severity": "error",
+      "message": "A Supabase service-role key is exposed in this file. That key bypasses row-level security on every table in the project — it is the database's root credential, not an API key. Rotate it in the Supabase dashboard now, then load it from a server-only environment variable.",
+      "fixPrompt": "Fix \"Supabase service-role key exposed in source\" (sec/hardcoded-service-role-key) at scripts/check_columns.js:5: A Supabase service-role key is exposed in this file. That key bypasses row-level security on every table in the project — it is the database's root credential, not an API key. Rotate it in the Supabase dashboard now, then load it from a server-only environment variable."
+    },
+    {
+      "ruleId": "sec/hardcoded-service-role-key",
+      "file": "scripts/diagnose.js",
+      "line": 4,
+      "severity": "error",
+      "message": "A Supabase service-role key is exposed in this file. That key bypasses row-level security on every table in the project — it is the database's root credential, not an API key. Rotate it in the Supabase dashboard now, then load it from a server-only environment variable.",
+      "fixPrompt": "Fix \"Supabase service-role key exposed in source\" (sec/hardcoded-service-role-key) at scripts/diagnose.js:4: A Supabase service-role key is exposed in this file. That key bypasses row-level security on every table in the project — it is the database's root credential, not an API key. Rotate it in the Supabase dashboard now, then load it from a server-only environment variable."
+    },
+    {
+      "ruleId": "sec/hardcoded-service-role-key",
+      "file": "scripts/diagnose.mjs",
+      "line": 4,
+      "severity": "error",
+      "message": "A Supabase service-role key is exposed in this file. That key bypasses row-level security on every table in the project — it is the database's root credential, not an API key. Rotate it in the Supabase dashboard now, then load it from a server-only environment variable.",
+      "fixPrompt": "Fix \"Supabase service-role key exposed in source\" (sec/hardcoded-service-role-key) at scripts/diagnose.mjs:4: A Supabase service-role key is exposed in this file. That key bypasses row-level security on every table in the project — it is the database's root credential, not an API key. Rotate it in the Supabase dashboard now, then load it from a server-only environment variable."
+    },
+    {
+      "ruleId": "sec/hardcoded-service-role-key",
+      "file": "scripts/direct-add-columns.js",
+      "line": 14,
+      "severity": "error",
+      "message": "A Supabase service-role key is exposed in this file. That key bypasses row-level security on every table in the project — it is the database's root credential, not an API key. Rotate it in the Supabase dashboard now, then load it from a server-only environment variable.",
+      "fixPrompt": "Fix \"Supabase service-role key exposed in source\" (sec/hardcoded-service-role-key) at scripts/direct-add-columns.js:14: A Supabase service-role key is exposed in this file. That key bypasses row-level security on every table in the project — it is the database's root credential, not an API key. Rotate it in the Supabase dashboard now, then load it from a server-only environment variable."
+    },
+    {
+      "ruleId": "sec/hardcoded-service-role-key",
+      "file": "scripts/force-checkout-failed-users.js",
+      "line": 44,
+      "severity": "error",
+      "message": "A Supabase service-role key is exposed in this file. That key bypasses row-level security on every table in the project — it is the database's root credential, not an API key. Rotate it in the Supabase dashboard now, then load it from a server-only environment variable.",
+      "fixPrompt": "Fix \"Supabase service-role key exposed in source\" (sec/hardcoded-service-role-key) at scripts/force-checkout-failed-users.js:44: A Supabase service-role key is exposed in this file. That key bypasses row-level security on every table in the project — it is the database's root credential, not an API key. Rotate it in the Supabase dashboard now, then load it from a server-only environment variable."
+    },
+    {
+      "ruleId": "sec/hardcoded-service-role-key",
+      "file": "scripts/force-checkout-kaase-today.js",
+      "line": 50,
+      "severity": "error",
+      "message": "A Supabase service-role key is exposed in this file. That key bypasses row-level security on every table in the project — it is the database's root credential, not an API key. Rotate it in the Supabase dashboard now, then load it from a server-only environment variable.",
+      "fixPrompt": "Fix \"Supabase service-role key exposed in source\" (sec/hardcoded-service-role-key) at scripts/force-checkout-kaase-today.js:50: A Supabase service-role key is exposed in this file. That key bypasses row-level security on every table in the project — it is the database's root credential, not an API key. Rotate it in the Supabase dashboard now, then load it from a server-only environment variable."
+    },
+    {
+      "ruleId": "sec/hardcoded-service-role-key",
+      "file": "scripts/list-tables.ts",
+      "line": 4,
+      "severity": "error",
+      "message": "A Supabase service-role key is exposed in this file. That key bypasses row-level security on every table in the project — it is the database's root credential, not an API key. Rotate it in the Supabase dashboard now, then load it from a server-only environment variable.",
+      "fixPrompt": "Fix \"Supabase service-role key exposed in source\" (sec/hardcoded-service-role-key) at scripts/list-tables.ts:4: A Supabase service-role key is exposed in this file. That key bypasses row-level security on every table in the project — it is the database's root credential, not an API key. Rotate it in the Supabase dashboard now, then load it from a server-only environment variable."
+    },
+    {
+      "ruleId": "sec/hardcoded-service-role-key",
+      "file": "scripts/simulate-checkout.js",
+      "line": 33,
+      "severity": "error",
+      "message": "A Supabase service-role key is exposed in this file. That key bypasses row-level security on every table in the project — it is the database's root credential, not an API key. Rotate it in the Supabase dashboard now, then load it from a server-only environment variable.",
+      "fixPrompt": "Fix \"Supabase service-role key exposed in source\" (sec/hardcoded-service-role-key) at scripts/simulate-checkout.js:33: A Supabase service-role key is exposed in this file. That key bypasses row-level security on every table in the project — it is the database's root credential, not an API key. Rotate it in the Supabase dashboard now, then load it from a server-only environment variable."
+    },
+    {
+      "ruleId": "sec/hardcoded-service-role-key",
+      "file": "scripts/simulate_offpremises_flow.js",
+      "line": 4,
+      "severity": "error",
+      "message": "A Supabase service-role key is exposed in this file. That key bypasses row-level security on every table in the project — it is the database's root credential, not an API key. Rotate it in the Supabase dashboard now, then load it from a server-only environment variable.",
+      "fixPrompt": "Fix \"Supabase service-role key exposed in source\" (sec/hardcoded-service-role-key) at scripts/simulate_offpremises_flow.js:4: A Supabase service-role key is exposed in this file. That key bypasses row-level security on every table in the project — it is the database's root credential, not an API key. Rotate it in the Supabase dashboard now, then load it from a server-only environment variable."
+    },
+    {
       "ruleId": "sec/post-has-validation",
       "file": "app/api/admin/backup/route.ts",
       "line": 23,
@@ -8800,6 +8936,22 @@
       "fixPrompt": "Fix \"Request body read with no apparent validation\" (sec/post-has-validation) at app/api/workflow/registry/route.ts:95: No validation library detected in this file — a request body is read (req.body / request.json()) with no apparent zod/yup/joi/valibot/class-validator reference."
     },
     {
+      "ruleId": "sec/weak-default-credential",
+      "file": "app/api/admin/test-users/route.ts",
+      "line": 35,
+      "severity": "error",
+      "message": "A password literal here is one of the passwords attackers try first. If this is a real credential, rotate it; if it seeds an account, that account is trivially reachable in any environment this code runs in.",
+      "fixPrompt": "Fix \"Known-weak password literal in application code\" (sec/weak-default-credential) at app/api/admin/test-users/route.ts:35: A password literal here is one of the passwords attackers try first. If this is a real credential, rotate it; if it seeds an account, that account is trivially reachable in any environment this code runs in."
+    },
+    {
+      "ruleId": "sec/weak-default-credential",
+      "file": "app/api/admin/test-users/route.ts",
+      "line": 44,
+      "severity": "error",
+      "message": "A password literal here is one of the passwords attackers try first. If this is a real credential, rotate it; if it seeds an account, that account is trivially reachable in any environment this code runs in.",
+      "fixPrompt": "Fix \"Known-weak password literal in application code\" (sec/weak-default-credential) at app/api/admin/test-users/route.ts:44: A password literal here is one of the passwords attackers try first. If this is a real credential, rotate it; if it seeds an account, that account is trivially reachable in any environment this code runs in."
+    },
+    {
       "ruleId": "ux/destructive-no-confirm",
       "file": "lib/backup-service.tsx",
       "line": 254,
@@ -9370,7 +9522,7 @@
   ],
   "warnings": [],
   "fileCount": 1122,
-  "ruleCount": 25,
+  "ruleCount": 28,
   "tokenSurface": {
     "files": [],
     "totalTokens": 0,
